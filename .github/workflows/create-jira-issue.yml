@@ -48,7 +48,7 @@ jobs:
         uses: atlassian/gajira-create@v3
         with:
           project: TNT
-          issuetype: Task
+          issuetype: Sub-task
           summary: '${{ github.event.issue.title }}'
           description: '${{ steps.md2jira.outputs.output-text }}'
           fields: |
