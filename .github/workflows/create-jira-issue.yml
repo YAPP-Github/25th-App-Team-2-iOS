@@ -43,6 +43,20 @@ jobs:
             ${{ github.event.issue.body }}
           mode: md2jira
 
+      - name: Load User Mapping
+        id: load-mapping
+        run: |
+          JIRA_EMAIL=$(echo '${{ secrets.USER_MAPPING }}' | jq -r --arg login ${{ github.event.issue.user.login }} '.[$login]')
+          if [ -z "$JIRA_EMAIL" ]; then
+            echo "No mapping found for user ${{ github.event.issue.user.login }}. Assignee will be empty."
+          fi
+          echo "jira_email=$JIRA_EMAIL" >> $GITHUB_ENV
+
+      - name: Log Assignee Information
+        run: |
+          echo "GitHub User: ${{ steps.load-mapping.outputs.github_user }}"
+          echo "Jira Assignee Email: ${{ steps.load-mapping.outputs.jira_email }}"
+
       - name: Create Issue
         id: create
         uses: atlassian/gajira-create@v3
@@ -51,6 +65,7 @@ jobs:
           issuetype: SubTask
           summary: '${{ github.event.issue.title }}'
           description: '${{ steps.md2jira.outputs.output-text }}'
+          assignee: '${{ env.jira_email }}'
           fields: |
             {
               "parent": {
