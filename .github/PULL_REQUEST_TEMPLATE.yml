@@ -1,12 +1,12 @@
 name: 'Pull Request Template'
 description: 'PR 작성 시 사용하는 기본 템플릿입니다.'
-title: '[Feature] PR 제목을 작성해주세요'
+title: 'PR 제목을 작성해주세요'
 body:
   - type: input
     id: parentKey
     attributes:
       label: '🎟️ 상위 작업 (Ticket Number)'
-      description: '상위 작업의 Ticket Number를 기입해주세요'
+      description: '상위 작업의 Ticket Number를 기입해주세요 (Story)'
       placeholder: 'TNT-00'
     validations:
       required: true

@@ -1,13 +1,13 @@
 name: 'Basic issue template'
 description: '기본 이슈 템플릿'
 labels: []
-title: '[Prefix] Issue description'
+title: 'Issue description'
 body:
   - type: input
     id: parentKey
     attributes:
       label: '🎟️ 상위 작업 (Ticket Number)'
-      description: '상위 작업의 Ticket Number를 기입해주세요'
+      description: '상위 작업의 Ticket Number를 기입해주세요 (Story)'
       placeholder: 'TNT-00'
     validations:
       required: true
