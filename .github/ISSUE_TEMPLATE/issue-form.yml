@@ -1,0 +1,48 @@
+name: 'Basic issue template'
+description: '기본 이슈 템플릿'
+labels: []
+title: '[Prefix] Issue description'
+body:
+  - type: input
+    id: parentKey
+    attributes:
+      label: '🎟️ 상위 작업 (Ticket Number)'
+      description: '상위 작업의 Ticket Number를 기입해주세요'
+      placeholder: 'TNT-00'
+    validations:
+      required: true
+
+  - type: input
+    id: branch
+    attributes:
+      label: '🌳 브랜치명 (Branch)'
+      description: '영어로 브랜치명을 작성해주세요'
+    validations:
+      required: true
+
+  - type: textarea
+    id: summary
+    attributes:
+      label: '🚨 이슈 요약'
+      description: '이슈에 대한 내용을 간략하게 기술합니다'
+      placeholder: '이슈 요약을 작성해주세요'
+    validations:
+      required: true
+
+  - type: textarea
+    id: checklist
+    attributes:
+      label: '✅ 체크 리스트'
+      description: '체크 리스트 타입으로 할 일을 분류합니다'
+      value: |
+        - [ ] 
+    validations:
+      required: false
+
+  - type: textarea
+    id: references
+    attributes:
+      label: '👀 참고자료'
+      description: '참고자료가 있다면 여기에 작성해주세요. 부재 시 비워둘 수 있습니다.'
+    validations:
+      required: false
