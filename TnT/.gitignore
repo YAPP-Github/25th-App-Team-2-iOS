@@ -68,3 +68,16 @@ Derived/
 
 ### Tuist managed dependencies ###
 Tuist/.build
+
+# XCconfig
+**.xcconfig
+
+# Signing
+Signing/
+master.key
+
+# PList
+# => 전체 plist를 다 제외함.
+# **/*.plist  
+# Support/*.plist
+GoogleService-Info.plist
