@@ -10,8 +10,9 @@ import SwiftUI
 
 // MARK: Sementic Color
 extension Color {
-    // App Color
-    static let accentColor = DesignSystemAsset.accentColor.swiftUIColor
+    struct App {
+        static let accentColor = DesignSystemAsset.accentColor.swiftUIColor
+    }
 }
 
 // MARK: Gray Scale
