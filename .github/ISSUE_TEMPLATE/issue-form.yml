@@ -1,6 +1,6 @@
 name: 'Basic issue template'
 description: '기본 이슈 템플릿'
-labels: []
+labels: ['feat']
 title: 'Issue description'
 body:
   - type: input
@@ -25,7 +25,15 @@ body:
     attributes:
       label: '🚨 이슈 요약'
       description: '이슈에 대한 내용을 간략하게 기술합니다'
-      placeholder: '이슈 요약을 작성해주세요'
+      value: |
+        **주요 사항**  
+        - 이슈의 핵심 목표 또는 해결해야 할 문제를 간략히 작성하세요.
+
+        **Input**  
+        - 이 이슈를 수행하기 위해 필요한 입력 값, 데이터, 리소스를 작성하세요.
+
+        **Output**  
+        - 이 이슈를 통해 산출될 결과물, 목표, 또는 상태를 작성하세요.
     validations:
       required: true
 
@@ -43,6 +51,6 @@ body:
     id: references
     attributes:
       label: '👀 참고자료'
-      description: '참고자료가 있다면 여기에 작성해주세요. 부재 시 비워둘 수 있습니다.'
+      description: '참고자료(디자인 문서, API 문서 등)가 있다면 작성해주세요. 없을 경우 "없음"으로 남겨주세요.'
     validations:
       required: false
