@@ -20,14 +20,33 @@ public extension ImageResource {
     static let icnArrowLeft: ImageResource = DesignSystemImages.icnArrowLeft.imageResource
     static let icnDelete: ImageResource = DesignSystemImages.icnDelete.imageResource
     static let icnDropDown: ImageResource = DesignSystemImages.icnDropDown.imageResource
-    static let icnFeedback: ImageResource = DesignSystemImages.icnFeedback.imageResource
+    static let icnFeedbackEmpty: ImageResource = DesignSystemImages.icnFeedbackEmpty.imageResource
     static let icnFeedbackFilled: ImageResource = DesignSystemImages.icnFeedbackFilled.imageResource
-    static let icnHome: ImageResource = DesignSystemImages.icnHome.imageResource
+    static let icnHomeEmpty: ImageResource = DesignSystemImages.icnHomeEmpty.imageResource
     static let icnHomeFilled: ImageResource = DesignSystemImages.icnHomeFilled.imageResource
-    static let icnList: ImageResource = DesignSystemImages.icnList.imageResource
+    static let icnListEmpty: ImageResource = DesignSystemImages.icnListEmpty.imageResource
     static let icnListFilled: ImageResource = DesignSystemImages.icnListFilled.imageResource
-    static let icnMypage: ImageResource = DesignSystemImages.icnMypage.imageResource
+    static let icnMypageEmpty: ImageResource = DesignSystemImages.icnMypageEmpty.imageResource
     static let icnMypageFilled: ImageResource = DesignSystemImages.icnMypageFilled.imageResource
-    static let icnWrite: ImageResource = DesignSystemImages.icnWrite.imageResource
+    static let icnWriteWhite: ImageResource = DesignSystemImages.icnWriteWhite.imageResource
+    static let icnWriteBlack: ImageResource = DesignSystemImages.icnWriteBlack.imageResource
+    static let icnRadioButtonUnselected: ImageResource = DesignSystemImages.icnRadioButtonUnselected.imageResource
+    static let icnRadioButtonSelected: ImageResource = DesignSystemImages.icnRadioButtonSelected.imageResource
+    static let icnCheckMarkEmpty: ImageResource = DesignSystemImages.icnCheckMarkEmpty.imageResource
+    static let icnCheckMarkFilled: ImageResource = DesignSystemImages.icnCheckMarkFilled.imageResource
+    static let icnCheckButtonUnselected: ImageResource = DesignSystemImages.icnCheckButtonUnselected.imageResource
+    static let icnCheckButtonSelected: ImageResource = DesignSystemImages.icnCheckButtonSelected.imageResource
+    static let icnStarEmpty: ImageResource = DesignSystemImages.icnStarEmpty.imageResource
+    static let icnStarFilled: ImageResource = DesignSystemImages.icnStarFilled.imageResource
+    static let icnHeartEmpty: ImageResource = DesignSystemImages.icnHeartEmpty.imageResource
+    static let icnHeartFilled: ImageResource = DesignSystemImages.icnHeartFilled.imageResource
 }
+
 // MARK: Image
+public extension ImageResource {
+    static let imgAppSplash = DesignSystemImages.imgAppSplash.imageResource
+    static let imgDefaultProfileImage = DesignSystemImages.imgDefaultProfileImage.imageResource
+    static let imgOnboardingLogin = DesignSystemImages.imgOnboardingLogin.imageResource
+    static let imgOnboardingTrainee = DesignSystemImages.imgOnboardingTrainee.imageResource
+    static let imgOnboardingTrainer = DesignSystemImages.imgOnboardingTrainer.imageResource
+}
