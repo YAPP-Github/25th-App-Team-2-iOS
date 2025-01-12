@@ -9,12 +9,12 @@
 import SwiftUI
 
 /// 앱에서 사용할 폰트와 스타일을 관리
-struct Typography {
+public struct Typography {
     
     /// Pretendard 폰트의 굵기와 커스텀 폰트를 생성
-    struct Pretendard {
+    public struct Pretendard {
         /// Pretendard 폰트의 굵기(enum) 정의
-        enum Weight {
+        public enum Weight {
             case thin, extraLight, light, regular, medium, semibold, bold, extrabold, black
             
             var name: String {
@@ -37,19 +37,18 @@ struct Typography {
         ///   - weight: Pretendard의 폰트 굵기
         ///   - size: 폰트 크기
         /// - Returns: SwiftUI Font 객체
-        static func customFont(_ weight: Pretendard.Weight, size: CGFloat) -> Font {
+        public static func customFont(_ weight: Pretendard.Weight, size: CGFloat) -> Font {
             return Font.custom(weight.name, size: size)
         }
     }
     
     /// 폰트, 줄 높이, 줄 간격, 자간 등을 포함한 스타일 정의를 위한 구조체입니다.
-    struct FontStyle {
+    public struct FontStyle {
         let font: Font
         let lineHeight: CGFloat
         let lineSpacing: CGFloat
         let letterSpacing: CGFloat
         
-
         /// 주어진 Weight, 크기, 줄 높이 배율, 자간으로 FontStyle을 생성합니다.
         /// - Parameters:
         ///   - weight: Pretendard 폰트의 굵기
@@ -66,7 +65,7 @@ struct Typography {
 }
 
 /// 앱에서 사용할 기본적인 폰트 스타일을 정의합니다.
-extension Typography.FontStyle {
+public extension Typography.FontStyle {
     // Heading Styles
     static let heading1: Typography.FontStyle = Typography.FontStyle(.bold, size: 28, lineHeightMultiplier: 1.4, letterSpacing: -0.02)
     static let heading2: Typography.FontStyle = Typography.FontStyle(.bold, size: 24, lineHeightMultiplier: 1.5, letterSpacing: -0.02)
@@ -102,7 +101,7 @@ struct TypographyModifier: ViewModifier {
 }
 
 /// Typography.FontStyle을 쉽게 적용할 수 있도록 도와줍니다.
-extension View {
+public extension View {
     /// Typography.FontStyle을 적용합니다.
     /// - Parameter style: 적용할 Typography.FontStyle
     /// - Returns: 스타일이 적용된 View

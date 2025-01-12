@@ -9,14 +9,14 @@
 import SwiftUI
 
 // MARK: Sementic Color
-extension Color {
+public extension Color {
     struct App {
-        static let accentColor: Color = DesignSystemAsset.accentColor.swiftUIColor
+        public static let accentColor: Color = DesignSystemAsset.accentColor.swiftUIColor
     }
 }
 
 // MARK: Gray Scale
-extension Color {
+public extension Color {
     // Common
     static let common0: Color = DesignSystemAsset.common0.swiftUIColor
     static let common100: Color = DesignSystemAsset.common100.swiftUIColor
@@ -36,7 +36,7 @@ extension Color {
 }
 
 // MARK: Color Scale
-extension Color {
+public extension Color {
     // Blue
     static let blue50: Color = DesignSystemAsset.blue50.swiftUIColor
     static let blue100: Color = DesignSystemAsset.blue100.swiftUIColor
