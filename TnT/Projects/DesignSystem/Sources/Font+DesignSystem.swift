@@ -17,7 +17,7 @@ public struct Typography {
         public enum Weight {
             case thin, extraLight, light, regular, medium, semibold, bold, extrabold, black
             
-            var name: String {
+            public var name: String {
                 switch self {
                 case .thin: return "Pretendard-Thin"
                 case .extraLight: return "Pretendard-ExtraLight"
@@ -44,10 +44,10 @@ public struct Typography {
     
     /// 폰트, 줄 높이, 줄 간격, 자간 등을 포함한 스타일 정의를 위한 구조체입니다.
     public struct FontStyle {
-        let font: Font
-        let lineHeight: CGFloat
-        let lineSpacing: CGFloat
-        let letterSpacing: CGFloat
+        public let font: Font
+        public let lineHeight: CGFloat
+        public let lineSpacing: CGFloat
+        public let letterSpacing: CGFloat
         
         /// 주어진 Weight, 크기, 줄 높이 배율, 자간으로 FontStyle을 생성합니다.
         /// - Parameters:
