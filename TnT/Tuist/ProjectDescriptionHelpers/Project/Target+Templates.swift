@@ -24,7 +24,7 @@ public extension Target {
             product: product,
             bundleId: "com.\(organizationName).\(name)",
             deploymentTargets: deploymentTargets,
-            infoPlist: .default,
+            infoPlist: .file(path: .relativeToRoot("Projects/TnTApp/Support/Info.plist")),
             sources: ["Sources/**"],
             resources: resources ? ["Resources/**"] : nil,
             scripts: [.swiftLint],
