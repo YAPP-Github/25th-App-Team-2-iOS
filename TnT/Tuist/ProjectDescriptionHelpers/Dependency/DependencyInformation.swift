@@ -8,11 +8,11 @@
 @preconcurrency import ProjectDescription
 
 let dependencyInfo: [DependencyInformation: [DependencyInformation]] = [
-    .TnTApp: [.Presentation, .Data, .Domain, .ComposableArchitecture],
-    .Presentation: [.DesignSystem, .ComposableArchitecture, .Lottie],
-    .Domain: [.DI, .SwiftDepedencies],
-    .Data: [.Domain, .KakaoSDKUser],
-    .DesignSystem: [.ComposableArchitecture],
+    .TnTApp: [.Presentation],
+    .Presentation: [.DesignSystem, .Domain, .ComposableArchitecture],
+    .Domain: [.Data, .SwiftDepedencies, .KakaoSDKUser],
+    .Data: [],
+    .DesignSystem: [.ComposableArchitecture, .Lottie],
     .DI: []
 ]
 
