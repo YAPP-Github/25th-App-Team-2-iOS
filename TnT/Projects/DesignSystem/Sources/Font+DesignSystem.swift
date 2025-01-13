@@ -88,24 +88,32 @@ public extension Typography.FontStyle {
     static let caption1: Typography.FontStyle = Typography.FontStyle(.medium, size: 11, lineHeightMultiplier: 1.3, letterSpacing: -0.02)
 }
 
-/// 텍스트에 스타일을 적용하기 위한 ViewModifier입니다.
+/// 텍스트에 Typography 스타일과 색상을 적용하는 ViewModifier입니다.
+/// Typography.FontStyle을 사용하여 폰트, 줄 간격, 자간 등을 설정하고,
+/// Color를 통해 텍스트의 색상을 지정합니다.
 struct TypographyModifier: ViewModifier {
     let style: Typography.FontStyle
+    let color: Color
 
     func body(content: Content) -> some View {
         content
             .font(style.font)
             .lineSpacing(style.lineSpacing)
             .kerning(style.letterSpacing)
+            .foregroundStyle(color)
     }
 }
 
 /// Typography.FontStyle을 쉽게 적용할 수 있도록 도와줍니다.
+/// Typography.FontStyle과 Color를 사용하여 폰트, 줄 간격, 자간, 텍스트 색상을 설정합니다.
 public extension View {
-    /// Typography.FontStyle을 적용합니다.
-    /// - Parameter style: 적용할 Typography.FontStyle
-    /// - Returns: 스타일이 적용된 View
-    func typographyStyle(_ style: Typography.FontStyle) -> some View {
-        self.modifier(TypographyModifier(style: style))
+    /// View에 Typography.FontStyle과 색상을 적용합니다.
+    ///
+    /// - Parameters:
+    ///   - style: 적용할 Typography.FontStyle (폰트, 줄 간격, 자간 등 포함)
+    ///   - color: 텍스트 색상 (기본값: .neutral950)
+    /// - Returns: Typography 스타일과 색상이 적용된 View
+    func typographyStyle(_ style: Typography.FontStyle, with color: Color = .neutral950) -> some View {
+        self.modifier(TypographyModifier(style: style, color: color))
     }
 }
