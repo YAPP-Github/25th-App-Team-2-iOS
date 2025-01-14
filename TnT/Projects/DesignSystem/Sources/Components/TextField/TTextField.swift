@@ -150,6 +150,12 @@ public extension TTextField {
         let title: String
         /// 입력 가능한 글자 수 제한
         let limitCount: Int?
+        
+        public init(isRequired: Bool, title: String, limitCount: Int?) {
+            self.isRequired = isRequired
+            self.title = title
+            self.limitCount = limitCount
+        }
     }
     
     /// TextField 우측 버튼 설정입니다
@@ -158,5 +164,10 @@ public extension TTextField {
         let title: String
         /// 버튼 클릭 시 실행되는 동작
         let tapAction: (() -> Void)?
+        
+        public init(title: String, tapAction: (() -> Void)?) {
+            self.title = title
+            self.tapAction = tapAction
+        }
     }
 }
