@@ -21,6 +21,8 @@ public struct TTextField: View {
     private let unitText: String?
     /// 우측 버튼 설정
     private let button: ButtonContent?
+    /// 키보드 타입
+    private let keyboardType: UIKeyboardType
     
     /// 입력 텍스트
     @Binding private var text: String
@@ -33,6 +35,7 @@ public struct TTextField: View {
     ///   - footerText: 하단 푸터 텍스트 (옵션)
     ///   - unitText: 우측 단위 텍스트 (옵션)
     ///   - button: 우측 버튼 설정 (옵션)
+    ///   - keyboardType: 텍스트 필드 키보드 타입 (기본값: .default)
     ///   - text: 입력 텍스트 (Binding)
     ///   - textFieldStatus: 텍스트 필드 상태 (Binding)
     public init(
@@ -41,6 +44,7 @@ public struct TTextField: View {
         footerText: String? = nil,
         unitText: String? = nil,
         button: ButtonContent? = nil,
+        keyboardType: UIKeyboardType = .default,
         text: Binding<String>,
         textFieldStatus: Binding<Status>
     ) {
@@ -49,6 +53,7 @@ public struct TTextField: View {
         self.footerText = footerText
         self.unitText = unitText
         self.button = button
+        self.keyboardType = keyboardType
         self._text = text
         self._status = textFieldStatus
     }
@@ -80,6 +85,7 @@ public struct TTextField: View {
             VStack(spacing: 0) {
                 HStack(spacing: 0) {
                     TextField(placeholder, text: $text)
+                        .keyboardType(keyboardType)
                         .multilineTextAlignment(unitText != nil ? .trailing : .leading)
                         .padding(8)
 
