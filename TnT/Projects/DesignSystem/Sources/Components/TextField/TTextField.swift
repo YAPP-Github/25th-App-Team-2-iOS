@@ -8,113 +8,210 @@
 
 import SwiftUI
 
-enum TextFieldStatus {
-    case empty
-    case focused
-    case invalid
-    case filled
+public extension TTextField {
+    /// TextField에 표시되는 상태입니다
+    enum Status {
+        case empty
+        case focused
+        case invalid
+        case valid
+        case filled
+        
+        /// Status에 따른 컬러웨이입니다
+        var style: (statusColor: Color, textColor: Color) {
+            switch self {
+            case .empty, .filled:
+                return (.neutral200, .neutral400)
+            case .focused:
+                return (.neutral600, .neutral600)
+            case .invalid:
+                return (.red500, .neutral600)
+            case .valid:
+                return (.blue500, .neutral600)
+            }
+        }
+    }
 }
 
-struct TTextField: View {
-    // 필수 속성
-    let placeholder: String
-    let limitCount: Int
+public extension TTextField {
+    /// TextField 상단 헤더 설정입니다
+    struct HeaderContent {
+        /// 필수 여부를 표시
+        let isRequired: Bool
+        /// 헤더의 제목
+        let title: String
+        /// 입력 가능한 글자 수 제한
+        let limitCount: Int?
+    }
     
-    // 바인딩 상태
-    @Binding var text: String
-    @Binding var textFieldStatus: TextFieldStatus
+    /// TextField 우측 버튼 설정입니다
+    struct ButtonContent {
+        /// 버튼에 표시될 텍스트
+        let title: String
+        /// 버튼 클릭 시 실행되는 동작
+        let tapAction: (() -> Void)?
+    }
+}
+
+/// TnT 앱 내에서 전반적으로 사용되는 커스텀 텍스트 필드 컴포넌트입니다.
+public struct TTextField: View {
     
-    // 선택 속성
-    let header: String?
-    let footer: String?
-    let rightButtonAction: (() -> Void)?
-    let unitText: String?
+    /// Placeholder 텍스트
+    private let placeholder: String
+    /// 상단 헤더 설정
+    private let header: HeaderContent?
+    /// 하단 푸터 텍스트
+    private let footerText: String?
+    /// 우측 단위 텍스트
+    private let unitText: String?
+    /// 우측 버튼 설정
+    private let button: ButtonContent?
     
-    // 내부 상태
-    private var lineColor: Color {
-        switch textFieldStatus {
-        case .empty: return .gray
-        case .focused: return .blue
-        case .invalid: return .red
-        case .filled: return .green
-        }
+    /// 입력 텍스트
+    @Binding private var text: String
+    /// 텍스트 필드 상태
+    @Binding private var status: Status
+    
+    /// - Parameters:
+    ///   - placeholder: Placeholder 텍스트 (기본값: "내용을 입력해주세요")
+    ///   - header: 상단 헤더 설정 (옵션)
+    ///   - footerText: 하단 푸터 텍스트 (옵션)
+    ///   - unitText: 우측 단위 텍스트 (옵션)
+    ///   - button: 우측 버튼 설정 (옵션)
+    ///   - text: 입력 텍스트 (Binding)
+    ///   - textFieldStatus: 텍스트 필드 상태 (Binding)
+    public init(
+        placeholder: String = "내용을 입력해주세요",
+        header: HeaderContent? = nil,
+        footerText: String? = nil,
+        unitText: String? = nil,
+        button: ButtonContent? = nil,
+        text: Binding<String>,
+        textFieldStatus: Binding<Status>
+    ) {
+        self.placeholder = placeholder
+        self.header = header
+        self.footerText = footerText
+        self.unitText = unitText
+        self.button = button
+        self._text = text
+        self._status = textFieldStatus
     }
 
-    private var textColor: Color {
-        return textFieldStatus == .invalid ? .red : .black
-    }
-
-    var body: some View {
+    public var body: some View {
         VStack(alignment: .leading, spacing: 8) {
-            // Header (옵션)
-            if let header = header {
-                Text(header)
-                    .font(.headline)
-            }
-            
-            // 텍스트 필드 영역
-            HStack {
-                TextField(placeholder, text: $text, onEditingChanged: { isEditing in
-                    textFieldStatus = isEditing ? .focused : (text.isEmpty ? .empty : .filled)
-                })
-                .onChange(of: text) { newValue in
-                    if newValue.count > limitCount {
-                        text = String(newValue.prefix(limitCount))
-                        textFieldStatus = .invalid
-                    } else if !newValue.isEmpty {
-                        textFieldStatus = .filled
-                    } else {
-                        textFieldStatus = .empty
+            // Header
+            if let header {
+                HStack(spacing: 0) {
+                    Text(header.title)
+                        .typographyStyle(.body1Bold, with: .neutral900)
+                    if header.isRequired {
+                        Text("*")
+                            .typographyStyle(.body1Bold, with: .red500)
                     }
-                }
-                .foregroundColor(textColor)
-                .padding(8)
-                .background(
-                    RoundedRectangle(cornerRadius: 8)
-                        .stroke(lineColor, lineWidth: 1)
-                )
-                .keyboardType(.default)
-                
-                // Right Button (옵션)
-                if let action = rightButtonAction {
-                    Button(action: action) {
-                        Image(systemName: "arrow.right")
-                            .foregroundColor(.blue)
-                            .padding(8)
-                            .background(Circle().fill(Color.gray.opacity(0.2)))
+                    
+                    Spacer()
+                    
+                    if let limitCount = header.limitCount {
+                        Text("\(text.count)/\(limitCount)자")
+                            .typographyStyle(.label1Medium, with: .neutral400)
+                            .padding(.horizontal, 4)
+                            .padding(.vertical, 2)
                     }
-                }
-                
-                // 단위 텍스트 (옵션)
-                if let unit = unitText {
-                    Text(unit)
-                        .foregroundColor(.gray)
-                        .padding(.trailing, 8)
                 }
             }
             
-            // Footer (옵션)
-            if let footer = footer {
+            // Text Field
+            VStack(spacing: 0) {
+                HStack(spacing: 0) {
+                    TextField(placeholder, text: $text)
+                        .multilineTextAlignment(unitText != nil ? .trailing : .leading)
+                        .padding(8)
+
+                    if let unitText {
+                        Text(unitText)
+                            .typographyStyle(.body1Medium, with: status.style.textColor)
+                            .padding(.horizontal, 12)
+                            .padding(.vertical, 3)
+                    }
+                    
+                    if let button {
+                        // TODO: 추후 버튼 컴포넌트 나오면 대체
+                        Button(action: button.tapAction ?? { print("Button tapped") }) {
+                            Text(button.title)
+                                .typographyStyle(.label2Medium, with: .neutral50)
+                                .padding(.horizontal, 12)
+                                .padding(.vertical, 7)
+                                .background(Color.neutral900)
+                                .clipShape(.rect(cornerRadius: 8))
+                        }
+                        .padding(.vertical, 5)
+                    }
+                }
+                
+                TDivider(color: status.style.statusColor)
+            }
+            
+            // Footer
+            if let footer = footerText {
                 Text(footer)
-                    .font(.caption)
-                    .foregroundColor(.gray)
+                    .typographyStyle(.body2Medium, with: status.style.statusColor)
             }
         }
-        .padding(.vertical, 4)
     }
 }
 
 #Preview {
-    TTextField(
-        placeholder: "example",
-        limitCount: 20,
-        text: .constant("ㅅㄷㄴㅅㄷㄴㅅㄷ"),
-        textFieldStatus: .constant(.filled),
-        header: "오호라",
-        footer: "오호라2",
-        rightButtonAction: {
-            print("action")
-        },
-        unitText: "???"
-    )
+    ScrollView {
+        VStack(spacing: 16) {
+            // Empty 상태
+            TTextField(
+                header: .init(isRequired: true, title: "필수 입력", limitCount: 10),
+                footerText: "빈 필드 상태입니다.",
+                text: .constant(""),
+                textFieldStatus: .constant(.empty)
+            )
+            .padding()
+            
+            // Focused 상태
+            TTextField(
+                header: .init(isRequired: false, title: "내 초대 코드", limitCount: 20),
+                footerText: "현재 입력 중입니다.",
+                button: .init(title: "확인", tapAction: { print("확인 버튼 클릭") }),
+                text: .constant("입력 중..."),
+                textFieldStatus: .constant(.focused)
+            )
+            .padding()
+
+            // Invalid 상태
+            TTextField(
+                header: .init(isRequired: false, title: "이메일", limitCount: nil),
+                footerText: "유효하지 않은 입력입니다.",
+                text: .constant("invalid email"),
+                textFieldStatus: .constant(.invalid)
+            )
+            .padding()
+
+            // Valid 상태
+            TTextField(
+                header: .init(isRequired: false, title: "이름", limitCount: nil),
+                footerText: "올바른 입력입니다.",
+                text: .constant("John Doe"),
+                textFieldStatus: .constant(.valid)
+            )
+            .padding()
+
+            // Filled 상태
+            TTextField(
+                header: .init(isRequired: true, title: "주소", limitCount: 50),
+                footerText: "최대 글자 수를 초과하지 않도록 작성하세요.",
+                unitText: "단위",
+                button: .init(title: "검색", tapAction: { print("검색 버튼 클릭") }),
+                text: .constant("서울특별시 강남구 테헤란로"),
+                textFieldStatus: .constant(.filled)
+            )
+            .padding()
+        }
+    }
 }
+    
