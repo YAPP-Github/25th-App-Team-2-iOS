@@ -8,51 +8,6 @@
 
 import SwiftUI
 
-public extension TTextField {
-    /// TextField에 표시되는 상태입니다
-    enum Status {
-        case empty
-        case focused
-        case invalid
-        case valid
-        case filled
-        
-        /// Status에 따른 컬러웨이입니다
-        var style: (statusColor: Color, textColor: Color) {
-            switch self {
-            case .empty, .filled:
-                return (.neutral200, .neutral400)
-            case .focused:
-                return (.neutral600, .neutral600)
-            case .invalid:
-                return (.red500, .neutral600)
-            case .valid:
-                return (.blue500, .neutral600)
-            }
-        }
-    }
-}
-
-public extension TTextField {
-    /// TextField 상단 헤더 설정입니다
-    struct HeaderContent {
-        /// 필수 여부를 표시
-        let isRequired: Bool
-        /// 헤더의 제목
-        let title: String
-        /// 입력 가능한 글자 수 제한
-        let limitCount: Int?
-    }
-    
-    /// TextField 우측 버튼 설정입니다
-    struct ButtonContent {
-        /// 버튼에 표시될 텍스트
-        let title: String
-        /// 버튼 클릭 시 실행되는 동작
-        let tapAction: (() -> Void)?
-    }
-}
-
 /// TnT 앱 내에서 전반적으로 사용되는 커스텀 텍스트 필드 컴포넌트입니다.
 public struct TTextField: View {
     
@@ -161,57 +116,47 @@ public struct TTextField: View {
     }
 }
 
-#Preview {
-    ScrollView {
-        VStack(spacing: 16) {
-            // Empty 상태
-            TTextField(
-                header: .init(isRequired: true, title: "필수 입력", limitCount: 10),
-                footerText: "빈 필드 상태입니다.",
-                text: .constant(""),
-                textFieldStatus: .constant(.empty)
-            )
-            .padding()
-            
-            // Focused 상태
-            TTextField(
-                header: .init(isRequired: false, title: "내 초대 코드", limitCount: 20),
-                footerText: "현재 입력 중입니다.",
-                button: .init(title: "확인", tapAction: { print("확인 버튼 클릭") }),
-                text: .constant("입력 중..."),
-                textFieldStatus: .constant(.focused)
-            )
-            .padding()
-
-            // Invalid 상태
-            TTextField(
-                header: .init(isRequired: false, title: "이메일", limitCount: nil),
-                footerText: "유효하지 않은 입력입니다.",
-                text: .constant("invalid email"),
-                textFieldStatus: .constant(.invalid)
-            )
-            .padding()
-
-            // Valid 상태
-            TTextField(
-                header: .init(isRequired: false, title: "이름", limitCount: nil),
-                footerText: "올바른 입력입니다.",
-                text: .constant("John Doe"),
-                textFieldStatus: .constant(.valid)
-            )
-            .padding()
-
-            // Filled 상태
-            TTextField(
-                header: .init(isRequired: true, title: "주소", limitCount: 50),
-                footerText: "최대 글자 수를 초과하지 않도록 작성하세요.",
-                unitText: "단위",
-                button: .init(title: "검색", tapAction: { print("검색 버튼 클릭") }),
-                text: .constant("서울특별시 강남구 테헤란로"),
-                textFieldStatus: .constant(.filled)
-            )
-            .padding()
+public extension TTextField {
+    /// TextField에 표시되는 상태입니다
+    enum Status {
+        case empty
+        case focused
+        case invalid
+        case valid
+        case filled
+        
+        /// Status에 따른 컬러웨이입니다
+        var style: (statusColor: Color, textColor: Color) {
+            switch self {
+            case .empty, .filled:
+                return (.neutral200, .neutral400)
+            case .focused:
+                return (.neutral600, .neutral600)
+            case .invalid:
+                return (.red500, .neutral600)
+            case .valid:
+                return (.blue500, .neutral600)
+            }
         }
     }
 }
+
+public extension TTextField {
+    /// TextField 상단 헤더 설정입니다
+    struct HeaderContent {
+        /// 필수 여부를 표시
+        let isRequired: Bool
+        /// 헤더의 제목
+        let title: String
+        /// 입력 가능한 글자 수 제한
+        let limitCount: Int?
+    }
     
+    /// TextField 우측 버튼 설정입니다
+    struct ButtonContent {
+        /// 버튼에 표시될 텍스트
+        let title: String
+        /// 버튼 클릭 시 실행되는 동작
+        let tapAction: (() -> Void)?
+    }
+}
