@@ -37,6 +37,8 @@ public struct Typography {
     /// 폰트, 줄 높이, 줄 간격, 자간 등을 포함한 스타일 정의를 위한 구조체입니다.
     public struct FontStyle {
         public let font: Font
+        public let uiFont: UIFont
+        public let size: CGFloat
         public let lineHeight: CGFloat
         public let lineSpacing: CGFloat
         public let letterSpacing: CGFloat
@@ -49,6 +51,8 @@ public struct Typography {
         ///   - letterSpacing: 자간 (CGFloat)
         init(_ weight: Pretendard.Weight, size: CGFloat, lineHeightMultiplier: CGFloat, letterSpacing: CGFloat) {
             self.font = weight.fontConvertible.swiftUIFont(size: size)
+            self.uiFont = weight.fontConvertible.font(size: size)
+            self.size = size
             self.lineHeight = size * lineHeightMultiplier
             self.lineSpacing = (size * lineHeightMultiplier) - size
             self.letterSpacing = letterSpacing
