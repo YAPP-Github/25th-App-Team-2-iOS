@@ -75,7 +75,7 @@ public extension TPopUpAlertView {
     }
 }
 
-extension TPopupAlertState.ButtonState {
+public extension TPopupAlertState.ButtonState {
     /// `ButtonState`를 `AlertButton`으로 변환
     func toButton() -> TPopUpAlertView.AlertButton {
         TPopUpAlertView.AlertButton(

@@ -36,7 +36,6 @@ public struct TControlButton: View {
     
     public var body: some View {
         Button(action: {
-            isSelected.toggle()
             tapAction()
         }, label: {
             type.image(isSelected: isSelected)
@@ -59,7 +58,6 @@ public extension TControlButton {
         /// 선택 상태에 따른 이미지 반환
         func image(isSelected: Bool) -> Image {
             switch self {
-                
             case .radio:
                 return Image(isSelected ? .icnRadioButtonSelected : .icnRadioButtonUnselected)
             case .checkMark:
