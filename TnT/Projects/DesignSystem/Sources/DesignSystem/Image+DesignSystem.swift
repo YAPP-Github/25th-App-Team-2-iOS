@@ -40,6 +40,8 @@ public extension ImageResource {
     static let icnStarFilled: ImageResource = DesignSystemAsset.icnStarFilled.imageResource
     static let icnHeartEmpty: ImageResource = DesignSystemAsset.icnHeartEmpty.imageResource
     static let icnHeartFilled: ImageResource = DesignSystemAsset.icnHeartFilled.imageResource
+    static let icnToggleUnselected: ImageResource = DesignSystemAsset.icnToggleUnselected.imageResource
+    static let icnToggleSelected: ImageResource = DesignSystemAsset.icnToggleSelected.imageResource
 }
 
 // MARK: Image
