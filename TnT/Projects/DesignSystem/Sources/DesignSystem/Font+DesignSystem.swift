@@ -16,35 +16,29 @@ public struct Typography {
         /// Pretendard 폰트의 굵기(enum) 정의
         public enum Weight {
             case thin, extraLight, light, regular, medium, semibold, bold, extrabold, black
-            
-            public var name: String {
+
+            public var fontConvertible: DesignSystemFontConvertible {
                 switch self {
-                case .thin: return "Pretendard-Thin"
-                case .extraLight: return "Pretendard-ExtraLight"
-                case .light: return "Pretendard-Light"
-                case .regular: return "Pretendard-Regular"
-                case .medium: return "Pretendard-Medium"
-                case .semibold: return "Pretendard-SemiBold"
-                case .bold: return "Pretendard-Bold"
-                case .extrabold: return "Pretendard-ExtraBold"
-                case .black: return "Pretendard-Black"
+                    
+                case .thin: return DesignSystemFontFamily.Pretendard.thin
+                case .extraLight: return DesignSystemFontFamily.Pretendard.extraLight
+                case .light: return DesignSystemFontFamily.Pretendard.light
+                case .regular: return DesignSystemFontFamily.Pretendard.regular
+                case .medium: return DesignSystemFontFamily.Pretendard.medium
+                case .semibold: return DesignSystemFontFamily.Pretendard.semiBold
+                case .bold: return DesignSystemFontFamily.Pretendard.bold
+                case .extrabold: return DesignSystemFontFamily.Pretendard.extraBold
+                case .black: return DesignSystemFontFamily.Pretendard.black
                 }
             }
-        }
-        
-        /// 주어진 Weight와 크기로 커스텀 폰트를 생성합니다.
-        /// - Parameters:
-        ///   - weight: Pretendard의 폰트 굵기
-        ///   - size: 폰트 크기
-        /// - Returns: SwiftUI Font 객체
-        public static func customFont(_ weight: Pretendard.Weight, size: CGFloat) -> Font {
-            return Font.custom(weight.name, size: size)
         }
     }
     
     /// 폰트, 줄 높이, 줄 간격, 자간 등을 포함한 스타일 정의를 위한 구조체입니다.
     public struct FontStyle {
         public let font: Font
+        public let uiFont: UIFont
+        public let size: CGFloat
         public let lineHeight: CGFloat
         public let lineSpacing: CGFloat
         public let letterSpacing: CGFloat
@@ -56,7 +50,9 @@ public struct Typography {
         ///   - lineHeightMultiplier: 줄 높이 배율 (CGFloat)
         ///   - letterSpacing: 자간 (CGFloat)
         init(_ weight: Pretendard.Weight, size: CGFloat, lineHeightMultiplier: CGFloat, letterSpacing: CGFloat) {
-            self.font = Pretendard.customFont(weight, size: size)
+            self.font = weight.fontConvertible.swiftUIFont(size: size)
+            self.uiFont = weight.fontConvertible.font(size: size)
+            self.size = size
             self.lineHeight = size * lineHeightMultiplier
             self.lineSpacing = (size * lineHeightMultiplier) - size
             self.letterSpacing = letterSpacing
