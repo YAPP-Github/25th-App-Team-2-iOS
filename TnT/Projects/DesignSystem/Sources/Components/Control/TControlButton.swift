@@ -10,7 +10,9 @@ import SwiftUI
 
 /// TnT 앱 내에서 전반적으로 사용되는 커스텀 컨트롤 버튼 컴포넌트입니다.
 public struct TControlButton: View {
-    /// 버틉 탭 액션
+    /// 버튼 기본 사이즈
+    static private let defaultSize: CGSize = .init(width: 24, height: 24)
+    /// 버튼 탭 액션
     private let tapAction: () -> Void
     /// 버튼 스타일
     private let type: Style
@@ -40,7 +42,7 @@ public struct TControlButton: View {
             type.image(isSelected: isSelected)
                 .resizable()
                 .scaledToFit()
-                .frame(width: type.defaultSize.width, height: type.defaultSize.height)
+                .frame(width: TControlButton.defaultSize.width, height: TControlButton.defaultSize.height)
         })
     }
 }
@@ -51,7 +53,6 @@ public extension TControlButton {
         case radio
         case checkMark
         case checkbox
-        case toggle
         case star
         case heart
         
@@ -65,22 +66,10 @@ public extension TControlButton {
                 return Image(isSelected ? .icnCheckMarkFilled : .icnCheckMarkEmpty)
             case .checkbox:
                 return Image(isSelected ? .icnCheckButtonSelected : .icnCheckButtonUnselected)
-            case .toggle:
-                return Image(isSelected ? .icnToggleSelected : .icnToggleUnselected)
             case .star:
                 return Image(isSelected ? .icnStarFilled : .icnStarEmpty)
             case .heart:
                 return Image(isSelected ? .icnHeartFilled : .icnHeartEmpty)
-            }
-        }
-        
-        /// 스타일에 따른 기본 크기
-        var defaultSize: CGSize {
-            switch self {
-            case .toggle:
-                return .init(width: 44, height: 24)
-            default:
-                return .init(width: 24, height: 24)
             }
         }
     }
