@@ -8,96 +8,78 @@
 
 import SwiftUI
 
+/// 버튼의 이미지를 위한 구조체
+public struct ButtonImage {
+    public let resource: ImageResource
+    public let size: CGFloat
+    public let type: ButtonPostiton?
+    
+    public init(
+        resource: ImageResource,
+        size: CGFloat,
+        type: ButtonPostiton? = nil
+    ) {
+        self.resource = resource
+        self.size = size
+        self.type = type
+    }
+}
+
 /// 버튼의 상태를 정의하는 열거형
 /// - `default`: 기본 스타일 상태
 /// - `disable`: 비활성화 상태
 public enum ButtonState {
     case `default`(DefaultStyle)
-    case disable(DisableStyle)
+    case disable(DefaultStyle)
 }
 
 /// 기본 스타일을 정의하는 열거형
 /// 버튼의 다양한 기본 스타일과 그에 따른 색상 속성을 정의
 public enum DefaultStyle {
-    case primaryDefault
-    case grayDefault
-    case outlineDefault
-    case redDefault
+    case primary(isEnabled: Bool)
+    case gray(isEnabled: Bool)
+    case outline(isEnabled: Bool)
+    case red(isEnabled: Bool)
     
     /// 버튼 배경 색상
     var backgound: Color {
         switch self {
-        case .primaryDefault:
-            return .neutral900
-        case .grayDefault:
-            return .neutral100
-        case .outlineDefault:
-            return .clear
-        case .redDefault:
-            return .red50
+        case .primary(let isEnabled):
+            return isEnabled ? .neutral900 : .neutral200
+        case .gray(let isEnabled):
+            return isEnabled ? .neutral100 : .neutral200
+        case .outline(let isEnabled):
+            return isEnabled ? .neutral300 : .clear
+        case .red(let isEnabled):
+            return isEnabled ? .red400 : .clear
         }
     }
     
     /// 버튼 텍스트 색상
     var textColor: Color {
         switch self {
-        case .primaryDefault:
-            return .neutral50
-        case .grayDefault:
-            return .neutral500
-        case .outlineDefault:
-            return .neutral500
-        case .redDefault:
-            return .red600
+        case .primary(let isEnabled):
+            return isEnabled ? .neutral50 : .neutral50
+        case .gray(let isEnabled):
+            return isEnabled ? .neutral500 : .neutral50
+        case .outline(let isEnabled):
+            return isEnabled ? .neutral300 : .neutral500
+        case .red(let isEnabled):
+            return isEnabled ? .red600 : .neutral300
         }
     }
     
     /// 버튼 외곽선 색상
     var borderColor: Color {
         switch self {
-        case .primaryDefault, .grayDefault:
-            return .clear
-        case .outlineDefault:
-            return .neutral300
-        case .redDefault:
-            return .red400
-        }
-    }
-}
-
-/// 비활성화 상태 스타일을 정의하는 열거형
-/// 버튼의 비활성화 상태에서 색상 속성을 정의
-public enum DisableStyle {
-    case grayDisable // primaryDefault, grayDefault와 매칭되는 비활성화 스타일
-    case outlineDisable // outlineDefault, redDefault와 매칭되는 비활성화 스타일
-    
-    /// 버튼 배경 색상
-    var background: Color {
-        switch self {
-        case .grayDisable:
-            return .neutral200
-        case .outlineDisable:
-            return .clear
-        }
-    }
-    
-    /// 버튼 텍스트 색상
-    var textColor: Color {
-        switch self {
-        case .grayDisable:
-            return .common0
-        case .outlineDisable:
-            return .neutral300
-        }
-    }
-    
-    /// 버튼 외곽선 색상
-    var borderColor: Color {
-        switch self {
-        case .grayDisable:
-            return .clear
-        case .outlineDisable:
-            return .neutral300
+        case .primary(let isEnabled):
+            return isEnabled ? .clear : .clear
+        case .gray(let isEnabled):
+            return isEnabled ? .clear : .clear
+        case .outline(let isEnabled):
+            return isEnabled ? .neutral300 : .neutral300
+        case .red(let isEnabled):
+            return isEnabled ? .red400 : .neutral300
         }
     }
 }
@@ -138,6 +120,13 @@ public enum ButtonConfiguration {
             return 7
         case .xSmall:
             return 3
+        }
+    }
+    
+    var horizontalSize: CGFloat {
+        switch self {
+        case .xLarge, .large, .medium, .small, .xSmall:
+            return 20
         }
     }
     

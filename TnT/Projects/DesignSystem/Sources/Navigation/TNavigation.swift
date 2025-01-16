@@ -33,75 +33,74 @@ public struct TNavigation: View {
     }
     
     public var body: some View {
+        HStack {
+            // 왼쪽 뷰
+            leftView
+            Spacer()
+            // 중앙 타이틀
+            centerTitle
+            Spacer()
+            // 오른쪽 뷰
+            rightView
+        }
+        .padding(.init(top: 22.5, leading: 20, bottom: 10.5, trailing: 20))
+    }
+    
+    @ViewBuilder
+    private var leftView: some View {
         switch type {
-            /// 왼쪽 이미지 버튼, 센터 타이틀
-        case .LButtonWithTitle(let imageResource, let title):
-            HStack {
-                Text(title)
-                    .typographyStyle(.heading4, with: .neutral900)
-                    .frame(maxWidth: .infinity, alignment: .center)
-                    .overlay(alignment: .topLeading) {
-                        Image(imageResource)
-                            .resizable()
-                            .frame(width: 32, height: 32)
-                    }
-                    .onTapGesture {
-                        leftAction?()
-                    }
-            }
-            .padding(.init(top: 22.5, leading: 20, bottom: 10.5, trailing: 20))
+        case .LButtonWithTitle(let leftImage, _),
+                .LRButtonWithTitle(let leftImage, _, _),
+                .LButtonRTextWithTitle(let leftImage, _, _):
+            Image(leftImage)
+                .resizable()
+                .frame(width: 32, height: 32)
+                .onTapGesture {
+                    leftAction?()
+                }
             
-            /// 왼쪽 이미지 버튼, 센터 타이틀, 오른쪽 이미지 버튼
-        case .LRButtonWithTitle(let LImage, let title, let RImage):
-            HStack {
-                Image(LImage)
-                    .resizable()
-                    .frame(width: 32, height: 32)
-                    .onTapGesture {
-                        leftAction?()
-                    }
-                
-                Text(title)
-                    .typographyStyle(.heading4, with: .neutral900)
-                    .frame(maxWidth: .infinity, alignment: .center)
-                
-                Image(RImage)
-                    .resizable()
-                    .frame(width: 32, height: 32)
-                    .onTapGesture {
-                        rightAction?()
-                    }
-            }
-            .padding(.init(top: 22.5, leading: 20, bottom: 10.5, trailing: 20))
-            
-            /// 왼쪽 이미지 버튼, 센터 타이틀, 오른쪽 텍스트 버튼
-        case .LButtonRTextWithTitle(let LImage, let title, let RText):
-            HStack {
-                Image(LImage)
-                    .resizable()
-                    .frame(width: 32, height: 32)
-                    .onTapGesture {
-                        leftAction?()
-                    }
-                
-                Text(title)
-                    .typographyStyle(.heading4, with: .neutral900)
-                    .frame(maxWidth: .infinity, alignment: .center)
-                
-                Text(RText)
-                    .typographyStyle(.body2Medium, with: .neutral400)
-                    .onTapGesture {
-                        rightAction?()
-                    }
-            }
-            .padding(.init(top: 22.5, leading: 20, bottom: 10.5, trailing: 20))
-            
-            /// 타이틀
-        case .Title(let title):
-            Text(title)
+        case .Title:
+            Rectangle()
+                .fill(Color.clear)
+                .frame(width: 32, height: 32)
+        }
+    }
+    
+    @ViewBuilder
+    private var centerTitle: some View {
+        switch type {
+        case .LButtonWithTitle(_, let centerTitle),
+                .LRButtonWithTitle(_, let centerTitle, _),
+                .LButtonRTextWithTitle(_, let centerTitle, _),
+                .Title(let centerTitle):
+            Text(centerTitle)
                 .typographyStyle(.heading4, with: .neutral900)
                 .frame(maxWidth: .infinity, alignment: .center)
-                .padding(.init(top: 22.5, leading: 20, bottom: 10.5, trailing: 20))
+        }
+    }
+    
+    @ViewBuilder
+    private var rightView: some View {
+        switch type {
+        case .LRButtonWithTitle(_, _, let rightImage):
+            Image(rightImage)
+                .resizable()
+                .frame(width: 32, height: 32)
+                .onTapGesture {
+                    rightAction?()
+                }
+            
+        case .LButtonRTextWithTitle(_, _, let rightText):
+            Text(rightText)
+                .typographyStyle(.body2Medium, with: .neutral400)
+                .onTapGesture {
+                    rightAction?()
+                }
+            
+        case .LButtonWithTitle, .Title:
+            Rectangle()
+                .fill(Color.clear)
+                .frame(width: 32, height: 32)
         }
     }
 }
@@ -129,11 +128,11 @@ public extension TNavigation {
 /// 네비게이션 바의 유형을 정의하는 열거형
 public enum TNavigationCase {
     /// 왼쪽 이미지 버튼, 센터 타이틀
-    case LButtonWithTitle(ImageResource, String)
+    case LButtonWithTitle(leftImage: ImageResource, centerTitle: String)
     /// 왼쪽 이미지 버튼, 센터 타이틀, 오른쪽 이미지 버튼
-    case LRButtonWithTitle(ImageResource, String, ImageResource)
+    case LRButtonWithTitle(leftImage: ImageResource, centerTitle: String, rightImage: ImageResource)
     /// 왼쪽 이미지 버튼, 센터 타이틀, 오른쪽 텍스트 버튼
-    case LButtonRTextWithTitle(ImageResource, String, String)
+    case LButtonRTextWithTitle(leftImage: ImageResource, centerTitle: String, rightText: String)
     /// 타이틀
-    case Title(String)
+    case Title(centerTitle: String)
 }
