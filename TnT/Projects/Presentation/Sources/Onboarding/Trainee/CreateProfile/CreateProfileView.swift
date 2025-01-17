@@ -63,6 +63,7 @@ private extension CreateProfileView {
                            let uiImage = UIImage(data: imageData) {
                             Image(uiImage: uiImage)
                                 .resizable()
+                                .scaledToFill()
                                 .clipShape(Circle())
             } else {
                 if store.userType == .trainer {
