@@ -8,6 +8,7 @@
 
 import SwiftUI
 import ComposableArchitecture
+import PhotosUI
 
 import Domain
 import DesignSystem
@@ -25,106 +26,115 @@ public struct CreateProfileView: View {
     }
     
     public var body: some View {
-        NavigationStack {
-            VStack {
+        VStack {
+            
+            Header
+            
+            VStack(spacing: 24) {
                 
-                Spacer(minLength: 60)
+                ImageSection
                 
-                VStack(spacing: 48) {
-                    Header
-                    
-                    ImageSection
-                    
-                    ButtonSection
-                }
-                
-                Spacer()
-                
-                BottomTempButton {
-                    send(.tapNextButton)
-                }
+                TextFieldSection
             }
-            .ignoresSafeArea(.container, edges: .bottom)
-            .navigationDestination(
-                isPresented: Binding(get: { store.viewState.isNavigating }, set: { store.send(.setNavigating($0))})
-            ) {
-                DummyView()
+            
+            Spacer()
+            
+            BottomTempButton(isEnabled: store.viewState.isNextButtonEnabled) {
+                send(.tapNextButton)
             }
         }
+        .ignoresSafeArea(.container, edges: .bottom)
     }
 }
 
 // MARK: - SubViews
 private extension CreateProfileView {
     var Header: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Text("안녕하세요!\n어떤 회원으로 이용하시겠어요?")
-                .typographyStyle(.heading2, with: .neutral950)
-            Text("트레이너와 트레이니 중 선택해주세요.")
-                .typographyStyle(.body1Medium, with: .neutral500)
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(.horizontal, 24)
+        Text("이름이 어떻게 되세요?")
+            .typographyStyle(.heading2, with: .neutral950)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.horizontal, 24)
+            .padding(.bottom, 48)
     }
     
     var ImageSection: some View {
         Group {
-            if store.userType == .trainer {
-                Image(.imgOnboardingTrainer)
-                    .resizable()
+            if let imageData = store.userImageData,
+                           let uiImage = UIImage(data: imageData) {
+                            Image(uiImage: uiImage)
+                                .resizable()
+                                .clipShape(Circle())
             } else {
-                Image(.imgOnboardingTrainee)
-                    .resizable()
+                if store.userType == .trainer {
+                    Image(.imgDefaultTrainerImage)
+                        .resizable()
+                        .clipShape(Circle())
+                } else {
+                    Image(.imgDefaultTraineeImage)
+                        .resizable()
+                        .clipShape(Circle())
+                }
             }
         }
-        .frame(idealWidth: 310, idealHeight: 310)
-        .padding(.horizontal, 20)
+        .frame(width: 132, height: 132)
+        .overlay(alignment: .bottomTrailing) {
+            PhotosPicker(
+                selection: Binding(get: {
+                    store.viewState.photoPickerItem
+                }, set: {
+                    send(.tapImageInPicker($0))
+                }),
+                matching: .images,
+                photoLibrary: .shared()
+            ) {
+                ZStack {
+                    Circle()
+                        .fill(Color.neutral900)
+                        .frame(width: 28, height: 28)
+                    Image(.icnWriteWhite)
+                        .resizable()
+                        .frame(width: 16, height: 16)
+                }
+            }
+        }
     }
     
-    var ButtonSection: some View {
-        HStack(spacing: 8) {
-            TempButton(
-                isSelected: store.userType == UserType.trainer,
-                title: UserType.trainer.koreanName,
-                action: { send(.tapUserTypeButton(.trainer), animation: .easeInOut(duration: 0.5)) }
+    var TextFieldSection: some View {
+        TTextField(
+            placeholder: "이름을 입력해주세요",
+            text: Binding(get: {
+                store.userName
+            }, set: {
+                send(.typeUserName($0))
+            }),
+            textFieldStatus: Binding(get: {
+                store.viewState.textFieldStatus
+            }, set: {
+                send(.updateTextFieldStatus($0))
+            })
+        )
+        .withSectionLayout(
+            header: .init(
+                isRequired: true,
+                title: "이름",
+                limitCount: UserPolicy.maxNameLength,
+                textCount: store.userName.count
+            ),
+            footer: .init(
+                footerText: store.viewState.showFooterText
+                ? "\(UserPolicy.maxNameLength)자 이하로 입력해주세요"
+                : "",
+                status: store.viewState.textFieldStatus
             )
-            TempButton(
-                isSelected: store.userType == UserType.trainee,
-                title: UserType.trainee.koreanName,
-                action: { send(.tapUserTypeButton(.trainee), animation: .easeInOut(duration: 0.5)) }
-            )
-        }
+        )
         .padding(.horizontal, 20)
     }
 }
 
 // TODO: 버튼 컴포넌트 나오면 대체
-private extension CreateProfileView {
-    struct TempButton: View {
-        var isSelected: Bool = false
-        var title: String
-        let action: (() -> Void)
-        
-        var body: some View {
-            Button(action: {
-                action()
-            }) {
-                Text(title)
-                    .typographyStyle(.body1Medium, with: isSelected ? .red600 : .neutral500)
-                    .padding(.vertical, 16)
-                    .frame(height: 58)
-                    .frame(maxWidth: .infinity)
-                    .background(isSelected ? Color.red50 : .clear)
-                    .cornerRadius(16)
-                    .overlay(
-                      RoundedRectangle(cornerRadius: 16)
-                        .stroke(isSelected ? Color.red400 : Color.neutral300, lineWidth: isSelected ? 1.5 : 1.0)
-                    )
-            }
-        }
-    }
-    
+private extension CreateProfileView {    
     struct BottomTempButton: View {
+        var isEnabled: Bool
         let action: (() -> Void)
         
         var body: some View {
@@ -137,9 +147,9 @@ private extension CreateProfileView {
                     .padding(.bottom, 53)
                     .frame(height: 100)
                     .frame(maxWidth: .infinity)
-                    .background(Color.neutral900)
+                    .background(isEnabled ? Color.neutral900 : Color.neutral300)
+                    .disabled(!isEnabled)
             }
         }
     }
 }
-
