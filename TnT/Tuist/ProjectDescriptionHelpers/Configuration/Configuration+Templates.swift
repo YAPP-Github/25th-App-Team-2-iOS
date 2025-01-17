@@ -12,8 +12,8 @@ public extension Configuration {
         return Settings.settings(
             base: ["OTHER_LDFLAGS": ["-ObjC"]],
             configurations: [
-                .debug(name: .debug, xcconfig: .relativeToRoot("Projects/TnTApp/Config/Secrets.xcconfig")),
-                .release(name: .release, xcconfig: .relativeToRoot("Projects/TnTApp/Config/Secrets.xcconfig")),
+                .debug(name: .debug, xcconfig: .relativeToRoot("Tuist/Config/Secrets.xcconfig")),
+                .release(name: .release, xcconfig: .relativeToRoot("Tuist/Config/Secrets.xcconfig")),
             ],
             defaultSettings: DefaultSettings.recommended
         )
