@@ -51,7 +51,8 @@ public struct TNavigation: View {
         switch type {
         case .LButtonWithTitle(let leftImage, _),
                 .LRButtonWithTitle(let leftImage, _, _),
-                .LButtonRTextWithTitle(let leftImage, _, _):
+                .LButtonRTextWithTitle(let leftImage, _, _),
+                .LButton(leftImage: let leftImage):
             Image(leftImage)
                 .resizable()
                 .frame(width: 32, height: 32)
@@ -76,6 +77,8 @@ public struct TNavigation: View {
             Text(centerTitle)
                 .typographyStyle(.heading4, with: .neutral900)
                 .frame(maxWidth: .infinity, alignment: .center)
+        case .LButton:
+            EmptyView()
         }
     }
     
@@ -97,7 +100,7 @@ public struct TNavigation: View {
                     rightAction?()
                 }
             
-        case .LButtonWithTitle, .Title:
+        case .LButtonWithTitle, .Title, .LButton:
             Rectangle()
                 .fill(Color.clear)
                 .frame(width: 32, height: 32)
@@ -135,4 +138,6 @@ public enum TNavigationCase {
     case LButtonRTextWithTitle(leftImage: ImageResource, centerTitle: String, rightText: String)
     /// 타이틀
     case Title(centerTitle: String)
+    /// 왼쪽 이미지
+    case LButton(leftImage: ImageResource)
 }
