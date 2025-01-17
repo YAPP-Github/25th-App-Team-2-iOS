@@ -47,28 +47,31 @@ public struct TIcnButton: View {
     }
 }
 
-/// 아이콘 버튼의 크기별 설정값을 정의하는 열거형
-public enum IcnButtonConfiguration {
-    case large
-    case medium
-    
-    /// 버튼 크기별 패딩 값
-    public var padding: CGFloat {
-        switch self {
-        case .large:
-            return 16
-        case .medium:
-            return 12
+public extension TIcnButton {
+    /// 아이콘 버튼의 크기별 설정값을 정의하는 열거형
+    enum IcnButtonConfiguration {
+        case large
+        case medium
+        
+        /// 버튼 크기별 패딩 값
+        public var padding: CGFloat {
+            switch self {
+            case .large:
+                return 16
+            case .medium:
+                return 12
+            }
+        }
+        
+        /// 버튼 크기별 코너 반경 값
+        public var radius: CGFloat {
+            switch self {
+            case .large:
+                return 16
+            case .medium:
+                return 12
+            }
         }
     }
-    
-    /// 버튼 크기별 코너 반경 값
-    public var radius: CGFloat {
-        switch self {
-        case .large:
-            return 16
-        case .medium:
-            return 12
-        }
-    }
+
 }
