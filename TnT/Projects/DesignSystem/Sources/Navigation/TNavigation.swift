@@ -43,7 +43,7 @@ public struct TNavigation: View {
             // 오른쪽 뷰
             rightView
         }
-        .padding(.init(top: 22.5, leading: 20, bottom: 10.5, trailing: 20))
+        .padding(.init(top: 14, leading: 16, bottom: 14, trailing: 16))
     }
     
     @ViewBuilder
