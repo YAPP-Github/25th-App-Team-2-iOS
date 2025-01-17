@@ -8,8 +8,14 @@
 
 import SwiftUI
 
+import DesignSystem
+
 @main
 struct ToyProjectApp: App {
+    
+    init() {
+        DesignSystemFontFamily.registerAllCustomFonts()
+    }
 
     var body: some Scene {
         WindowGroup {
