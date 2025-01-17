@@ -43,7 +43,6 @@ public struct UserTypeSelectionFeature {
         }
     }
     
-    
     public enum Action: ViewAction {
         /// 네비게이션 여부 설정
         case setNavigating(Bool)
@@ -68,10 +67,12 @@ public struct UserTypeSelectionFeature {
                 case .tapUserTypeButton(let userType):
                     state.userType = userType
                     return .none
+                    
                 case .tapNextButton:
                     print("다음으로..")
                     return .send(.setNavigating(true))
                 }
+                
             case .setNavigating(let isNavigating):
                 state.viewState.isNavigating = isNavigating
                 return .none

@@ -48,7 +48,10 @@ public struct UserTypeSelectionView: View {
             .navigationDestination(
                 isPresented: Binding(get: { store.viewState.isNavigating }, set: { store.send(.setNavigating($0))})
             ) {
-                DummyView()
+                CreateProfileView(
+                    store: .init(initialState: CreateProfileFeature.State(userType: .trainee)) {
+                        CreateProfileFeature()
+                    })
             }
         }
     }
@@ -77,7 +80,7 @@ private extension UserTypeSelectionView {
                     .resizable()
             }
         }
-        .frame(idealWidth: 310, idealHeight: 310)
+        .frame(width: 310, height: 310)
         .padding(.horizontal, 20)
     }
     
