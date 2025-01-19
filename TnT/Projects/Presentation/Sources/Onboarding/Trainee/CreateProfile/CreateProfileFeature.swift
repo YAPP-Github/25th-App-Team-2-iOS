@@ -53,7 +53,7 @@ public struct CreateProfileFeature {
         /// 텍스트 필드 상태 (빈 값 / 입력됨 / 유효하지 않음)
         var textFieldStatus: TTextField.Status
         /// 포토 피커 표시 여부
-        var showPhotoPicker: Bool
+        var isPhotoPickerPresented: Bool
         /// "다음" 버튼 활성화 여부
         var isNextButtonEnabled: Bool
         /// 네비게이션 여부 (다음 화면 이동)
@@ -62,26 +62,26 @@ public struct CreateProfileFeature {
         var photoPickerItem: PhotosPickerItem?
         
         /// 하단 푸터 텍스트 표시 여부 (이름이 유효하지 않을 경우 표시)
-        var showFooterText: Bool {
+        var isFooterTextVisible: Bool {
             return textFieldStatus == .invalid
         }
         
         /// `ViewState`의 생성자
         /// - Parameters:
         ///   - textFieldStatus: 텍스트 필드 상태  (기본값: `.empty`)
-        ///   - showPhotoPicker: 포토 피커 표시 여부  (기본값: `false`)
+        ///   - isPhotoPickerPresented: 포토 피커 표시 여부  (기본값: `false`)
         ///   - isNextButtonEnabled: "다음" 버튼 활성화 여부  (기본값: `false`)
         ///   - isNavigating: 네비게이션 여부  (기본값: `false`)
         ///   - photoPickerItem: 현재 선택된 이미지 아이템 (기본값: `nil`)
         public init(
             textFieldStatus: TTextField.Status = .empty,
-            showPhotoPicker: Bool = false,
+            isPhotoPickerPresented: Bool = false,
             isNextButtonEnabled: Bool = false,
             isNavigating: Bool = false,
             photoPickerItem: PhotosPickerItem? = nil
         ) {
             self.textFieldStatus = textFieldStatus
-            self.showPhotoPicker = showPhotoPicker
+            self.isPhotoPickerPresented = isPhotoPickerPresented
             self.isNextButtonEnabled = isNextButtonEnabled
             self.isNavigating = isNavigating
             self.photoPickerItem = photoPickerItem
@@ -94,9 +94,9 @@ public struct CreateProfileFeature {
         /// 선택된 이미지 데이터 저장
         case imagePicked(Data?)
         /// 뷰에서 발생한 액션을 처리합니다.
-        case view(ViewAction)
+        case view(View)
         
-        public enum ViewAction {
+        public enum View {
             /// 프로필 사진 변경 버튼이 눌렸을 때 (사진 선택 모달 띄우기)
             case tapWriteButton
             /// 사용자 이름 입력
@@ -118,7 +118,7 @@ public struct CreateProfileFeature {
             case .view(let action):
                 switch action {
                 case .tapWriteButton:
-                    state.viewState.showPhotoPicker = true
+                    state.viewState.isPhotoPickerPresented = true
                     return .none
                     
                 case .typeUserName(let userName):

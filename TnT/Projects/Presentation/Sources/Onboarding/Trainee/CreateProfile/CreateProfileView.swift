@@ -122,7 +122,7 @@ private extension CreateProfileView {
                 textCount: store.userName.count
             ),
             footer: .init(
-                footerText: store.viewState.showFooterText
+                footerText: store.viewState.isFooterTextVisible
                 ? "\(UserPolicy.maxNameLength)자 이하로 입력해주세요"
                 : "",
                 status: store.viewState.textFieldStatus
