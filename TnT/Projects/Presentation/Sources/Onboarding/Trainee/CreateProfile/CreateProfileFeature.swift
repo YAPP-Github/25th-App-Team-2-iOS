@@ -7,11 +7,11 @@
 //
 
 import UIKit
+import _PhotosUI_SwiftUI
 import ComposableArchitecture
 
 import Domain
 import DesignSystem
-import _PhotosUI_SwiftUI
 
 /// 역할 선택 화면의 상태 및 로직을 관리하는 리듀서입니다.
 @Reducer
@@ -157,7 +157,7 @@ public struct CreateProfileFeature {
 // MARK: Internal Logic
 private extension CreateProfileFeature {
     /// 사용자 입력값을 검증하고 상태를 업데이트합니다.
-    private func validate(_ state: inout State) -> Effect<Action> {
+    func validate(_ state: inout State) -> Effect<Action> {
         guard !(state.userName.isEmpty) else {
             state.viewState.textFieldStatus = .empty
             return .none
