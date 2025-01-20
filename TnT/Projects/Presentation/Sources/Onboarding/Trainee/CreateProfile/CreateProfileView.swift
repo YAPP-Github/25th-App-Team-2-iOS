@@ -39,7 +39,7 @@ public struct CreateProfileView: View {
             
             Spacer()
             
-            BottomTempButton(isEnabled: store.viewState.isNextButtonEnabled) {
+            BottomTempButton(isEnabled: store.view_isNextButtonEnabled) {
                 send(.tapNextButton)
             }
         }
@@ -77,8 +77,7 @@ private extension CreateProfileView {
             .frame(width: 132, height: 132)
             .overlay(alignment: .bottomTrailing) {
                 PhotosPicker(
-                    selection: $store.viewState.photoPickerItem,
-//                        .sending(\.view.tapImageInPicker), // -> 해당 액션은 수행됨
+                    selection: $store.view_photoPickerItem,
                     matching: .images,
                     photoLibrary: .shared()
                 ) {
@@ -98,7 +97,7 @@ private extension CreateProfileView {
         TTextField(
             placeholder: "이름을 입력해주세요",
             text: $store.userName,
-            textFieldStatus: $store.viewState.textFieldStatus
+            textFieldStatus: $store.view_textFieldStatus
         )
         .withSectionLayout(
             header: .init(
@@ -108,10 +107,10 @@ private extension CreateProfileView {
                 textCount: store.userName.count
             ),
             footer: .init(
-                footerText: store.viewState.isFooterTextVisible
+                footerText: store.view_isFooterTextVisible
                 ? "\(UserPolicy.maxNameLength)자 이하로 입력해주세요"
                 : "",
-                status: store.viewState.textFieldStatus
+                status: store.view_textFieldStatus
             )
         )
         .padding(.horizontal, 20)
