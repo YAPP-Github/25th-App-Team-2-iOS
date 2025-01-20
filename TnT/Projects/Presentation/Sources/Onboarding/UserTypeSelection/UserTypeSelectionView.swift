@@ -71,15 +71,11 @@ private extension UserTypeSelectionView {
     }
     
     var ImageSection: some View {
-        Group {
-            if store.userType == .trainer {
-                Image(.imgOnboardingTrainer)
-                    .resizable()
-            } else {
-                Image(.imgOnboardingTrainee)
-                    .resizable()
-            }
-        }
+        Image(store.userType == .trainer
+              ? .imgOnboardingTrainer
+              : .imgOnboardingTrainee
+        )
+        .resizable()
         .frame(width: 310, height: 310)
         .padding(.horizontal, 20)
     }

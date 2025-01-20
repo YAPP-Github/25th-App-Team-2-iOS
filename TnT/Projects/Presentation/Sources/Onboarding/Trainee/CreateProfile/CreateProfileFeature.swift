@@ -12,13 +12,14 @@ import ComposableArchitecture
 
 import Domain
 import DesignSystem
+import SwiftUICore
 
 /// 역할 선택 화면의 상태 및 로직을 관리하는 리듀서입니다.
 @Reducer
 public struct CreateProfileFeature {
     
     @ObservableState
-    public struct State {
+    public struct State: Equatable {
         /// 현재 선택된 유저 타입 (트레이너/트레이니)
         var userType: UserType
         /// 현재 입력된 사용자 이름
@@ -27,7 +28,11 @@ public struct CreateProfileFeature {
         var userImageData: Data?
         
         /// UI 관련 상태
-        var viewState: ViewState
+        var viewState: ViewState {
+            didSet {
+                print("changed")
+            }  // 🔹 내부 변경이 발생할 때마다 id 업데이트
+        }
         
         /// `CreateProfileFeature.State`의 생성자
         /// - Parameters:
@@ -59,7 +64,11 @@ public struct CreateProfileFeature {
         /// 네비게이션 여부 (다음 화면 이동)
         var isNavigating: Bool
         /// 현재 선택된 이미지 (PhotosPickerItem)
-        var photoPickerItem: PhotosPickerItem?
+        var photoPickerItem: PhotosPickerItem? {
+            didSet {
+                print("item picked")
+            }
+        }
         
         /// 하단 푸터 텍스트 표시 여부 (이름이 유효하지 않을 경우 표시)
         var isFooterTextVisible: Bool {
@@ -88,7 +97,7 @@ public struct CreateProfileFeature {
         }
     }
     
-    public enum Action: ViewAction {
+    public enum Action: Sendable, ViewAction {
         /// 네비게이션 여부 설정
         case setNavigating(Bool)
         /// 선택된 이미지 데이터 저장
@@ -96,16 +105,14 @@ public struct CreateProfileFeature {
         /// 뷰에서 발생한 액션을 처리합니다.
         case view(View)
         
-        public enum View {
+        @CasePathable
+        public enum View: Sendable, BindableAction {
+            /// 바인딩할 액션을 처리합니다
+            case binding(BindingAction<State>)
             /// 프로필 사진 변경 버튼이 눌렸을 때 (사진 선택 모달 띄우기)
             case tapWriteButton
-            /// 사용자 이름 입력
-            case typeUserName(String)
-            /// 텍스트 필드 상태 업데이트
-            case updateTextFieldStatus(TTextField.Status)
             /// "다음으로" 버튼이 눌렸을 때
             case tapNextButton
-            /// 포토 피커에서 이미지가 선택되었을 때
             case tapImageInPicker(PhotosPickerItem?)
         }
     }
@@ -113,25 +120,29 @@ public struct CreateProfileFeature {
     public init() {}
     
     public var body: some ReducerOf<Self> {
+        BindingReducer(action: \.view)
+        
         Reduce { state, action in
             switch action {
             case .view(let action):
                 switch action {
-                case .tapWriteButton:
-                    state.viewState.isPhotoPickerPresented = true
-                    return .none
-                    
-                case .typeUserName(let userName):
-                    state.userName = userName
+                case .binding(\.userName):
                     return self.validate(&state)
                     
-                case .updateTextFieldStatus(let status):
-                    state.viewState.textFieldStatus = status
+                case .binding(\.viewState.photoPickerItem):
+                    let item: PhotosPickerItem? = state.viewState.photoPickerItem
+                    print("왜 안돼")
+                    return .run { [item] send in
+                        if let item, let data = try? await item.loadTransferable(type: Data.self) {
+                            await send(.imagePicked(data))
+                        }
+                    }
+                
+                case .binding(\.viewState):
                     return .none
                     
-                case .tapNextButton:
-                    print("다음으로..")
-                    return .send(.setNavigating(true))
+                case .binding:
+                    return .none
                     
                 case .tapImageInPicker(let item):
                     state.viewState.photoPickerItem = item
@@ -140,6 +151,14 @@ public struct CreateProfileFeature {
                             await send(.imagePicked(data))
                         }
                     }
+                    
+                case .tapWriteButton:
+                    state.viewState.isPhotoPickerPresented = true
+                    return .none
+                    
+                case .tapNextButton:
+                    print("다음으로..")
+                    return .send(.setNavigating(true))
                 }
                 
             case .setNavigating(let isNavigating):
@@ -173,5 +192,32 @@ private extension CreateProfileFeature {
         state.viewState.isNextButtonEnabled = isNameValid
         
         return .none
+    }
+}
+
+
+/// ✅ 자동으로 `id`를 변경하는 프로퍼티 래퍼
+@propertyWrapper
+struct AutoIdentifiable<T: Equatable>: Equatable {
+    var id: UUID = UUID()  // 변경 감지를 위한 ID
+    private var value: T
+
+    var wrappedValue: T {
+        get { value }
+        set {
+            if value != newValue {
+                value = newValue
+                id = UUID()  // 값이 변경되면 id도 변경
+            }
+        }
+    }
+
+    init(wrappedValue: T) {
+        self.value = wrappedValue
+    }
+
+    // ✅ Equatable 수동 구현
+    static func == (lhs: AutoIdentifiable<T>, rhs: AutoIdentifiable<T>) -> Bool {
+        lhs.value == rhs.value
     }
 }

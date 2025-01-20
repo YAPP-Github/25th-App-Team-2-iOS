@@ -17,7 +17,7 @@ import DesignSystem
 @ViewAction(for: CreateProfileFeature.self)
 public struct CreateProfileView: View {
     
-    public var store: StoreOf<CreateProfileFeature>
+    @Bindable public var store: StoreOf<CreateProfileFeature>
     
     /// `CreateProfileView`의 생성자
     /// - Parameter store: `CreateProfileFeature`의 상태를 관리하는 `Store`
@@ -58,61 +58,47 @@ private extension CreateProfileView {
     }
     
     var ImageSection: some View {
-        Group {
-            if let imageData = store.userImageData,
-                           let uiImage = UIImage(data: imageData) {
-                            Image(uiImage: uiImage)
-                                .resizable()
-                                .scaledToFill()
-                                .clipShape(Circle())
-            } else {
-                if store.userType == .trainer {
-                    Image(.imgDefaultTrainerImage)
+            Group {
+                if let imageData = store.userImageData,
+                   let uiImage = UIImage(data: imageData) {
+                    Image(uiImage: uiImage)
                         .resizable()
+                        .scaledToFill()
                         .clipShape(Circle())
                 } else {
-                    Image(.imgDefaultTraineeImage)
-                        .resizable()
-                        .clipShape(Circle())
+                    Image(store.userType == .trainer
+                          ? .imgDefaultTrainerImage
+                          : .imgDefaultTraineeImage
+                    )
+                    .resizable()
+                    .clipShape(Circle())
                 }
             }
-        }
-        .frame(width: 132, height: 132)
-        .overlay(alignment: .bottomTrailing) {
-            PhotosPicker(
-                selection: Binding(get: {
-                    store.viewState.photoPickerItem
-                }, set: {
-                    send(.tapImageInPicker($0))
-                }),
-                matching: .images,
-                photoLibrary: .shared()
-            ) {
-                ZStack {
-                    Circle()
-                        .fill(Color.neutral900)
-                        .frame(width: 28, height: 28)
-                    Image(.icnWriteWhite)
-                        .resizable()
-                        .frame(width: 16, height: 16)
+            .frame(width: 132, height: 132)
+            .overlay(alignment: .bottomTrailing) {
+                PhotosPicker(
+                    selection: $store.viewState.photoPickerItem,
+//                        .sending(\.view.tapImageInPicker), // -> 해당 액션은 수행됨
+                    matching: .images,
+                    photoLibrary: .shared()
+                ) {
+                    ZStack {
+                        Circle()
+                            .fill(Color.neutral900)
+                            .frame(width: 28, height: 28)
+                        Image(.icnWriteWhite)
+                            .resizable()
+                            .frame(width: 16, height: 16)
+                    }
                 }
             }
-        }
     }
     
     var TextFieldSection: some View {
         TTextField(
             placeholder: "이름을 입력해주세요",
-            text: Binding(get: {
-                store.userName
-            }, set: {
-                send(.typeUserName($0))
-            }),
-            textFieldStatus: Binding(get: {
-                store.viewState.textFieldStatus
-            }, set: {
-                send(.updateTextFieldStatus($0))
-            })
+            text: $store.userName,
+            textFieldStatus: $store.viewState.textFieldStatus
         )
         .withSectionLayout(
             header: .init(
