@@ -6,7 +6,7 @@
 //  Copyright © 2025 yapp25thTeamTnT. All rights reserved.
 //
 
-public enum UserType {
+public enum UserType: Sendable {
     case trainer
     case trainee
     

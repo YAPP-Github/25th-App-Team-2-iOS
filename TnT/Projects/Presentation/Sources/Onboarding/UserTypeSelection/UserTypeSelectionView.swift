@@ -16,7 +16,7 @@ import DesignSystem
 @ViewAction(for: UserTypeSelectionFeature.self)
 public struct UserTypeSelectionView: View {
     
-    public var store: StoreOf<UserTypeSelectionFeature>
+    @Bindable public var store: StoreOf<UserTypeSelectionFeature>
     
     /// `UserTypeSelectionView`의 생성자
     /// - Parameter store: `UserTypeSelectionFeature`의 상태를 관리하는 `Store`
@@ -46,7 +46,7 @@ public struct UserTypeSelectionView: View {
             }
             .ignoresSafeArea(.container, edges: .bottom)
             .navigationDestination(
-                isPresented: Binding(get: { store.viewState.isNavigating }, set: { store.send(.setNavigating($0))})
+                isPresented: $store.view_isNavigating
             ) {
                 CreateProfileView(
                     store: .init(initialState: CreateProfileFeature.State(userType: .trainee)) {
