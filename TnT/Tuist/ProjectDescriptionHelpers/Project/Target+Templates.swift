@@ -28,6 +28,7 @@ public extension Target {
             infoPlist: .file(path: .relativeToRoot("Tuist/Config/Info.plist")),
             sources: ["Sources/**"],
             resources: resource ? ["Resources/**"] : nil,
+            scripts: [.swiftLint],
             dependencies: dependencies
         )
     }
@@ -48,6 +49,7 @@ public extension Target {
             infoPlist: .file(path: .relativeToRoot("Tuist/Config/Info.plist")),
             sources: ["Sources/**"],
             resources: resource ? ["Resources/**"] : nil,
+            scripts: [.swiftLint],
             dependencies: dependencies,
             mergedBinaryType: mergedBinaryType,
             mergeable: mergeable
@@ -66,6 +68,7 @@ public extension Target {
             infoPlist: .file(path: .relativeToRoot("Tuist/Config/Info.plist")),
             sources: ["Sources/**"],
             resources: ["Resources/**"],
+            scripts: [.swiftLint],
             dependencies: dependencies
         )
     }
