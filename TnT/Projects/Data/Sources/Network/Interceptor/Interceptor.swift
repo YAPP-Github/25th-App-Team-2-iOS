@@ -25,6 +25,8 @@ enum InterceptorPriority: Int, Comparable {
 protocol Interceptor {
     /// 인터셉터의 우선순위
     var priority: InterceptorPriority { get }
+    /// 요청 재수행 최대값
+    var maxRetryCount: Int? { get }
     /// 요청을 변환하는 메서드 (예: 헤더 추가, URL 변경 등)
     /// - Parameter request: 변환할 `URLRequest`
     /// - Returns: 변환된 `URLRequest`
@@ -49,6 +51,7 @@ protocol Interceptor {
 /// 기본 구현 제공 (옵션 메서드 역할)
 extension Interceptor {
     var priority: InterceptorPriority { return .normal }
+    var maxRetryCount: Int? { return nil }
     func adapt(request: URLRequest) async throws -> URLRequest { request }
     func validate(response: URLResponse, data: Data) async throws {}
     func retry(request: URLRequest, dueTo error: Error, attempt: Int) async throws -> Bool { false }

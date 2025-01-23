@@ -82,11 +82,11 @@ private extension InterceptorPipeline {
 
 // MARK: - Additional
 extension InterceptorPipeline {
-    // Interceptor에서 최대 재시도 횟수 가져오기 (여러 개의 `RetryInterceptor`가 있는 경우 최대값 반환)
+    // Interceptor에서 최대 재시도 횟수 가져오기
     /// - Returns: 최대 재시도 횟수 (`Int?` 타입)
     func getMaxRetryCount() -> Int? {
         return interceptors
-            .compactMap { ($0 as? RetryInterceptor)?.maxRetryCount }
+            .compactMap { $0.maxRetryCount }
             .max()
     }
 }
