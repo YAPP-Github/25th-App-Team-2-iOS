@@ -7,8 +7,9 @@
 
 @preconcurrency import ProjectDescription
 
-public let environmentName: String = "TnTApp"
-public let environmentOrganizationName: String = "yapp25thTeamTnT"
-public let environmentDeploymentTargets: DeploymentTargets = .iOS("17.0")
-public let environmentPlatform: Platform = .iOS
-public let environmentDestinations: Destinations = [.iPhone]
+public enum Environment {
+    public static let appName: String = "TnTApp"
+    public static let organizationName = "yapp25thTeamTnT"
+    public static let destinations: Destinations = .iOS
+    public static let deploymentTarget: DeploymentTargets = .iOS("17.0")
+}

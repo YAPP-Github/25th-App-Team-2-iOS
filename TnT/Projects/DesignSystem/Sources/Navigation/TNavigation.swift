@@ -141,3 +141,13 @@ public enum TNavigationCase {
     /// 왼쪽 이미지
     case LButton(leftImage: ImageResource)
 }
+
+struct TNavigationView: View {
+    var body: some View {
+        TNavigation(type: .LButton(leftImage: .icnArrowDown))
+    }
+}
+
+#Preview(body: {
+    TNavigationView()
+})
