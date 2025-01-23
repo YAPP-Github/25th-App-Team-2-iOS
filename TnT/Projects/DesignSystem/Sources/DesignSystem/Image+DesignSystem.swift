@@ -45,7 +45,8 @@ public extension ImageResource {
 // MARK: Image
 public extension ImageResource {
     static let imgAppSplash: ImageResource = DesignSystemAsset.imgAppSplash.imageResource
-    static let imgDefaultProfileImage: ImageResource = DesignSystemAsset.imgDefaultProfileImage.imageResource
+    static let imgDefaultTraineeImage: ImageResource = DesignSystemAsset.imgDefaultTraineeImage.imageResource
+    static let imgDefaultTrainerImage: ImageResource = DesignSystemAsset.imgDefaultTrainerImage.imageResource
     static let imgOnboardingLogin: ImageResource = DesignSystemAsset.imgOnboardingLogin.imageResource
     static let imgOnboardingTrainee: ImageResource = DesignSystemAsset.imgOnboardingTrainee.imageResource
     static let imgOnboardingTrainer: ImageResource = DesignSystemAsset.imgOnboardingTrainer.imageResource

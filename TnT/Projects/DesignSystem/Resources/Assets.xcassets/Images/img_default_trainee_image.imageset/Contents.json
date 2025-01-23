@@ -1,17 +1,17 @@
 {
   "images" : [
     {
-      "filename" : "img_default_profile_image.png",
+      "filename" : "basic profile_trainee.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
-      "filename" : "img_default_profile_image@2x.png",
+      "filename" : "basic profile_trainee@2x.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
     {
-      "filename" : "img_default_profile_image@3x.png",
+      "filename" : "basic profile_trainee@3x.png",
       "idiom" : "universal",
       "scale" : "3x"
     }

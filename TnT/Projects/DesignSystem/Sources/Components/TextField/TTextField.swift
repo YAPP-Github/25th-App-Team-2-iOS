@@ -20,6 +20,8 @@ public struct TTextField: View {
     @Binding private var text: String
     /// 텍스트 필드 상태
     @Binding private var status: Status
+    /// 텍스트 컬러 상태
+    @State private var textColor: Color = .neutral400
     /// 텍스트 필드 포커스 상태
     @FocusState var isFocused: Bool
     
@@ -51,9 +53,12 @@ public struct TTextField: View {
                     .lineSpacing(Typography.FontStyle.body1Medium.lineSpacing)
                     .kerning(Typography.FontStyle.body1Medium.letterSpacing)
                     .tint(Color.neutral800)
-                    .foregroundStyle(status.textColor)
+                    .foregroundStyle(textColor)
                     .padding(8)
                     .frame(height: 42)
+                    .onChange(of: status) {
+                        textColor = status.textColor(isFocused: isFocused)
+                    }
                 
                 if let rightView {
                     rightView
@@ -66,7 +71,6 @@ public struct TTextField: View {
 }
 
 public extension TTextField.RightView {
-    ///
     enum Style {
         case unit(text: String, status: TTextField.Status)
         case button(title: String, tapAction: () -> Void)
@@ -88,7 +92,7 @@ public extension TTextField {
             switch style {
             case let .unit(text, status):
                 Text(text)
-                    .typographyStyle(.body1Medium, with: status.textColor)
+                    .typographyStyle(.body1Medium, with: status.textColor(isFocused: true))
                     .padding(.horizontal, 12)
                     .padding(.vertical, 3)
                 
@@ -115,19 +119,19 @@ public extension TTextField {
         private let title: String
         /// 입력 가능한 글자 수 제한
         private let limitCount: Int?
-        /// 입력된 텍스트
-        @Binding private var text: String
+        /// 입력된 텍스트 카운트
+        private var textCount: Int?
         
         public init(
             isRequired: Bool,
             title: String,
             limitCount: Int?,
-            text: Binding<String>
+            textCount: Int?
         ) {
             self.isRequired = isRequired
             self.title = title
             self.limitCount = limitCount
-            self._text = text
+            self.textCount = textCount
         }
         
         public var body: some View {
@@ -141,9 +145,9 @@ public extension TTextField {
                 
                 Spacer()
                 
-                if let limitCount {
-                    Text("\(text.count)/\(limitCount)자")
-                        .typographyStyle(.label1Medium, with: .neutral400)
+                if let limitCount, let textCount {
+                    Text("\(textCount)/\(limitCount)자")
+                        .typographyStyle(.label1Medium, with: textCount > limitCount ? .red500 : .neutral400)
                         .padding(.horizontal, 4)
                         .padding(.vertical, 2)
                 }
@@ -156,11 +160,11 @@ public extension TTextField {
         /// 푸터 텍스트
         private let footerText: String
         /// 텍스트 필드 상태
-        @Binding private var status: Status
+        private var status: Status
         
-        public init(footerText: String, status: Binding<Status>) {
+        public init(footerText: String, status: Status) {
             self.footerText = footerText
-            self._status = status
+            self.status = status
         }
         
         public var body: some View {
@@ -172,7 +176,7 @@ public extension TTextField {
 
 public extension TTextField {
     /// TextField에 표시되는 상태입니다
-    enum Status {
+    enum Status: Equatable {
         case empty
         case filled
         case invalid
@@ -181,9 +185,7 @@ public extension TTextField {
         /// 밑선 색상 설정
         func underlineColor(isFocused: Bool) -> Color {
             switch self {
-            case .empty:
-                return isFocused ? .neutral600 : .neutral200
-            case .filled:
+            case .empty, .filled:
                 return isFocused ? .neutral600 : .neutral200
             case .invalid:
                 return .red500
@@ -193,7 +195,7 @@ public extension TTextField {
         }
         
         /// 텍스트 색상 설정
-        var textColor: Color {
+        func textColor(isFocused: Bool) -> Color {
             switch self {
             case .empty:
                 return .neutral400
