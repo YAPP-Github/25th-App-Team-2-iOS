@@ -10,7 +10,7 @@ import Foundation
 
 /// KeyChainManager
 /// - 키체인을 통해 데이터를 CRUD 하기 위한 유틸리티입니다.
-struct KeyChainManager {
+public struct KeyChainManager {
     
     // MARK: - Create / Update
     /// 데이터를 키체인에 저장하거나 업데이트합니다.
@@ -18,7 +18,7 @@ struct KeyChainManager {
     ///   - value: 저장할 데이터 (Generic 타입)
     ///   - key: Key 열거형으로 정의된 키
     /// - Throws: 타입 불일치, 데이터 변환 실패, 키체인 저장 실패 에러
-    static func save<T>(_ value: T, for key: Key) throws {
+    public static func save<T>(_ value: T, for key: Key) throws {
         
         guard type(of: value) == key.converter.type else {
             throw KeyChainError.typeMismatch(
@@ -50,7 +50,7 @@ struct KeyChainManager {
     /// - Parameter key: Key 열거형으로 정의된 키
     /// - Returns: Generic 타입으로 변환된 값 (데이터가 없으면 nil)
     /// - Throws: 데이터 변환 실패, 읽기 실패, 타입 불일치 에러
-    static func read<T>(for key: Key) throws -> T? {
+    public static func read<T>(for key: Key) throws -> T? {
         let keyString: String = key.keyString
         
         let query: [String: Any] = [
@@ -89,7 +89,7 @@ struct KeyChainManager {
     /// 키체인에서 데이터를 삭제합니다.
     /// - Parameter key: Key 열거형으로 정의된 키
     /// - Throws: 삭제 실패 에러
-    static func delete(_ key: Key) throws {
+    public static func delete(_ key: Key) throws {
         let keyString: String = key.keyString
         
         let query: [String: Any] = [
@@ -104,7 +104,7 @@ struct KeyChainManager {
     }
 }
 
-extension KeyChainManager {
+public extension KeyChainManager {
     /// Key 열거형: 키체인에 저장할 데이터를 정의
     enum Key {
         case token
@@ -141,7 +141,7 @@ extension KeyChainManager {
         case readFailed(key: String, status: OSStatus)
         case deleteFailed(key: String, status: OSStatus)
         
-        var description: String {
+        public var description: String {
             switch self {
             case .typeMismatch(let key, let expected, let actual):
                 return "타입 불일치: 키 \(key)에서 기대한 타입은 \(expected)였으나 실제 타입은 \(actual)입니다."

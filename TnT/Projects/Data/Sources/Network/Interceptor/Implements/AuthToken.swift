@@ -17,7 +17,7 @@ struct AuthTokenInterceptor: Interceptor {
         guard let token: String = try KeyChainManager.read(for: .token) else {
             return request
         }
-        request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        request.setValue(token, forHTTPHeaderField: "Authorization")
         return request
     }
 }
