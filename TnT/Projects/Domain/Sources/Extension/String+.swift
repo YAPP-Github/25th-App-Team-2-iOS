@@ -7,3 +7,10 @@
 //
 
 import Foundation
+
+public extension String {
+    /// 문자열을 Date로 변환
+    func toDate(format: TDateFormat) -> Date? {
+        return TDateFormatUtility.formatter(for: format).date(from: self)
+    }
+}

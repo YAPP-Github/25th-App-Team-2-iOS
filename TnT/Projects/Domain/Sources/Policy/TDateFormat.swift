@@ -1,5 +1,5 @@
 //
-//  DateFormate.swift
+//  TDateFormat.swift
 //  Domain
 //
 //  Created by 박민서 on 1/24/25.
@@ -8,7 +8,7 @@
 
 import Foundation
 
-/// 사용할 날짜 포맷 정의
+/// 앱내에서 전반적으로 사용할 날짜 포맷 정의
 public enum TDateFormat: String {
     ///  "yyyy-MM-dd"
     case yyyyMMdd = "yyyy-MM-dd"
