@@ -9,7 +9,7 @@
 import Foundation
 
 /// 사용자의 운동 목적을 정의하는 열거형
-public enum TrainingPurpose {
+public enum TrainingPurpose: Sendable, CaseIterable {
     /// 체중 감량
     case loseWeight
     /// 근력 향상
