@@ -18,7 +18,7 @@ public struct LoginFeature {
     
     public enum Action: ViewAction {
         case view(View)
-        case move(moveAction)
+        case move(MoveAction)
         case path(StackActionOf<Path>)
         
         @CasePathable
@@ -28,7 +28,7 @@ public struct LoginFeature {
         }
         
         @CasePathable
-        public enum moveAction: Equatable {
+        public enum MoveAction: Equatable {
             case toTermview // 약관동의화면으로 이동
             case toselectRole // 역할 선택화면으로 이동
             

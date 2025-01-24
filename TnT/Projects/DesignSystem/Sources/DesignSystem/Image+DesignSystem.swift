@@ -51,4 +51,6 @@ public extension ImageResource {
     static let imgOnboardingLogin: ImageResource = DesignSystemAsset.imgOnboardingLogin.imageResource
     static let imgOnboardingTrainee: ImageResource = DesignSystemAsset.imgOnboardingTrainee.imageResource
     static let imgOnboardingTrainer: ImageResource = DesignSystemAsset.imgOnboardingTrainer.imageResource
+    static let imgBoom: ImageResource = DesignSystemAsset.imgBoom.imageResource
+    static let imgConnectionCompleteBackground: ImageResource = DesignSystemAsset.imgConnectioncompletebackground.imageResource
 }
