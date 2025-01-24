@@ -15,7 +15,7 @@ public final class TDateFormatUtility {
     private static let queue = DispatchQueue(label: "com.TnT.DateFormatUtility", attributes: .concurrent)
 
     /// 포맷에 맞는 `DateFormatter` 반환 (캐싱된 인스턴스 재사용)
-    private static func formatter(for format: TDateFormat) -> DateFormatter {
+    static func formatter(for format: TDateFormat) -> DateFormatter {
         var result: DateFormatter?
         
         // sync - 동시 읽기 가능
@@ -44,8 +44,4 @@ public final class TDateFormatUtility {
         // sync 블록이 모두 끝난 후 리턴
         return result ?? DateFormatter()
     }
-    
-    
-    
-
 }
