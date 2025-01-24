@@ -31,6 +31,15 @@ public struct UserPolicy {
         textValidation: { TextValidator.isValidInput($0, maxLength: 5, regexPattern: #"^\d{2,3}(\.\d{1})?$"#) },
         isRequired: true
     )
+    
+    /// 주의사항 최대 길이 제한 (공백 포함)
+    public static let maxPrecautionLength: Int = 100
+    
+    /// 주의사항 입력 검증 (100자 제한, 외 제한 없음. 옵션)
+    public static let precautionInput: InputInfo = .init(
+        textValidation: { $0.count <= maxPrecautionLength },
+        isRequired: false
+    )
 }
 
 public extension UserPolicy {
