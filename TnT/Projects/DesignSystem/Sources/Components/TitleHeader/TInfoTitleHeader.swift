@@ -1,5 +1,5 @@
 //
-//  InfoTitleHeader.swift
+//  TInfoTitleHeader.swift
 //  DesignSystem
 //
 //  Created by 박민서 on 1/24/25.
