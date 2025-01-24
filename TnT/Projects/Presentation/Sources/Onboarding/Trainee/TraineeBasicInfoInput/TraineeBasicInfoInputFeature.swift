@@ -7,7 +7,6 @@
 //
 
 import UIKit
-import _PhotosUI_SwiftUI
 import ComposableArchitecture
 
 import Domain

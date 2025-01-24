@@ -30,7 +30,9 @@ public struct TraineeBasicInfoInputView: View {
     
     public var body: some View {
         VStack(spacing: 0) {
-            TNavigation(type: .LButton(leftImage: .icnArrowLeft), leftAction: {})
+            TNavigation(type: .LButton(leftImage: .icnArrowLeft), leftAction: {
+                dismiss()
+            })
             
             Header
                 .padding(.bottom, 32)
@@ -47,7 +49,7 @@ public struct TraineeBasicInfoInputView: View {
                     title: "다음",
                     state: store.view_isNextButtonEnabled ? .true : .false
                 ) {
-                    print("asdf")
+                    send(.tapNextButton)
                 }
             }
         }
