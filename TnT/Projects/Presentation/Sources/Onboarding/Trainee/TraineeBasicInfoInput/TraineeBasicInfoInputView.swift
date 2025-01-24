@@ -80,7 +80,7 @@ private extension TraineeBasicInfoInputView {
             // 페이지 인디케이터
             HStack(spacing: 4) {
                 ForEach(1...4, id: \.self) { num in
-                    TPageIndicator(pageNumber: num, isCurrent: num == 1)
+                    TPageIndicator(pageNumber: num, isCurrent: num == 2)
                 }
                 Spacer()
             }

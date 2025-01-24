@@ -12,7 +12,7 @@ public final class TDateFormatUtility {
     
     /// 포맷별 `DateFormatter` 캐시
     private static var cache: [TDateFormat: DateFormatter] = [:]
-    private static let queue = DispatchQueue(label: "com.TnT.DateFormatUtility", attributes: .concurrent)
+    private static let queue: DispatchQueue = DispatchQueue(label: "com.TnT.DateFormatUtility", attributes: .concurrent)
 
     /// 포맷에 맞는 `DateFormatter` 반환 (캐싱된 인스턴스 재사용)
     static func formatter(for format: TDateFormat) -> DateFormatter {
@@ -31,7 +31,7 @@ public final class TDateFormatUtility {
             if let cachedFormatter = cache[format] {
                 result = cachedFormatter
             } else {
-                let formatter = DateFormatter()
+                let formatter: DateFormatter = DateFormatter()
                 formatter.dateFormat = format.rawValue
                 formatter.locale = Locale(identifier: "ko_KR")
                 formatter.timeZone = .current
