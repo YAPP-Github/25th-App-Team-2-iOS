@@ -1,5 +1,5 @@
 //
-//  LoginFeature.swift
+//  OnboardingFeature.swift
 //  Presentation
 //
 //  Created by 박서연 on 1/24/25.
@@ -10,7 +10,7 @@ import ComposableArchitecture
 import SwiftUI
 
 @Reducer
-public struct LoginFeature {
+public struct OnboardingFeature {
     @ObservableState
     public struct State: Equatable {
         var path = StackState<Path.State>()
@@ -29,12 +29,12 @@ public struct LoginFeature {
         
         @CasePathable
         public enum MoveAction: Equatable {
-            case toTermview // 약관동의화면으로 이동
+            case toTermview // 약관 동의 화면으로 이동
             case toselectRole // 역할 선택화면으로 이동
             
             /// 트레이너
             case toRegisterNickname
-            case toFinishedSignup
+            case toCompleteSignup
             case toMakeInvitationCode
             
             /// 트레이니
@@ -51,7 +51,7 @@ public struct LoginFeature {
             
             /// 트레이너
             case registerNickname
-            case finishedSignup
+            case completeSignup
             case makeInvitationCode
             
             /// 트레이니
@@ -86,11 +86,11 @@ public struct LoginFeature {
                 case .toRegisterNickname:
                     state.path.append(.registerNickname)
                     return .none
-                case .toFinishedSignup:
-                    state.path.append(.finishedSignup)
+                case .toCompleteSignup:
+                    state.path.append(.completeSignup(TrainerSignUpCompleteFeature.State()))
                     return .none
                 case .toMakeInvitationCode:
-                    state.path.append(.makeInvitationCode)
+                    state.path.append(.makeInvitationCode(MakeInvitationCodeFeature.State()))
                     return .none
                 default:
                     return .none
@@ -110,8 +110,8 @@ public struct LoginFeature {
         
         /// 트레이너
         case registerNickname // 이름 입력
-        case finishedSignup // 회원가입 완료
-        case makeInvitationCode // 초대코드 발급
+        case completeSignup(TrainerSignUpCompleteFeature) // 회원가입 완료
+        case makeInvitationCode(MakeInvitationCodeFeature) // 초대코드 발급
         
         /// 트레이니
         case registerUserInfo // 트레이니 기본 정보 입력

@@ -10,10 +10,10 @@ import SwiftUI
 import DesignSystem
 import ComposableArchitecture
 
-public struct TrainerProfileCompleteView: View {
-    public let store: StoreOf<TrainerProfileCompleteFeature>
+public struct TrainerSignUpCompleteView: View {
+    public let store: StoreOf<TrainerSignUpCompleteFeature>
     
-    public init(store: StoreOf<TrainerProfileCompleteFeature>) {
+    public init(store: StoreOf<TrainerSignUpCompleteFeature>) {
         self.store = store
     }
     

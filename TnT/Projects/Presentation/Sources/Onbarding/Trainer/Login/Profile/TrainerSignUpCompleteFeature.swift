@@ -10,14 +10,12 @@ import SwiftUI
 import ComposableArchitecture
 
 @Reducer
-public struct TrainerProfileCompleteFeature {
+public struct TrainerSignUpCompleteFeature {
     @ObservableState
     public struct State: Equatable {
-        var viewState: ViewState
+        var buttonTapped: Bool = false
         
-        public init(viewState: ViewState) {
-            self.viewState = viewState
-        }
+        public init() { }
     }
     
     public struct ViewState: Equatable {
@@ -50,7 +48,7 @@ public struct TrainerProfileCompleteFeature {
                 }
                 
             case .setNavigating(let isNavigating):
-                state.viewState.isNavigating = isNavigating
+//                state.viewState.isNavigating = isNavigating
                 return .none
             }
         }

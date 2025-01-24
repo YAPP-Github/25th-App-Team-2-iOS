@@ -9,7 +9,7 @@
 import DesignSystem
 import SwiftUI
 
-struct LoginMainView: View {
+struct LoginView: View {
     var body: some View {
         VStack {
             Spacer().frame(height: 48)
