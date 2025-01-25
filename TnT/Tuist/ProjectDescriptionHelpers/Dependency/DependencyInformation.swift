@@ -11,7 +11,7 @@ let dependencyInfo: [DependencyInformation: [DependencyInformation]] = [
     .TnTApp: [.Presentation, .Data],
     .Presentation: [.DesignSystem, .Domain, .ComposableArchitecture],
     .Domain: [.SwiftDepedencies],
-    .Data: [.Domain, .KakaoSDKUser],
+    .Data: [.Domain, .KakaoSDKUser, .SwiftDepedencies],
     .DesignSystem: [.Lottie],
 ]
 
