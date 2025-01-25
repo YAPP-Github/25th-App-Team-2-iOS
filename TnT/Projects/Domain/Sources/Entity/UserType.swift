@@ -9,13 +9,4 @@
 public enum UserType: Sendable {
     case trainer
     case trainee
-    
-    public var koreanName: String {
-        switch self {
-        case .trainer:
-            return "트레이너"
-        case .trainee:
-            return "트레이니"
-        }
-    }
 }
