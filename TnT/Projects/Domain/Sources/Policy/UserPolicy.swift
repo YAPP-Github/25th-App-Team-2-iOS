@@ -6,7 +6,7 @@
 //  Copyright © 2025 yapp25thTeamTnT. All rights reserved.
 //
 
-public struct UserPolicy {
+struct UserPolicy {
     /// 사용자 이름 최대 길이 제한 (공백 포함)
     public static let maxNameLength: Int = 15
     
@@ -42,29 +42,11 @@ public struct UserPolicy {
     )
 }
 
-public extension UserPolicy {
+extension UserPolicy {
     struct InputInfo {
         /// 입력 값이 유효한지 검증하는 함수
         public let textValidation: (String) -> Bool
         /// 필수 입력 여부
         public let isRequired: Bool
-    }
-}
-
-/// 키 및 몸무게 단위를 관리하는 열거형
-public enum UnitText {
-    /// 키 단위
-    case height
-    /// 몸무게 단위
-    case weight
-    
-    /// 해당 항목의 한국 단위 반환
-    public var koreaUnit: String {
-        switch self {
-        case .height:
-            return "cm"
-        case .weight:
-            return "kg"
-        }
     }
 }
