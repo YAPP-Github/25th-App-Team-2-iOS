@@ -147,9 +147,9 @@ public extension TButton {
             case .gray(let isEnabled):
                 return isEnabled ? .neutral100 : .neutral200
             case .outline(let isEnabled):
-                return isEnabled ? .neutral300 : .clear
+                return isEnabled ? .clear : .clear
             case .red(let isEnabled):
-                return isEnabled ? .red400 : .clear
+                return isEnabled ? .red50 : .clear
             }
         }
         
@@ -161,7 +161,7 @@ public extension TButton {
             case .gray(let isEnabled):
                 return isEnabled ? .neutral500 : .neutral50
             case .outline(let isEnabled):
-                return isEnabled ? .neutral300 : .neutral500
+                return isEnabled ? .neutral500 : .neutral300
             case .red(let isEnabled):
                 return isEnabled ? .red600 : .neutral300
             }
