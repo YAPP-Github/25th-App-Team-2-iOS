@@ -9,7 +9,7 @@
 
 extension Array where Element == Scheme {
     static var app: [Scheme] {
-        let name = environmentName
+        let name = Environment.appName
         let deployTargets: [ConfigurationName] = [.debug, .release]
         
         return deployTargets.map {

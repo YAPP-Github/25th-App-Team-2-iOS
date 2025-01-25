@@ -13,7 +13,7 @@ public struct TBottomButton: View {
     /// 버튼의 제목 텍스트
     public let title: String
     /// 버튼의 상태
-    public let state: ButtonState
+    public let isEnable: Bool
     /// 버튼이 탭되었을 때 실행할 동작 (옵셔널)
     public var action: (() -> Void)
     
@@ -24,11 +24,11 @@ public struct TBottomButton: View {
     ///   - action: 버튼 탭 시 실행할 동작 (옵셔널)
     public init(
         title: String,
-        state: ButtonState,
+        isEnable: Bool,
         action: (@escaping () -> Void)
     ) {
         self.title = title
-        self.state = state
+        self.isEnable = isEnable
         self.action = action
     }
     
@@ -36,11 +36,10 @@ public struct TBottomButton: View {
         Button(title) {
             action()
         }
-        .typographyStyle(.heading4, with: state.textColor)
+        .typographyStyle(.heading4, with: isEnable ? ButtonState.true.textColor : ButtonState.false.textColor)
         .padding(.vertical, 20)
         .frame(maxWidth: .infinity)
-        .background(state.background)
-        .ignoresSafeArea()
+        .background(isEnable ? ButtonState.true.textColor : ButtonState.false.textColor)
     }
 }
 

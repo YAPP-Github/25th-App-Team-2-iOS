@@ -8,12 +8,11 @@
 @preconcurrency import ProjectDescription
 
 let dependencyInfo: [DependencyInformation: [DependencyInformation]] = [
-    .TnTApp: [.Presentation],
+    .TnTApp: [.Presentation, .Data],
     .Presentation: [.DesignSystem, .Domain, .ComposableArchitecture],
-    .Domain: [.Data, .SwiftDepedencies, .KakaoSDKUser],
-    .Data: [],
-    .DesignSystem: [.ComposableArchitecture, .Lottie],
-    .DI: []
+    .Domain: [.SwiftDepedencies],
+    .Data: [.Domain, .KakaoSDKUser],
+    .DesignSystem: [.Lottie],
 ]
 
 public enum DependencyInformation: String, CaseIterable, Sendable {
@@ -21,7 +20,6 @@ public enum DependencyInformation: String, CaseIterable, Sendable {
     case Presentation = "Presentation"
     case Domain = "Domain"
     case Data = "Data"
-    case DI = "DI"
     case DesignSystem = "DesignSystem"
     case Lottie = "Lottie"
     case ComposableArchitecture = "ComposableArchitecture"
@@ -29,23 +27,19 @@ public enum DependencyInformation: String, CaseIterable, Sendable {
     case SwiftDepedencies = "Dependencies"
 }
 
-extension DependencyInformation {
-    public func setDependency(module: DependencyInformation) -> TargetDependency {
-        switch self {
-        case .TnTApp:
-            return .project(target: self.rawValue, path: "Projects/TnTApp")
-        case .Presentation:
-            return .project(target: self.rawValue, path: "Projects/Presentation")
-        case .Domain:
-            return .project(target: self.rawValue, path: "Projects/Domain")
-        case .Data:
-            return .project(target: self.rawValue, path: "Projects/Data")
-        case .DI:
-            return .project(target: self.rawValue, path: "Projects/DI")
-        case .DesignSystem:
-            return .project(target: self.rawValue, path: "Projects/DesignSystem")
-        default:
-            return .project(target: "none", path: "")
+public extension DependencyInformation {
+    static func dependencies(of name: String) -> [TargetDependency] {
+        guard let name = DependencyInformation(rawValue: name) else { return [] }
+        guard let modules: [DependencyInformation] = dependencyInfo[name] else { return [] }
+        
+        return modules.map { module in
+            let name = module.rawValue
+            
+            if externalDependency.contains(module) {
+                return .external(name: name)
+            } else {
+                return .project(target: name, path: .relativeToRoot("Projects/\(name)"))
+            }
         }
     }
 }

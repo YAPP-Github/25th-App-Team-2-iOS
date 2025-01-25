@@ -6,15 +6,8 @@
 
     let packageSettings = PackageSettings(
         // Customize the product types for specific package product
-        // Default is .staticFramework
-        // productTypes: ["Alamofire": .framework,] 
-        productTypes: [:],
-        baseSettings: .settings(
-            configurations: [
-                .debug(name: .debug),
-                .release(name: .release)
-            ]
-        )
+        // Default is .staticFramework 
+        productTypes: [:]
     )
 #endif
 
