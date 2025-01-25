@@ -70,6 +70,8 @@ public struct TraineeBasicInfoInputFeature {
         }
     }
     
+    @Dependency(\.userUseCase) private var userUseCase
+    
     public enum Action: Sendable, ViewAction {
         /// 뷰에서 발생한 액션을 처리합니다.
         case view(View)
@@ -137,19 +139,19 @@ private extension TraineeBasicInfoInputFeature {
         guard let field else { return .none }
         switch field {
         case .birthDate:
-            guard !state.birthDate.isEmpty, UserPolicy.birthDateInput.textValidation(state.birthDate) else {
+            guard !state.birthDate.isEmpty, userUseCase.validateBirthDate(state.birthDate) else {
                 state.view_birthDateStatus = state.birthDate.isEmpty ? .empty : .invalid
                 return self.validateAllFields(&state)
             }
             state.view_birthDateStatus = .filled
         case .height:
-            guard !state.height.isEmpty, UserPolicy.heightInput.textValidation(state.height) else {
+            guard !state.height.isEmpty, userUseCase.validateHeight(state.height) else {
                 state.view_heightStatus = state.height.isEmpty ? .empty : .invalid
                 return self.validateAllFields(&state)
             }
             state.view_heightStatus = .filled
         case .weight:
-            guard !state.weight.isEmpty, UserPolicy.weightInput.textValidation(state.weight) else {
+            guard !state.weight.isEmpty, userUseCase.validateWeight(state.weight) else {
                 state.view_weightStatus = state.weight.isEmpty ? .empty : .invalid
                 return self.validateAllFields(&state)
             }

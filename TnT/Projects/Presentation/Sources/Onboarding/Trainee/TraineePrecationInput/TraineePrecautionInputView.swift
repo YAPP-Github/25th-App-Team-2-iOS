@@ -84,7 +84,7 @@ private extension TraineePrecautionInputView {
             textEditorStatus: $store.view_editorStatus,
             footer: {
                 .init(
-                    textLimit: UserPolicy.maxPrecautionLength,
+                    textLimit: store.view_editorMaxCount ?? 100,
                     status: $store.view_editorStatus,
                     textCount: store.precaution.count
                 )
