@@ -8,11 +8,11 @@
 @preconcurrency import ProjectDescription
 
 let dependencyInfo: [DependencyInformation: [DependencyInformation]] = [
-    .TnTApp: [.Presentation, .DesignSystem],
+    .TnTApp: [.Presentation, .Data],
     .Presentation: [.DesignSystem, .Domain, .ComposableArchitecture],
-    .Domain: [.SwiftDepedencies, .KakaoSDKUser],
-    .Data: [.Domain],
-    .DesignSystem: [.ComposableArchitecture, .Lottie],
+    .Domain: [.SwiftDepedencies],
+    .Data: [.Domain, .KakaoSDKUser],
+    .DesignSystem: [.Lottie],
 ]
 
 public enum DependencyInformation: String, CaseIterable, Sendable {
