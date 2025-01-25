@@ -6,13 +6,3 @@
 //
 
 import SwiftUI
-
-struct TEestView: View {
-    var body: some View {
-        Text("dd")
-    }
-}
-
-#Preview {
-    TEestView()
-}
