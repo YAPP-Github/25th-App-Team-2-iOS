@@ -45,11 +45,6 @@ public struct TrainerSignUpCompleteView: View {
                 }
             }
             .navigationBarBackButtonHidden()
-            .navigationDestination(
-                isPresented: Binding(get: { store.viewState.isNavigating }, set: { store.send(.setNavigating($0))})
-            ) {
-                
-            }
         }
     }
 }

@@ -44,28 +44,11 @@ public struct OnboardingFeature {
             case toRegisterInvitationCode
             case toRegisterPtClassInfo
         }
-        
-        public enum ScopeAction {
-            case term
-            case selectRole
-            
-            /// 트레이너
-            case registerNickname
-            case completeSignup
-            case makeInvitationCode
-            
-            /// 트레이니
-            case registerUserInfo
-            case registerPtPurpose
-            case registerprecautions
-            case registerInvitationCode
-            case registerPtClassInfo
-        }
     }
     
     public init() {}
     
-    var body: some ReducerOf<Self> {
+    public var body: some ReducerOf<Self> {
         Reduce { state, action in
             switch action {
             case let .view(view):
@@ -75,6 +58,7 @@ public struct OnboardingFeature {
                 case .tappedKakaoLogin:
                     return .none
                 }
+                
             case let .move(move):
                 switch move {
                 case .toTermview:
@@ -90,6 +74,15 @@ public struct OnboardingFeature {
                     state.path.append(.completeSignup(TrainerSignUpCompleteFeature.State()))
                     return .none
                 case .toMakeInvitationCode:
+                    state.path.append(.makeInvitationCode(MakeInvitationCodeFeature.State()))
+                    return .none
+                default:
+                    return .none
+                }
+                
+            case let .path(action):
+                switch action {
+                case .element(id: _, action: .makeInvitationCode(.tappedNextButton)):
                     state.path.append(.makeInvitationCode(MakeInvitationCodeFeature.State()))
                     return .none
                 default:
