@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import UIKit
 
 /// API 요청 타입을 정의하는 Enum
 enum RequestTask {
@@ -17,7 +18,8 @@ enum RequestTask {
     /// Encodable 객체를 JSON으로 변환하여 요청
     case requestJSONEncodable(encodable: Encodable)
     /// Multipart 파일 업로드 요청
-    case uploadMultipart(files: [MultipartFile], additionalFields: [String: String])
+    /// - 여러 개의 JSON + 파일 + 추가 필드 지원 - 빈 배열 입력 시 해당 내용 스킵
+    case uploadMultipart(jsons: [MultipartJSON], files: [MultipartFile], additionalFields: [String: String])
     
     /// URLRequest를 구성하는 메서드
     /// - Parameter request: 원본 `URLRequest`
@@ -37,50 +39,72 @@ enum RequestTask {
             modifiedRequest.httpBody = try JSONEncoder().encode(encodable)
             modifiedRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
             
-        case .uploadMultipart(let files, let additionalFields):
+        case let .uploadMultipart(jsonItems, files, additionalFields):
             let boundary: String = "Boundary-\(UUID().uuidString)"
-            if modifiedRequest.value(forHTTPHeaderField: "Content-Type") == nil {
-                modifiedRequest.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
-            }
-            modifiedRequest.httpBody = createMultipartBody(files: files, additionalFields: additionalFields, boundary: boundary)
+            modifiedRequest.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
+            modifiedRequest.httpBody = try createMultipartBody(
+                jsonItems: jsonItems,
+                files: files,
+                additionalFields: additionalFields,
+                boundary: boundary
+            )
         }
-        
         return modifiedRequest
     }
 }
 
 // MARK: Private Helper Methods
 private extension RequestTask {
-    
     /// Multipart 요청 본문을 생성하는 메서드
     /// - Parameters:
+    ///   - jsonItems: 업로드할 JSON 데이터 리스트
     ///   - files: 업로드할 파일 리스트
-    ///   - additionalFields: 추가 필드 (ex: 텍스트 데이터)
+    ///   - additionalFields: 추가 텍스트 필드
     ///   - boundary: 멀티파트 경계를 구분하는 문자열
     /// - Returns: 멀티파트 데이터가 포함된 `Data`
     func createMultipartBody(
+        jsonItems: [MultipartJSON],
         files: [MultipartFile],
-        additionalFields: [String: String] = [:],
+        additionalFields: [String: String],
         boundary: String
-    ) -> Data {
+    ) throws -> Data {
         var body: Data = Data()
-        // 추가 필드 (텍스트 데이터) 처리
+        
+        // 추가 텍스트 필드 처리
         additionalFields.forEach { key, value in
             body.append("--\(boundary)\r\n")
             body.append("Content-Disposition: form-data; name=\"\(key)\"\r\n\r\n")
             body.append("\(value)\r\n")
         }
         
-        // 파일 데이터 처리
-        files.forEach { file in
+        // JSON 데이터 추가
+        for jsonItem in jsonItems {
+            let jsonData: Data = try JSONEncoder().encode(jsonItem.json)
             body.append("--\(boundary)\r\n")
-            body.append("Content-Disposition: form-data; name=\"\(file.fieldName)\"; filename=\"\(file.fileName)\"\r\n")
-            body.append("Content-Type: \(file.mimeType)\r\n\r\n")
-            body.append(file.data)
+            body.append("Content-Disposition: form-data; name=\"\(jsonItem.jsonName)\"\r\n")
+            body.append("Content-Type: application/json\r\n\r\n")
+            body.append(jsonData)
             body.append("\r\n")
         }
         
-        // 마지막 Boundary 추가
+        // 파일 데이터 추가
+        for file in files {
+            var fileData: Data = file.data
+            
+            // 이미지 파일인 경우 10MB 초과하면 압축
+            if file.mimeType.hasPrefix("image"), let image = UIImage(data: file.data),
+               let compressedData = image.compressedData(maxSizeMB: 10.0) {
+                fileData = compressedData
+            }
+            
+            body.append("--\(boundary)\r\n")
+            body.append("Content-Disposition: form-data; name=\"\(file.fieldName)\"; filename=\"\(file.fileName)\"\r\n")
+            body.append("Content-Type: \(file.mimeType)\r\n\r\n")
+            body.append(fileData)
+            body.append("\r\n")
+        }
+        
+        // 최종 바운더리 추가
         body.append("--\(boundary)--\r\n")
         return body
     }
