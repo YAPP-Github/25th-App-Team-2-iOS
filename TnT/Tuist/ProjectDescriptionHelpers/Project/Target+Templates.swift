@@ -63,7 +63,7 @@ public extension Target {
             name: appName,
             destinations: destinations,
             product: .app,
-            bundleId: "\(organizationName).\(appName).\(appName)",
+            bundleId: "com.TnT.yapp25-app2team",
             deploymentTargets: deploymentTargets,
             infoPlist: .file(path: .relativeToRoot("Tuist/Config/Info.plist")),
             sources: ["Sources/**"],
