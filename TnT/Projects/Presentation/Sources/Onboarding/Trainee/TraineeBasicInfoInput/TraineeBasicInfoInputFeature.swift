@@ -113,7 +113,7 @@ public struct TraineeBasicInfoInputFeature {
                     state.view_isDatePickerPresented = false
                     state.birthDate = date.toString(format: .yyyyMMddSlash)
                     state.view_birthDateStatus = state.birthDate.isEmpty ? .empty : .filled
-                    return .none
+                    return .send(.view(.setFocus(.birthDate, nil)))
                     
                 case let .setFocus(oldFocus, newFocus):
                     state.view_focusField = newFocus

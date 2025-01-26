@@ -96,10 +96,14 @@ public struct TraineeBasicInfoInputView: View {
             )
             .withSectionLayout(header: .init(isRequired: false, title: "생년월일", limitCount: nil, textCount: nil))
             .focused($focusedField, equals: .birthDate)
-            .disabled(true)
-            .onTapGesture {
-                send(.tapBirthDateTextField)
-            }
+            .allowsHitTesting(false)
+            .overlay(
+                Rectangle()
+                    .fill(Color.clear)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .contentShape(Rectangle())
+                    .onTapGesture { send(.tapBirthDateTextField) }
+            )
             .frame(maxWidth: .infinity)
             .padding(.horizontal, 20)
             
