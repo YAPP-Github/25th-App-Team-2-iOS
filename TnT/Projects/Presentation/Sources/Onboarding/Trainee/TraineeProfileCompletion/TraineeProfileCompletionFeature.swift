@@ -47,8 +47,6 @@ public struct TraineeProfileCompletionFeature {
         }
     }
     
-    @Dependency(\.userUseCase) private var userUseCase
-    
     public enum Action: Sendable, ViewAction {
         /// 뷰에서 발생한 액션을 처리합니다.
         case view(View)
