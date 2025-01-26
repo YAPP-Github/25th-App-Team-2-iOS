@@ -20,20 +20,19 @@ public protocol UserUseCase {
     func validateWeight(_ weight: String) -> Bool
     /// 개별 필드 - 주의사항 검증
     func validatePrecaution(_ text: String) -> Bool
-    /// 초대 코드 검증
-    func validateInvitationCode(_ code: String) -> Bool
     /// 이름 최대 길이 제한
     func getMaxNameLength() -> Int
     /// 주의사항 최대 길이 제한
     func getPrecautionMaxLength() -> Int
-    // MARK: API Call
-    /// API Call - 트레이너 초대 코드 인증 API 호출
-    func verifyTrainerInvitationCode(_ code: String) async throws -> Bool
 }
 
 // MARK: - Default 구현체
 public struct DefaultUserUseCase: UserUseCase {
-    public init() {}
+    private let userRepository: UserRepository
+    
+    public init(userRepository: UserRepository) {
+        self.userRepository = userRepository
+    }
     
     public func validateUserName(_ name: String) -> Bool {
         return !name.isEmpty && UserPolicy.userNameInput.textValidation(name)
@@ -55,32 +54,11 @@ public struct DefaultUserUseCase: UserUseCase {
         return UserPolicy.precautionInput.textValidation(text)
     }
     
-    public func validateInvitationCode(_ code: String) -> Bool {
-        return !code.isEmpty && UserPolicy.invitationInput.textValidation(code)
-    }
-    
     public func getMaxNameLength() -> Int {
         return UserPolicy.maxNameLength
     }
     
     public func getPrecautionMaxLength() -> Int {
         return UserPolicy.maxPrecautionLength
-    }
-    
-    public func verifyTrainerInvitationCode(_ code: String) async throws -> Bool {
-        return Bool.random()
-    }
-}
-
-// MARK: - Swift-Dependencies
-private enum UserUseCaseKey: DependencyKey {
-    static let liveValue: UserUseCase = DefaultUserUseCase()
-}
-
-// MARK: - DependencyValues
-public extension DependencyValues {
-    var userUseCase: UserUseCase {
-        get { self[UserUseCaseKey.self] }
-        set { self[UserUseCaseKey.self] = newValue }
     }
 }
