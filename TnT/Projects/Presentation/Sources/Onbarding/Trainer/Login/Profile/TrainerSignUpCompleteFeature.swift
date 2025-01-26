@@ -18,16 +18,8 @@ public struct TrainerSignUpCompleteFeature {
         public init() { }
     }
     
-    public struct ViewState: Equatable {
-        public var isNavigating: Bool
-        
-        public init(isNavigating: Bool = false) {
-            self.isNavigating = isNavigating
-        }
-    }
-    
     public enum Action: Equatable {
-        case setNavigating(Bool)
+        case setNavigating
         case view(ViewAction)
         
         public enum ViewAction {
@@ -43,12 +35,10 @@ public struct TrainerSignUpCompleteFeature {
             case .view(let action):
                 switch action {
                 case .startButtonTapped:
-                    print("다음으로")
-                    return .send(.setNavigating(true))
+                    return .send(.setNavigating)
                 }
                 
-            case .setNavigating(let isNavigating):
-//                state.viewState.isNavigating = isNavigating
+            case .setNavigating:
                 return .none
             }
         }

@@ -7,10 +7,14 @@
 //
 
 import SwiftUI
+import Presentation
+import ComposableArchitecture
 
 struct ContentView: View {
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        OnboardingView(store: Store(initialState: OnboardingFeature.State(), reducer: {
+            OnboardingFeature()
+        }))
     }
 }
 

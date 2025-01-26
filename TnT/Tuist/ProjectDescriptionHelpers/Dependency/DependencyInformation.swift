@@ -8,7 +8,7 @@
 @preconcurrency import ProjectDescription
 
 let dependencyInfo: [DependencyInformation: [DependencyInformation]] = [
-    .TnTApp: [.Presentation],
+    .TnTApp: [.Presentation, .ComposableArchitecture, .DesignSystem],
     .Presentation: [.DesignSystem, .Domain, .ComposableArchitecture],
     .Domain: [.Data, .SwiftDepedencies, .KakaoSDKUser],
     .Data: [],

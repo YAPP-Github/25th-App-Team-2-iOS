@@ -42,7 +42,7 @@ public struct MakeInvitationCodeView: View {
                     
                     HStack(spacing: 0) {
                         ZStack(alignment: .bottom) {
-                            Text("\(store.state.invitationCode)")
+                            Text("\(store.state.view_invitationCode)")
                                 .typographyStyle(.body1Medium, with: .neutral600)
                                 .padding(8)
                                 .frame(maxWidth: .infinity, alignment: .leading)

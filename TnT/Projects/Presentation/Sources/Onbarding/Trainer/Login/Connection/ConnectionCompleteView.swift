@@ -41,19 +41,12 @@ public struct ConnectionCompleteView: View {
                     Spacer()
                     Image(.imgBoom)
                     TBottomButton(title: "다음", state: .true) {
-                        store.send(.view(.startButtonTapped))
+                        store.send(.view(.tappedNextButton))
                     }
                     .padding(.bottom, 40)
                 }
             }
             .navigationBarBackButtonHidden()
-            .navigationDestination(
-                isPresented: Binding(get: { store.viewState.isNavigating }, set: { store.send(.setNavigating($0))})
-            ) {
-                ConnectedTraineeProfileView(store: Store(initialState: ConnectedTraineeProfileFeature.State(viewState: .init()), reducer: {
-                    ConnectedTraineeProfileFeature()
-                }))
-            }
         }
     }
     

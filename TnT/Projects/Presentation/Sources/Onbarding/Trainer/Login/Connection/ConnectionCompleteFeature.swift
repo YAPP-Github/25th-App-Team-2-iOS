@@ -13,27 +13,18 @@ import ComposableArchitecture
 public struct ConnectionCompleteFeature {
     @ObservableState
     public struct State: Equatable {
-        var viewState: ViewState
+        var trainer: Data?
+        var trainee: Data?
         
-        public init(viewState: ViewState) {
-            self.viewState = viewState
-        }
-    }
-    
-    public struct ViewState: Equatable {
-        public var isNavigating: Bool
-        
-        public init(isNavigating: Bool = false) {
-            self.isNavigating = isNavigating
-        }
+        public init() { }
     }
     
     public enum Action: Equatable {
-        case setNavigating(Bool)
+        case setNavigating
         case view(ViewAction)
         
         public enum ViewAction {
-            case startButtonTapped
+            case tappedNextButton
         }
     }
     
@@ -44,13 +35,11 @@ public struct ConnectionCompleteFeature {
             switch action {
             case .view(let action):
                 switch action {
-                case .startButtonTapped:
-                    print("다음으로")
-                    return .send(.setNavigating(true))
+                case .tappedNextButton:
+                    return .send(.setNavigating)
                 }
                 
-            case .setNavigating(let isNavigating):
-                state.viewState.isNavigating = isNavigating
+            case .setNavigating:
                 return .none
             }
         }

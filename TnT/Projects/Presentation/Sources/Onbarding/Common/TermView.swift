@@ -10,71 +10,6 @@ import SwiftUI
 import DesignSystem
 import ComposableArchitecture
 
-@Reducer
-public struct TermFeature {
-    @ObservableState
-    public struct State: Equatable {
-        var terms: [Term: Bool]
-        var isAllAgreed: Bool {
-            terms.values.allSatisfy { $0 }
-        }
-        var viewState: ViewState
-        
-        public init(viewState: ViewState) {
-            self.terms = [
-                .term: false,
-                .personalInfo: false
-            ]
-            self.viewState = viewState
-        }
-    }
-    
-    public struct ViewState: Equatable {
-        public var isNavigating: Bool
-        
-        public init(isNavigating: Bool = false) {
-            self.isNavigating = isNavigating
-        }
-    }
-    
-    public enum Action: Equatable {
-        case toggleTerm(Term, Bool)
-        case toggleAll(Bool)
-        case setNavigating(Bool)
-        case view(ViewAction)
-        
-        public enum ViewAction {
-            case nextButtonTapped
-        }
-    }
-    
-    public init() { }
-    
-    public var body: some ReducerOf<Self> {
-        Reduce { state, action in
-            switch action {
-            case .toggleTerm(let term, let isAgreed):
-                state.terms[term] = isAgreed
-                return .none
-                
-            case .toggleAll(let isAgreed):
-                state.terms.keys.forEach { state.terms[$0] = isAgreed }
-                return .none
-                
-            case .view(let action):
-                switch action {
-                case .nextButtonTapped:
-                    print("next")
-                    return .send(.setNavigating(true))
-                }
-            case .setNavigating(let isNavigating):
-                state.viewState.isNavigating = isNavigating
-                return .none
-            }
-        }
-    }
-}
-
 struct TermView: View {
     
     public let store: StoreOf<TermFeature>
@@ -99,11 +34,11 @@ struct TermView: View {
                 
                 VStack(spacing: 8) {
                     HStack(spacing: 8) {
-                        Image(store.isAllAgreed ? .icnCheckButtonSelected : .icnCheckButtonUnselected)
+                        Image(store.view_isAllAgreed ? .icnCheckButtonSelected : .icnCheckButtonUnselected)
                             .resizable()
                             .frame(width: 24, height: 24)
                             .onTapGesture {
-                                store.send(.toggleAll(!store.isAllAgreed))
+                                store.send(.toggleAll(!store.view_isAllAgreed))
                             }
                         
                         VStack(alignment: .leading, spacing: 4) {
@@ -119,10 +54,10 @@ struct TermView: View {
                     TDivider(height: 2, color: .neutral100)
                         .padding(.vertical, 8)
                     
-                    ForEach(store.terms.keys.sorted(by: { $0.id < $1.id }), id: \.self) { term in
+                    ForEach(store.view_terms.keys.sorted(by: { $0.id < $1.id }), id: \.self) { term in
                         termsView(
                             term: term,
-                            isAgreed: store.terms[term] ?? false
+                            isAgreed: store.view_terms[term] ?? false
                         ) {
                             store.send(.toggleTerm(term, !$0))
                         }
@@ -133,7 +68,7 @@ struct TermView: View {
             
             Spacer()
             
-            TBottomButton(title: "다음", state: store.isAllAgreed ? .true : .false) {
+            TBottomButton(title: "다음", state: store.view_isAllAgreed ? .true : .false) {
                 store.send(.view(.nextButtonTapped))
             }
         }

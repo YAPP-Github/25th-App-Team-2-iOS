@@ -12,34 +12,45 @@ import ComposableArchitecture
 
 @Reducer
 public struct MakeInvitationCodeFeature {
-    
-    public init() { }
 
     @ObservableState
     public struct State: Equatable {
-        var invitationCode: String = "123456"
+        var view_invitationCode: String = ""
         
         public init() { }
     }
     
     public enum Action: Equatable {
-        case tappedNextButton
-        case tappedIssuanceButton
-        case copyCode
+        case setNavigation
+        case view(ViewAction)
+        
+        public enum ViewAction {
+            case tappedNextButton
+            case tappedIssuanceButton
+            case copyCode
+        }
     }
+    
+    public init() { }
     
     public var body: some ReducerOf<Self> {
         Reduce { state, action in
             switch action {
-            case .tappedNextButton:
-                return .none
-            
-            case .tappedIssuanceButton:
+            case .view(let view):
+                switch view {
+                case .copyCode:
+                    UIPasteboard.general.string = state.view_invitationCode
+                    return .none
+                    
+                case .tappedIssuanceButton:
+                    return .none
+                    
+                case .tappedNextButton:
+                    return .send(.setNavigation)
+                }
+            case .setNavigation:
                 return .none
                 
-            case .copyCode:
-                UIPasteboard.general.string = state.invitationCode
-                return .none
             }
         }
     }
