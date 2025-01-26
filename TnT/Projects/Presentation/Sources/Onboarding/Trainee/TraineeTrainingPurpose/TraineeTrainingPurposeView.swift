@@ -72,6 +72,7 @@ public struct TraineeTrainingPurposeView: View {
         .padding(.vertical, 12)
     }
     
+    @ViewBuilder
     private func selectSection() -> some View {
         LazyVGrid(columns: columns, spacing: 12) {
             ForEach(TrainingPurpose.allCases, id: \.self) { purpose in

@@ -86,7 +86,7 @@ public struct TraineeBasicInfoInputView: View {
     }
     
     @ViewBuilder
-    var TextFieldSection() -> some View {
+    private func TextFieldSection() -> some View {
         VStack(spacing: 48) {
             TTextField(
                 placeholder: "2000/01/01",
