@@ -19,3 +19,11 @@ struct MultipartFile {
     /// 파일 데이터
     let data: Data
 }
+
+/// 멀티파트 업로드 JSON을 정의하는 구조체
+struct MultipartJSON {
+    /// API 요청에서 사용할 필드명
+    let jsonName: String
+    /// 업로드할 JSON
+    let json: Encodable
+}
