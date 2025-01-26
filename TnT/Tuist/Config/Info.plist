@@ -64,5 +64,9 @@
 	</array>
 	<key>UIUserInterfaceStyle</key>
 	<string>Light</string>
+	<key>API_BASE_URL_DEV</key>
+	<string>$(API_BASE_URL_DEV)</string>
+	<key>KAKAO_NATIVE_APP_KEY</key>
+	<string>$(KAKAO_NATIVE_APP_KEY)</string>
 </dict>
 </plist>
