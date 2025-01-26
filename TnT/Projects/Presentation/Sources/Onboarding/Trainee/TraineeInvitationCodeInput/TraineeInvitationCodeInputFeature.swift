@@ -70,6 +70,8 @@ public struct TraineeInvitationCodeInputFeature {
             case tapVerifyButton
             /// "다음으로" 버튼이 눌렸을 때
             case tapNextButton
+            /// 포커스 상태 변경
+            case setFocus(Bool)
         }
     }
     
@@ -96,6 +98,10 @@ public struct TraineeInvitationCodeInputFeature {
                     
                 case .tapNextButton:
                     return .send(.setNavigating)
+                
+                case .setFocus(let isFocused):
+                    state.view_isFieldFocused = isFocused
+                    return .none
                 }
                 
             case .updateVerificationStatus(let isVerified):

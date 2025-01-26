@@ -18,7 +18,6 @@ public struct TraineeInvitationCodeInputView: View {
     
     @Bindable public var store: StoreOf<TraineeInvitationCodeInputFeature>
     @FocusState private var focusedField: Bool
-    @Environment(\.dismiss) var dismiss: DismissAction
     
     /// `TraineeInvitationCodeInputView` 생성자
     /// - Parameter store: `TraineeInvitationCodeInputFeature`와 연결된 Store
@@ -28,8 +27,9 @@ public struct TraineeInvitationCodeInputView: View {
     
     public var body: some View {
         VStack(spacing: 0) {
-            TNavigation(type: .LButton(leftImage: .icnArrowLeft), leftAction: {
-                dismiss()
+            // TODO: #30 PR 머지 후 RTextWithTitle로 변경
+            TNavigation(type: .LRButtonWithTitle(leftImage: .icnListFilled, centerTitle: "연결하기", rightImage: .icnListFilled), rightAction: {
+                
             })
             .padding(.bottom, 24)
             
@@ -43,11 +43,18 @@ public struct TraineeInvitationCodeInputView: View {
         .navigationBarBackButtonHidden()
         .keyboardDismissOnTap()
         .safeAreaInset(edge: .bottom) {
-            TBottomButton(
-                title: "다음",
-                isEnable: store.view_isNextButtonEnabled
-            ) {
-                send(.tapNextButton)
+            if store.view_isFieldFocused == false {
+                TBottomButton(
+                    title: "다음",
+                    isEnable: store.view_isNextButtonEnabled
+                ) {
+                    send(.tapNextButton)
+                }
+            }
+        }
+        .onChange(of: focusedField) { oldValue, newValue in
+            if oldValue != newValue {
+                send(.setFocus(newValue))
             }
         }
     }
