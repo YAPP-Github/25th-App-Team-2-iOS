@@ -111,31 +111,34 @@ public extension TTextEditor {
     struct Footer: View {
         /// 최대 입력 가능 글자 수
         private let textLimit: Int
-        
+        /// 입력된 텍스트 카운트
+        private var textCount: Int
         /// 텍스트 필드 상태
         @Binding private var status: Status
-        /// 입력된 텍스트
-        @Binding private var text: String
         
         /// Footer 생성자
         /// - Parameters:
         ///   - textLimit: 최대 입력 가능 글자 수.
         ///   - status: 텍스트 에디터의 상태를 관리하는 바인딩.
-        ///   - text: 입력된 텍스트를 관리하는 바인딩.
+        ///   - textLimit: 입력된 텍스트 글자 수.
         public init(
             textLimit: Int,
             status: Binding<Status>,
-            text: Binding<String>
+            textCount: Int
         ) {
             self.textLimit = textLimit
+            self.textCount = textCount
             self._status = status
-            self._text = text
         }
         
         public var body: some View {
             HStack {
+                if status == .invalid {
+                    Text("글자 수를 초과했어요")
+                        .typographyStyle(.label2Medium, with: status.footerColor)
+                }
                 Spacer()
-                Text("\(text.count)/\(textLimit)")
+                Text("\(textCount)/\(textLimit)")
                     .typographyStyle(.label2Medium, with: status.footerColor)
             }
         }

@@ -10,7 +10,6 @@
 public extension Configuration {
     static func defaultSettings() -> Settings {
         return Settings.settings(
-            base: ["OTHER_LDFLAGS": ["-ObjC"]],
             configurations: [
                 .debug(name: .debug, xcconfig: .relativeToRoot("Tuist/Config/Secrets.xcconfig")),
                 .release(name: .release, xcconfig: .relativeToRoot("Tuist/Config/Secrets.xcconfig")),
@@ -18,6 +17,10 @@ public extension Configuration {
             defaultSettings: DefaultSettings.recommended
         )
     }
+    
+//    static func defaultSettings() -> Settings {
+//        return Settings.settings()
+//    }
 }
 
 

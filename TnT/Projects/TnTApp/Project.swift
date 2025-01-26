@@ -8,4 +8,4 @@
 @preconcurrency import ProjectDescription
 @preconcurrency import ProjectDescriptionHelpers
 
-let project = Project.app
+let project = Project.appProject()

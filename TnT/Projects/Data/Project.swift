@@ -8,4 +8,4 @@
 @preconcurrency import ProjectDescription
 @preconcurrency import ProjectDescriptionHelpers
 
-let project = Project.module(name: "Data", resources: false)
+let project = Project.staticLibraryProejct(name: "Data", resource: false)

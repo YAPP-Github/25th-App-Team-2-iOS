@@ -6,39 +6,61 @@
 //
 
 @preconcurrency import ProjectDescription
+@preconcurrency import ProjectDescription
 
 public extension Target {
-    private static let organizationName = environmentOrganizationName
-    private static let destinations = environmentDestinations
-    private static let deploymentTargets = environmentDeploymentTargets
+    private static let appName = Environment.appName
+    private static let destinations = Environment.destinations
+    private static let deploymentTargets = Environment.deploymentTarget
+    private static let organizationName = Environment.organizationName
     
-    static func moduleTarget(
+    static func staticLibraryTarget(
         name: String,
-        product: Product = .staticLibrary,
-        resources: Bool = false,
+        resource: Bool = false,
         dependencies: [TargetDependency] = []
     ) -> Target {
         return Target.target(
             name: name,
             destinations: destinations,
-            product: product,
-            bundleId: "com.\(organizationName).\(name)",
+            product: .staticLibrary,
+            bundleId: "\(organizationName).\(appName).\(name)",
             deploymentTargets: deploymentTargets,
             infoPlist: .file(path: .relativeToRoot("Tuist/Config/Info.plist")),
             sources: ["Sources/**"],
-            resources: resources ? ["Resources/**"] : nil,
+            resources: resource ? ["Resources/**"] : nil,
             scripts: [.swiftLint],
-            dependencies: dependencies,
-            settings: Configuration.defaultSettings()
+            dependencies: dependencies
         )
     }
-       
-    static func appTarget(
+    
+    static func dynamicLibraryTarget(
         name: String,
-        dependencies: [TargetDependency] = []
+        resource: Bool = false,
+        dependencies: [TargetDependency] = [],
+        mergedBinaryType: MergedBinaryType = .disabled,
+        mergeable: Bool = false
     ) -> Target {
         return Target.target(
             name: name,
+            destinations: destinations,
+            product: .framework,
+            bundleId: "\(organizationName).\(appName).\(name)",
+            deploymentTargets: deploymentTargets,
+            infoPlist: .file(path: .relativeToRoot("Tuist/Config/Info.plist")),
+            sources: ["Sources/**"],
+            resources: resource ? ["Resources/**"] : nil,
+            scripts: [.swiftLint],
+            dependencies: dependencies,
+            mergedBinaryType: mergedBinaryType,
+            mergeable: mergeable
+        )
+    }
+    
+    static func appTarget(
+        dependencies: [TargetDependency] = []
+    ) -> Target {
+        return Target.target(
+            name: appName,
             destinations: destinations,
             product: .app,
             bundleId: "com.TnT.yapp25-app2team",
@@ -46,12 +68,8 @@ public extension Target {
             infoPlist: .file(path: .relativeToRoot("Tuist/Config/Info.plist")),
             sources: ["Sources/**"],
             resources: ["Resources/**"],
-            //            entitlements: "\(name).entitlements", // 추가 후 주석 해제
             scripts: [.swiftLint],
-            dependencies: dependencies,
-            settings: Configuration.defaultSettings()
+            dependencies: dependencies
         )
     }
 }
-
-
