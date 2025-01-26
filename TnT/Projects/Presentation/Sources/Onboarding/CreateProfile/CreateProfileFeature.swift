@@ -44,6 +44,8 @@ public struct CreateProfileFeature {
         var view_isFooterTextVisible: Bool {
             return view_textFieldStatus == .invalid
         }
+        /// 유저의 최대 이름 길이
+        var view_nameMaxLength: Int?
         
         /// `CreateProfileFeature.State`의 생성자
         /// - Parameters:
@@ -57,6 +59,7 @@ public struct CreateProfileFeature {
         ///   - view_isNextButtonEnabled: "다음" 버튼 활성화 여부  (기본값: `false`)
         ///   - view_isNavigating: 네비게이션 여부  (기본값: `false`)
         ///   - view_photoPickerItem: 현재 선택된 이미지 아이템 (기본값: `nil`)
+        ///   - view_nameMaxLength:유저의 최대 이름 길이 (기본값: `nil`)
         public init(
             userType: UserType,
             userImageData: Data? = nil,
@@ -66,7 +69,8 @@ public struct CreateProfileFeature {
             view_isPhotoPickerPresented: Bool = false,
             view_isNextButtonEnabled: Bool = false,
             view_isNavigating: Bool = false,
-            view_photoPickerItem: PhotosPickerItem? = nil
+            view_photoPickerItem: PhotosPickerItem? = nil,
+            view_nameMaxLength: Int? = nil
         ) {
             self.userType = userType
             self.userImageData = userImageData
@@ -77,6 +81,7 @@ public struct CreateProfileFeature {
             self.view_isNextButtonEnabled = view_isNextButtonEnabled
             self.view_isNavigating = view_isNavigating
             self.view_photoPickerItem = view_photoPickerItem
+            self.view_nameMaxLength = view_nameMaxLength
         }
     }
     

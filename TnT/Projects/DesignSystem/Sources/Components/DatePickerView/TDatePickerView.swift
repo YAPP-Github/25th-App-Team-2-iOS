@@ -47,7 +47,7 @@ public struct TDatePickerView: View {
             
             TBottomButton(
                 title: "완료",
-                state: .true,
+                isEnable: true,
                 action: {
                     buttonAction(selectedDate)
                 }

@@ -31,16 +31,20 @@ public struct UserTypeSelectionView: View {
                 Spacer(minLength: 60)
                 
                 VStack(spacing: 48) {
-                    Header
+                    Header()
                     
-                    ImageSection
+                    ImageSection()
                     
-                    ButtonSection
+                    ButtonSection()
                 }
                 
                 Spacer()
-                
-                BottomTempButton {
+            }
+            .safeAreaInset(edge: .bottom) {
+                TBottomButton(
+                    title: "다음",
+                    isEnable: true
+                ) {
                     send(.tapNextButton)
                 }
             }
@@ -55,11 +59,9 @@ public struct UserTypeSelectionView: View {
             }
         }
     }
-}
-
-// MARK: - SubViews
-private extension UserTypeSelectionView {
-    var Header: some View {
+    
+    @ViewBuilder
+    private func Header() -> some View {
         VStack(alignment: .leading, spacing: 12) {
             Text("안녕하세요!\n어떤 회원으로 이용하시겠어요?")
                 .typographyStyle(.heading2, with: .neutral950)
@@ -70,7 +72,8 @@ private extension UserTypeSelectionView {
         .padding(.horizontal, 24)
     }
     
-    var ImageSection: some View {
+    @ViewBuilder
+    private func ImageSection() -> some View {
         Image(store.userType == .trainer
               ? .imgOnboardingTrainer
               : .imgOnboardingTrainee
@@ -80,64 +83,31 @@ private extension UserTypeSelectionView {
         .padding(.horizontal, 20)
     }
     
-    var ButtonSection: some View {
+    @ViewBuilder
+    private func ButtonSection() -> some View {
         HStack(spacing: 8) {
-            TempButton(
-                isSelected: store.userType == UserType.trainer,
+            TButton(
                 title: UserType.trainer.koreanName,
-                action: { send(.tapUserTypeButton(.trainer), animation: .easeInOut(duration: 0.5)) }
+                config: .large,
+                state: store.userType == UserType.trainer
+                ? .default(.red(isEnabled: true))
+                : .default(.outline(isEnabled: true)),
+                action: {
+                    send(.tapUserTypeButton(.trainer), animation: .easeInOut(duration: 0.5))
+                }
             )
-            TempButton(
-                isSelected: store.userType == UserType.trainee,
+            
+            TButton(
                 title: UserType.trainee.koreanName,
-                action: { send(.tapUserTypeButton(.trainee), animation: .easeInOut(duration: 0.5)) }
+                config: .large,
+                state: store.userType == UserType.trainee
+                ? .default(.red(isEnabled: true))
+                : .default(.outline(isEnabled: true)),
+                action: {
+                    send(.tapUserTypeButton(.trainee), animation: .easeInOut(duration: 0.5))
+                }
             )
         }
         .padding(.horizontal, 20)
-    }
-}
-
-// TODO: 버튼 컴포넌트 나오면 대체
-private extension UserTypeSelectionView {
-    struct TempButton: View {
-        var isSelected: Bool = false
-        var title: String
-        let action: (() -> Void)
-        
-        var body: some View {
-            Button(action: {
-                action()
-            }) {
-                Text(title)
-                    .typographyStyle(.body1Medium, with: isSelected ? .red600 : .neutral500)
-                    .padding(.vertical, 16)
-                    .frame(height: 58)
-                    .frame(maxWidth: .infinity)
-                    .background(isSelected ? Color.red50 : .clear)
-                    .cornerRadius(16)
-                    .overlay(
-                      RoundedRectangle(cornerRadius: 16)
-                        .stroke(isSelected ? Color.red400 : Color.neutral300, lineWidth: isSelected ? 1.5 : 1.0)
-                    )
-            }
-        }
-    }
-    
-    struct BottomTempButton: View {
-        let action: (() -> Void)
-        
-        var body: some View {
-            Button(action: {
-                action()
-            }) {
-                Text("다음")
-                    .typographyStyle(.heading4, with: .neutral50)
-                    .padding(.top, 20)
-                    .padding(.bottom, 53)
-                    .frame(height: 100)
-                    .frame(maxWidth: .infinity)
-                    .background(Color.neutral900)
-            }
-        }
     }
 }
