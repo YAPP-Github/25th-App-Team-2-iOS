@@ -34,10 +34,10 @@ public struct TraineeBasicInfoInputView: View {
                 dismiss()
             })
             
-            Header
+            Header()
                 .padding(.bottom, 32)
             
-            TextFieldSection
+            TextFieldSection()
             
             Spacer()
         }
@@ -66,18 +66,9 @@ public struct TraineeBasicInfoInputView: View {
             }
         }
     }
-}
-
-public extension TraineeBasicInfoInputView {
-    enum Field: Sendable, Hashable {
-        case birthDate
-        case height
-        case weight
-    }
-}
-
-private extension TraineeBasicInfoInputView {
-    var Header: some View {
+    
+    @ViewBuilder
+    private func Header() -> some View {
         VStack(spacing: 12) {
             // 페이지 인디케이터
             HStack(spacing: 4) {
@@ -94,7 +85,8 @@ private extension TraineeBasicInfoInputView {
         .padding(.vertical, 12)
     }
     
-    var TextFieldSection: some View {
+    @ViewBuilder
+    var TextFieldSection() -> some View {
         VStack(spacing: 48) {
             TTextField(
                 placeholder: "2000/01/01",
@@ -144,5 +136,12 @@ private extension TraineeBasicInfoInputView {
             .padding(.horizontal, 20)
         }
     }
-    
+}
+
+public extension TraineeBasicInfoInputView {
+    enum Field: Sendable, Hashable {
+        case birthDate
+        case height
+        case weight
+    }
 }

@@ -35,10 +35,10 @@ public struct TraineeTrainingPurposeView: View {
                 dismiss()
             })
             
-            Header
+            Header()
                 .padding(.bottom, 32)
             
-            selectSection
+            selectSection()
                 
             Spacer()
         }
@@ -52,12 +52,10 @@ public struct TraineeTrainingPurposeView: View {
                 send(.tapNextButton)
             }
         }
-        
     }
-}
-
-private extension TraineeTrainingPurposeView {
-    var Header: some View {
+    
+    @ViewBuilder
+    private func Header() -> some View {
         VStack(spacing: 12) {
             // 페이지 인디케이터
             HStack(spacing: 4) {
@@ -74,7 +72,7 @@ private extension TraineeTrainingPurposeView {
         .padding(.vertical, 12)
     }
     
-    var selectSection: some View {
+    private func selectSection() -> some View {
         LazyVGrid(columns: columns, spacing: 12) {
             ForEach(TrainingPurpose.allCases, id: \.self) { purpose in
                 TempButton(

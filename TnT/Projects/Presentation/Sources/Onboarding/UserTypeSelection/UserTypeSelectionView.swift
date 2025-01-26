@@ -31,16 +31,20 @@ public struct UserTypeSelectionView: View {
                 Spacer(minLength: 60)
                 
                 VStack(spacing: 48) {
-                    Header
+                    Header()
                     
-                    ImageSection
+                    ImageSection()
                     
-                    ButtonSection
+                    ButtonSection()
                 }
                 
                 Spacer()
-                
-                BottomTempButton {
+            }
+            .safeAreaInset(edge: .bottom) {
+                TBottomButton(
+                    title: "다음",
+                    state: .true
+                ) {
                     send(.tapNextButton)
                 }
             }
@@ -55,11 +59,9 @@ public struct UserTypeSelectionView: View {
             }
         }
     }
-}
-
-// MARK: - SubViews
-private extension UserTypeSelectionView {
-    var Header: some View {
+    
+    @ViewBuilder
+    private func Header() -> some View {
         VStack(alignment: .leading, spacing: 12) {
             Text("안녕하세요!\n어떤 회원으로 이용하시겠어요?")
                 .typographyStyle(.heading2, with: .neutral950)
@@ -70,7 +72,8 @@ private extension UserTypeSelectionView {
         .padding(.horizontal, 24)
     }
     
-    var ImageSection: some View {
+    @ViewBuilder
+    private func ImageSection() -> some View {
         Image(store.userType == .trainer
               ? .imgOnboardingTrainer
               : .imgOnboardingTrainee
@@ -80,7 +83,8 @@ private extension UserTypeSelectionView {
         .padding(.horizontal, 20)
     }
     
-    var ButtonSection: some View {
+    @ViewBuilder
+    private func ButtonSection() -> some View {
         HStack(spacing: 8) {
             TempButton(
                 isSelected: store.userType == UserType.trainer,

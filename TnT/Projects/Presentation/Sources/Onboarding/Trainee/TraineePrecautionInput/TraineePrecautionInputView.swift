@@ -33,10 +33,10 @@ public struct TraineePrecautionInputView: View {
                 dismiss()
             })
             
-            Header
+            Header()
                 .padding(.bottom, 32)
             
-            TextEditorSection
+            TextEditorSection()
             
             Spacer()
         }
@@ -57,10 +57,9 @@ public struct TraineePrecautionInputView: View {
             send(.setFocus(newFocus))
         }
     }
-}
-
-private extension TraineePrecautionInputView {
-    var Header: some View {
+    
+    @ViewBuilder
+    private func Header() -> some View {
         VStack(spacing: 12) {
             // 페이지 인디케이터
             HStack(spacing: 4) {
@@ -77,7 +76,8 @@ private extension TraineePrecautionInputView {
         .padding(.vertical, 12)
     }
     
-    var TextEditorSection: some View {
+    @ViewBuilder
+    private func TextEditorSection() -> some View {
         TTextEditor(
             placeholder: "내용을 입력해주세요",
             text: $store.precaution,
