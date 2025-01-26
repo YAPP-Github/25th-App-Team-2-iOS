@@ -7,8 +7,9 @@
 //
 
 import ComposableArchitecture
-import DesignSystem
 import SwiftUI
+
+import DesignSystem
 
 public struct OnboardingView: View {
     @Bindable public var store: StoreOf<OnboardingFeature>
@@ -25,6 +26,9 @@ public struct OnboardingView: View {
                 Spacer()
                 
                 Image(.imgOnboardingLogin)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 310, height: 310)
                 
                 Bottom()
                 

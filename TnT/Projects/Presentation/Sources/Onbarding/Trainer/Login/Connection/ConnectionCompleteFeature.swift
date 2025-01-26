@@ -19,11 +19,12 @@ public struct ConnectionCompleteFeature {
         public init() { }
     }
     
-    public enum Action: Equatable {
+    public enum Action: Sendable, ViewAction, Equatable {
         case setNavigating
         case view(ViewAction)
         
-        public enum ViewAction {
+        @CasePathable
+        public enum ViewAction: Sendable, Equatable {
             case tappedNextButton
         }
     }

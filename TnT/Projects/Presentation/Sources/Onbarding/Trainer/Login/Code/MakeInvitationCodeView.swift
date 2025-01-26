@@ -7,8 +7,9 @@
 //
 
 import SwiftUI
-import DesignSystem
 import ComposableArchitecture
+
+import DesignSystem
 
 public struct MakeInvitationCodeView: View {
     public let store: StoreOf<MakeInvitationCodeFeature>

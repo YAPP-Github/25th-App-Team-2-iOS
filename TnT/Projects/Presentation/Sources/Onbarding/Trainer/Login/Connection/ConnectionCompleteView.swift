@@ -7,9 +7,11 @@
 //
 
 import SwiftUI
-import DesignSystem
 import ComposableArchitecture
 
+import DesignSystem
+
+@ViewAction(for: ConnectionCompleteFeature.self)
 public struct ConnectionCompleteView: View {
     
     public let store: StoreOf<ConnectionCompleteFeature>

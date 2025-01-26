@@ -7,8 +7,9 @@
 //
 
 import SwiftUI
-import DesignSystem
 import ComposableArchitecture
+
+import DesignSystem
 
 struct TermView: View {
     
@@ -74,7 +75,7 @@ struct TermView: View {
                 .padding(.vertical, 8)
             
             ForEach(store.view_terms.keys.sorted(by: { $0.id < $1.id }), id: \.self) { term in
-                termList(
+                termListItem(
                     term: term,
                     isAgreed: store.view_terms[term] ?? false
                 ) {
@@ -85,7 +86,7 @@ struct TermView: View {
     }
     
     @ViewBuilder
-    private func termList(term: Term, isAgreed: Bool, toggle: @escaping (Bool) -> Void) -> some View {
+    private func termListItem(term: Term, isAgreed: Bool, toggle: @escaping (Bool) -> Void) -> some View {
         HStack(spacing: 8) {
             Image(isAgreed ? .icnCheckButtonSelected : .icnCheckButtonUnselected)
                 .resizable()
@@ -106,38 +107,6 @@ struct TermView: View {
                         UIApplication.shared.open(url)
                     }
                 }
-        }
-    }
-}
-
-public enum Term: CaseIterable {
-    case term
-    case personalInfo
-    
-    var id: Int {
-        switch self {
-        case .term:
-            return 0
-        case .personalInfo:
-            return 1
-        }
-    }
-    
-    var title: String {
-        switch self {
-        case .term:
-            return "(필수)서비스 이용약관 동의"
-        case .personalInfo:
-            return "(필수)개인정보 처리방침 동의"
-        }
-    }
-    
-    var url: String {
-        switch self {
-        case .term:
-            return ""
-        case .personalInfo:
-            return ""
         }
     }
 }

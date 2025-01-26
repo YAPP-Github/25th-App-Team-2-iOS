@@ -7,8 +7,9 @@
 //
 
 import SwiftUI
-import DesignSystem
 import ComposableArchitecture
+
+import DesignSystem
 
 public struct TrainerSignUpCompleteView: View {
     public let store: StoreOf<TrainerSignUpCompleteFeature>
@@ -18,36 +19,36 @@ public struct TrainerSignUpCompleteView: View {
     }
     
     public var body: some View {
-        NavigationStack {
-            VStack(spacing: 10) {
-                Header()
-
-                profileImage()
-                
-                Spacer()
-                
-                TBottomButton(title: "시작하기", state: .true) {
-                    store.send(.view(.startButtonTapped))
-                }
+        VStack(spacing: 10) {
+            Header()
+            
+            profileImage()
+            
+            Spacer()
+            
+            TBottomButton(title: "시작하기", state: .true) {
+                store.send(.view(.startButtonTapped))
             }
-            .navigationBarBackButtonHidden()
         }
+        .navigationBarBackButtonHidden()
     }
     
     @ViewBuilder
     private func Header() -> some View {
-        Spacer().frame(height: 80.5)
-        
-        Text("만나서 반가워요\n김헬짱 트레이너님!")
-            .typographyStyle(.heading1, with: .neutral950)
-            .frame(maxWidth: .infinity)
-            .multilineTextAlignment(.center)
-            .padding(.horizontal, 24)
-        
-        Text("트레이니와 함께\n케미를 터뜨려보세요! 🧨")
-            .multilineTextAlignment(.center)
-        
-        Spacer().frame(height: 18)
+        VStack(spacing: 0) {
+            Spacer().frame(height: 80.5)
+            
+            Text("만나서 반가워요\n김헬짱 트레이너님!")
+                .typographyStyle(.heading1, with: .neutral950)
+                .frame(maxWidth: .infinity)
+                .multilineTextAlignment(.center)
+                .padding(.horizontal, 24)
+            
+            Text("트레이니와 함께\n케미를 터뜨려보세요! 🧨")
+                .multilineTextAlignment(.center)
+            
+            Spacer().frame(height: 18)
+        }
     }
     
     @ViewBuilder

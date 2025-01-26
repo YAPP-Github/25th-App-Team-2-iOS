@@ -58,3 +58,35 @@ public struct TermFeature {
         }
     }
 }
+
+public enum Term: CaseIterable {
+    case term
+    case personalInfo
+    
+    var id: Int {
+        switch self {
+        case .term:
+            return 0
+        case .personalInfo:
+            return 1
+        }
+    }
+    
+    var title: String {
+        switch self {
+        case .term:
+            return "(필수)서비스 이용약관 동의"
+        case .personalInfo:
+            return "(필수)개인정보 처리방침 동의"
+        }
+    }
+    
+    var url: String {
+        switch self {
+        case .term:
+            return ""
+        case .personalInfo:
+            return ""
+        }
+    }
+}
