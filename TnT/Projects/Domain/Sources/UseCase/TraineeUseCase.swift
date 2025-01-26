@@ -18,14 +18,18 @@ public protocol TraineeUseCase {
     // MARK: API Call
     /// API Call - 트레이너 초대 코드 인증 API 호출
     func verifyTrainerInvitationCode(_ code: String) async throws -> Bool
+    /// API Call - 트레이니 - 트레이너 연결 API 호출
+    func connectTrainer(_ info: TraineeConnectInfo) async throws -> ConnectionInfo
 }
 
 // MARK: - Default 구현체
 public struct DefaultTraineeUseCase: TraineeUseCase {
     private let trainerRepository: TrainerRepository
+    private let traineeRepository: TraineeRepository
     
-    public init(trainerRepository: TrainerRepository) {
+    public init(trainerRepository: TrainerRepository, traineeRepository: TraineeRepository) {
         self.trainerRepository = trainerRepository
+        self.traineeRepository = traineeRepository
     }
     
     public func validateInvitationCode(_ code: String) -> Bool {
@@ -42,7 +46,17 @@ public struct DefaultTraineeUseCase: TraineeUseCase {
     
     // MARK: API Call
     public func verifyTrainerInvitationCode(_ code: String) async throws -> Bool {
-        let result = try await trainerRepository.getVerifyInvitationCode(code: code)
+        let result: GetVerifyInvitationCodeResDTO = try await trainerRepository.getVerifyInvitationCode(code: code)
         return result.isVerified
+    }
+    
+    public func connectTrainer(_ info: TraineeConnectInfo) async throws -> ConnectionInfo {
+        let resDTO: PostConnectTrainerResDTO = try await traineeRepository.postConnectTrainer(info)
+        return ConnectionInfo(
+            trainerName: resDTO.trainerName,
+            traineeName: resDTO.traineeName,
+            trainerProfileImageUrl: resDTO.trainerProfileImageUrl,
+            traineeProfileImageUrl: resDTO.traineeProfileImageUrl
+        )
     }
 }
