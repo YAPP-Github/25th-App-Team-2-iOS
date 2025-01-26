@@ -7,7 +7,6 @@
 //
 
 import SwiftUI
-import ComposableArchitecture
 
 /// TPopUpAlertView에 표시하는 정보입니다.
 /// 팝업의 제목, 메시지, 버튼 정보를 포함.
