@@ -39,7 +39,7 @@ public struct TBottomButton: View {
         .typographyStyle(.heading4, with: isEnable ? ButtonState.true.textColor : ButtonState.false.textColor)
         .padding(.vertical, 20)
         .frame(maxWidth: .infinity)
-        .background(isEnable ? ButtonState.true.textColor : ButtonState.false.textColor)
+        .background(isEnable ? ButtonState.true.background : ButtonState.false.background)
     }
 }
 

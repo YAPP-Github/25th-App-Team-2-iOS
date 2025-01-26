@@ -223,8 +223,12 @@ public extension TButton {
         
         var horizontalSize: CGFloat {
             switch self {
-            case .xLarge, .large, .medium, .small, .xSmall:
+            case .xLarge, .large, .medium:
                 return 20
+            case .small:
+                return 12
+            case .xSmall:
+                return 8
             }
         }
         
@@ -236,7 +240,7 @@ public extension TButton {
             case .large, .medium:
                 return .body1Medium
             case .small:
-                return .label1Medium
+                return .label2Medium
             case .xSmall:
                 return .label2Medium
             }
