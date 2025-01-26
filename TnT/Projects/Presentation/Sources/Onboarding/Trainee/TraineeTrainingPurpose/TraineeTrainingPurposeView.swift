@@ -47,7 +47,7 @@ public struct TraineeTrainingPurposeView: View {
         .safeAreaInset(edge: .bottom) {
             TBottomButton(
                 title: "다음",
-                state: store.view_isNextButtonEnabled ? .true : .false
+                isEnable: store.view_isNextButtonEnabled
             ) {
                 send(.tapNextButton)
             }
@@ -76,9 +76,12 @@ public struct TraineeTrainingPurposeView: View {
     private func selectSection() -> some View {
         LazyVGrid(columns: columns, spacing: 12) {
             ForEach(TrainingPurpose.allCases, id: \.self) { purpose in
-                TempButton(
-                    isSelected: store.selectedPurposes.contains(purpose),
+                TButton(
                     title: purpose.koreanName,
+                    config: .xLarge,
+                    state: store.selectedPurposes.contains(purpose)
+                    ? .default(.red(isEnabled: true))
+                    : .default(.outline(isEnabled: true)),
                     action: {
                         send(.tapPurposeButton(purpose))
                     }
@@ -86,31 +89,5 @@ public struct TraineeTrainingPurposeView: View {
             }
         }
         .padding(.horizontal, 20)
-    }
-}
-
-private extension TraineeTrainingPurposeView {
-    struct TempButton: View {
-        var isSelected: Bool = false
-        var title: String
-        let action: (() -> Void)
-        
-        var body: some View {
-            Button(action: {
-                action()
-            }) {
-                Text(title)
-                    .typographyStyle(.body1Medium, with: isSelected ? .red600 : .neutral500)
-                    .padding(.vertical, 16)
-                    .frame(height: 64)
-                    .frame(maxWidth: .infinity)
-                    .background(isSelected ? Color.red50 : .clear)
-                    .cornerRadius(16)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 16)
-                            .stroke(isSelected ? Color.red400 : Color.neutral300, lineWidth: isSelected ? 1.5 : 1.0)
-                    )
-            }
-        }
     }
 }

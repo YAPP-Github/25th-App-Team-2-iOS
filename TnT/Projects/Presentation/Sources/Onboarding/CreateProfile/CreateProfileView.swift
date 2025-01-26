@@ -43,7 +43,7 @@ public struct CreateProfileView: View {
         .safeAreaInset(edge: .bottom) {
             TBottomButton(
                 title: "다음",
-                state: store.view_isNextButtonEnabled ? .true : .false
+                isEnable: store.view_isNextButtonEnabled
             ) {
                 send(.tapNextButton)
             }
@@ -118,12 +118,12 @@ public struct CreateProfileView: View {
             header: .init(
                 isRequired: true,
                 title: "이름",
-                limitCount: UserPolicy.maxNameLength,
+                limitCount: store.view_nameMaxLength ?? 15,
                 textCount: store.userName.count
             ),
             footer: .init(
                 footerText: store.view_isFooterTextVisible
-                ? "\(UserPolicy.maxNameLength)자 이하로 입력해주세요"
+                ? "\(store.view_nameMaxLength ?? 15)자 이하로 입력해주세요"
                 : "",
                 status: store.view_textFieldStatus
             )

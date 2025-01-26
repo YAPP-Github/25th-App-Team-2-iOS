@@ -46,7 +46,7 @@ public struct TraineePrecautionInputView: View {
             if store.view_focusField == false {
                 TBottomButton(
                     title: "다음",
-                    state: store.view_isNextButtonEnabled ? .true : .false
+                    isEnable: store.view_isNextButtonEnabled
                 ) {
                     send(.tapNextButton)
                 }
