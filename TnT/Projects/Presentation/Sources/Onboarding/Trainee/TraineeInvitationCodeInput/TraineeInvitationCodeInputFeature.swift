@@ -11,6 +11,7 @@ import ComposableArchitecture
 
 import Domain
 import DesignSystem
+import DIContainer
 
 @Reducer
 public struct TraineeInvitationCodeInputFeature {
@@ -52,7 +53,7 @@ public struct TraineeInvitationCodeInputFeature {
         }
     }
     
-    @Dependency(\.userUseCase) private var userUseCase: UserUseCase
+    @Dependency(\.traineeUseCase) private var traineeUseCase: TraineeUseCase
     
     public enum Action: Sendable, ViewAction {
         /// 뷰에서 발생한 액션을 처리합니다.
@@ -92,7 +93,7 @@ public struct TraineeInvitationCodeInputFeature {
 
                 case .tapVerifyButton:
                     return .run { [state] send in
-                        let result: Bool = try await userUseCase.verifyTrainerInvitationCode(state.invitationCode)
+                        let result: Bool = try await traineeUseCase.verifyTrainerInvitationCode(state.invitationCode)
                         await send(.updateVerificationStatus(result))
                     }
                     
@@ -131,7 +132,7 @@ private extension TraineeInvitationCodeInputFeature {
         state.view_invitationCodeStatus = .filled
         
         // 초대 코드 형식이 유효한지 검사
-        guard userUseCase.validateInvitationCode(state.invitationCode) else {
+        guard traineeUseCase.validateInvitationCode(state.invitationCode) else {
             state.view_isVerityButtonEnabled = false
             return .none
         }
