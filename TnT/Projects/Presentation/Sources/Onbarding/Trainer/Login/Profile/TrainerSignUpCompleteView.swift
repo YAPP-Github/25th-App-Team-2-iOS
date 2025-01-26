@@ -11,6 +11,7 @@ import ComposableArchitecture
 
 import DesignSystem
 
+@ViewAction(for: TrainerSignUpCompleteFeature.self)
 public struct TrainerSignUpCompleteView: View {
     public let store: StoreOf<TrainerSignUpCompleteFeature>
     
@@ -26,8 +27,8 @@ public struct TrainerSignUpCompleteView: View {
             
             Spacer()
             
-            TBottomButton(title: "시작하기", state: .true) {
-                store.send(.view(.startButtonTapped))
+            TBottomButton(title: "시작하기", isEnable: true) {
+                send(.startButtonTapped)
             }
         }
         .navigationBarBackButtonHidden()
@@ -53,7 +54,7 @@ public struct TrainerSignUpCompleteView: View {
     
     @ViewBuilder
     private func profileImage() -> some View {
-        Image(.imgDefaultProfileImage)
+        Image(.imgDefaultTrainerImage)
             .resizable()
             .frame(width: 200, height: 200)
             .clipShape(Circle())

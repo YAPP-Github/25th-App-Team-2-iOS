@@ -36,8 +36,8 @@ public struct ConnectionCompleteView: View {
                     Spacer()
                     
                     Image(.imgBoom)
-                    TBottomButton(title: "다음", state: .true) {
-                        store.send(.view(.tappedNextButton))
+                    TBottomButton(title: "다음", isEnable: true) {
+                        send(.tappedNextButton)
                     }
                     .padding(.bottom, 40)
                 }

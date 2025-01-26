@@ -20,11 +20,11 @@ public struct MakeInvitationCodeFeature {
         public init() { }
     }
     
-    public enum Action: Equatable {
+    public enum Action: Equatable, ViewAction {
         case setNavigation
-        case view(ViewAction)
+        case view(View)
         
-        public enum ViewAction {
+        public enum View {
             case tappedNextButton
             case tappedIssuanceButton
             case copyCode

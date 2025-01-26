@@ -111,9 +111,9 @@ public enum LoginType: String, CaseIterable {
     var image: ImageResource {
         switch self {
         case .kakao:
-            return .icKakao
+            return .icnKakao
         case .apple:
-            return .icApple
+            return .icnApple
         }
     }
     

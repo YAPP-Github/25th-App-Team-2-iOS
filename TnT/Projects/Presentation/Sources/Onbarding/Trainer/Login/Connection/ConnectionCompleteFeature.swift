@@ -13,18 +13,18 @@ import ComposableArchitecture
 public struct ConnectionCompleteFeature {
     @ObservableState
     public struct State: Equatable {
-        var trainer: Data?
-        var trainee: Data?
+        var view_trainer: Data?
+        var view_trainee: Data?
         
         public init() { }
     }
     
-    public enum Action: Sendable, ViewAction, Equatable {
+    public enum Action: Sendable, ViewAction {
         case setNavigating
-        case view(ViewAction)
+        case view(View)
         
         @CasePathable
-        public enum ViewAction: Sendable, Equatable {
+        public enum View: Sendable {
             case tappedNextButton
         }
     }

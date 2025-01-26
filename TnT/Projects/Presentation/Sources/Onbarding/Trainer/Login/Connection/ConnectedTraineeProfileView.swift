@@ -11,6 +11,7 @@ import ComposableArchitecture
 
 import DesignSystem
 
+@ViewAction(for: ConnectedTraineeProfileFeature.self)
 public struct ConnectedTraineeProfileView: View {
     public let store: StoreOf<ConnectedTraineeProfileFeature>
     
@@ -38,8 +39,8 @@ public struct ConnectedTraineeProfileView: View {
                     
                     Spacer()
                    
-                    TBottomButton(title: "시작하기", state: .true) {
-                        store.send(.view(.startButtonTapped))
+                    TBottomButton(title: "시작하기", isEnable: true) {
+                        send(.startButtonTapped)
                     }
                     .padding(.bottom, 40)
                 }

@@ -22,11 +22,11 @@ public struct TermFeature {
         public init() { }
     }
     
-    public enum Action: Equatable {
+    public enum Action: Equatable, ViewAction {
         case setNavigating
-        case view(ViewAction)
+        case view(View)
         
-        public enum ViewAction: Equatable {
+        public enum View: Equatable {
             case toggleTerm(Term, Bool)
             case toggleAll(Bool)
             case nextButtonTapped

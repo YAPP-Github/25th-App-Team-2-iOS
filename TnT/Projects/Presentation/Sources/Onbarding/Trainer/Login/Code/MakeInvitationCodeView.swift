@@ -11,6 +11,7 @@ import ComposableArchitecture
 
 import DesignSystem
 
+@ViewAction(for: MakeInvitationCodeFeature.self)
 public struct MakeInvitationCodeView: View {
     public let store: StoreOf<MakeInvitationCodeFeature>
     
@@ -29,7 +30,7 @@ public struct MakeInvitationCodeView: View {
     private func Header() -> some View {
         TNavigation(type: .RTextWithTitle(centerTitle: "연결하기", rightText: "건너뛰기"))
             .rightTap {
-                store.send(.view(.tappedNextButton))
+                send(.tappedNextButton)
             }
             .padding(.bottom, 24)
     }
@@ -58,7 +59,7 @@ public struct MakeInvitationCodeView: View {
                             .padding(8)
                             .frame(maxWidth: .infinity, alignment: .leading)
                             .onTapGesture {
-                                store.send(.view(.copyCode))
+                                send(.copyCode)
                             }
                         
                         TDivider(height: 1, color: .neutral300)
@@ -69,7 +70,7 @@ public struct MakeInvitationCodeView: View {
                         config: .small,
                         state: .default(.gray(isEnabled: true))
                     ) {
-                        store.send(.view(.tappedIssuanceButton))
+                        send(.tappedIssuanceButton)
                     }
                     .frame(width: 82)
                 }

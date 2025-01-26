@@ -11,6 +11,7 @@ import ComposableArchitecture
 
 import DesignSystem
 
+@ViewAction(for: TermFeature.self)
 struct TermView: View {
     
     public let store: StoreOf<TermFeature>
@@ -29,8 +30,8 @@ struct TermView: View {
             
             Spacer()
             
-            TBottomButton(title: "다음", state: store.view_isAllAgreed ? .true : .false) {
-                store.send(.view(.nextButtonTapped))
+            TBottomButton(title: "다음", isEnable: store.view_isAllAgreed) {
+                send(.nextButtonTapped)
             }
         }
         .navigationBarBackButtonHidden()
@@ -58,7 +59,7 @@ struct TermView: View {
                     .resizable()
                     .frame(width: 24, height: 24)
                     .onTapGesture {
-                        store.send(.view(.toggleAll(!store.view_isAllAgreed)))
+                        send(.toggleAll(!store.view_isAllAgreed))
                     }
                 
                 VStack(alignment: .leading, spacing: 4) {
@@ -79,7 +80,7 @@ struct TermView: View {
                     term: term,
                     isAgreed: store.view_terms[term] ?? false
                 ) {
-                    store.send(.view(.toggleTerm(term, !$0)))
+                    send(.toggleTerm(term, $0))
                 }
             }
         }
