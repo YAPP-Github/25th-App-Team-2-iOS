@@ -6,7 +6,6 @@
 //  Copyright © 2025 yapp25thTeamTnT. All rights reserved.
 //
 
-import UIKit
 import ComposableArchitecture
 
 import Domain
@@ -56,7 +55,7 @@ public struct TraineePrecautionInputFeature {
         }
     }
     
-    @Dependency(\.userUseCase) private var userUseCase
+    @Dependency(\.userUseCase) private var userUseCase: UserUseCase
     
     public enum Action: Sendable, ViewAction {
         /// 뷰에서 발생한 액션을 처리합니다.

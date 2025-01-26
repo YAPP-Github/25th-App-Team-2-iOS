@@ -18,6 +18,7 @@ import DesignSystem
 public struct CreateProfileView: View {
     
     @Bindable public var store: StoreOf<CreateProfileFeature>
+    @Environment(\.dismiss) var dismiss: DismissAction
     
     /// `CreateProfileView`의 생성자
     /// - Parameter store: `CreateProfileFeature`의 상태를 관리하는 `Store`
@@ -26,7 +27,10 @@ public struct CreateProfileView: View {
     }
     
     public var body: some View {
-        VStack {
+        VStack(spacing: 0) {
+            TNavigation(type: .LButton(leftImage: .icnArrowLeft), leftAction: {
+                dismiss()
+            })
             
             Header()
             
