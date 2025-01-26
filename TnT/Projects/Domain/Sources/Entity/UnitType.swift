@@ -1,15 +1,15 @@
 //
-//  UnitText.swift
-//  Presentation
+//  UnitType.swift
+//  Domain
 //
-//  Created by 박민서 on 1/25/25.
+//  Created by 박민서 on 1/26/25.
 //  Copyright © 2025 yapp25thTeamTnT. All rights reserved.
 //
 
 import Foundation
 
-/// 키 및 몸무게 단위를 관리하는 열거형
-public enum UnitText {
+/// 신체 정보 관련 단위 (키, 몸무게 등)를 관리하는 열거형
+public enum UnitType {
     /// 키 단위
     case height
     /// 몸무게 단위
