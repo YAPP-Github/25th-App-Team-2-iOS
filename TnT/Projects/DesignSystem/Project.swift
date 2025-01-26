@@ -8,4 +8,5 @@
 @preconcurrency import ProjectDescription
 @preconcurrency import ProjectDescriptionHelpers
 
-let project = Project.module(name: "DesignSystem", resources: true)
+let project = Project.staticLibraryProejct(name: "DesignSystem", resource: true)
+//dynamicFrameworkProject(name: "DesignSystem", resources: true)

@@ -12,9 +12,8 @@ import ComposableArchitecture
 
 struct ContentView: View {
     var body: some View {
-        OnboardingView(store: Store(initialState: OnboardingFeature.State(), reducer: {
-            OnboardingFeature()
-        }))
+        Text("dasdasdf")
+        Text("Hello, World!")
     }
 }
 

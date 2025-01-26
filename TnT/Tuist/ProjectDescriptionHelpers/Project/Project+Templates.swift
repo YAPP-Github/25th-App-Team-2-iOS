@@ -8,43 +8,94 @@
 @preconcurrency import ProjectDescription
 
 public extension Project {
-    private static let appName = environmentName
-    private static let organizationName = environmentOrganizationName
-
+    private static let appName = Environment.appName
+    private static let organizationName = Environment.organizationName
+    
     static let customOption: Options = .options(
         defaultKnownRegions: ["en", "ko"],
         developmentRegion: "ko"
     )
     
-    static var app: Project {
+    static func appProject(
+        dependencies: [TargetDependency] = []
+    ) -> Project {
         return Project(
             name: appName,
             organizationName: organizationName,
             options: customOption,
             settings: Configuration.defaultSettings(),
-            targets: .app,
+            targets: [
+                Target.appTarget(
+                    dependencies: DependencyInformation.dependencies(of: appName)
+                )
+            ],
             schemes: .app
         )
     }
     
-    static func module(
+    static func dynamicFrameworkProject(
         name: String,
-        options: Options = customOption,
-        resources: Bool
+        resources: Bool,
+        dependencies: [TargetDependency] = [],
+        packages: [Package] = []
     ) -> Project {
+        let debugScheme = Scheme.scheme(
+            schemeName: "\(name)Debug",
+            targetName: name,
+            configurationName: .debug
+        )
+
+        let releaseScheme = Scheme.scheme(
+            schemeName: "\(name)Release",
+            targetName: name,
+            configurationName: .release
+        )
+        
+        return Project(
+            name: name,
+            options: customOption,
+            settings: Configuration.defaultSettings(),
+            targets: [
+                Target.dynamicLibraryTarget(
+                    name: name,
+                    resource: resources,
+                    dependencies: DependencyInformation.dependencies(of: name)
+                )
+            ],
+            schemes: [debugScheme, releaseScheme]
+        )
+    }
+    
+    static func staticLibraryProejct(
+        name: String,
+        resource: Bool,
+        dependenceis: [TargetDependency] = []
+    ) -> Project {
+        let debugScheme = Scheme.scheme(
+            schemeName: "\(name)Debug",
+            targetName: name,
+            configurationName: .debug
+        )
+
+        let releaseScheme = Scheme.scheme(
+            schemeName: "\(name)Release",
+            targetName: name,
+            configurationName: .release
+        )
+        
         return Project(
             name: name,
             organizationName: organizationName,
-            options: options,
+            options: customOption,
             settings: Configuration.defaultSettings(),
-            targets: .targets(name: name, resources: resources),
-            schemes: [
-                .scheme(
-                    schemeName: name,
-                    targetName: name,
-                    configurationName: .debug
+            targets: [
+                Target.staticLibraryTarget(
+                    name: name,
+                    resource: resource,
+                    dependencies: DependencyInformation.dependencies(of: name)
                 )
-            ]
+            ],
+            schemes: [debugScheme, releaseScheme]
         )
     }
 }
