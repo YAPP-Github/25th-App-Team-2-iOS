@@ -73,7 +73,7 @@ public struct TTextField: View {
 public extension TTextField.RightView {
     enum Style {
         case unit(text: String, status: TTextField.Status)
-        case button(title: String, tapAction: () -> Void)
+        case button(title: String, state: TButton.ButtonState, tapAction: () -> Void)
     }
 }
 
@@ -96,17 +96,15 @@ public extension TTextField {
                     .padding(.horizontal, 12)
                     .padding(.vertical, 3)
                 
-            case let .button(title, tapAction):
+            case let .button(title, state, tapAction):
                 // TODO: 추후 버튼 컴포넌트 나오면 대체
-                Button(action: tapAction) {
-                    Text(title)
-                        .typographyStyle(.label2Medium, with: .neutral50)
-                        .padding(.horizontal, 12)
-                        .padding(.vertical, 7)
-                        .background(Color.neutral900)
-                        .clipShape(.rect(cornerRadius: 8))
-                }
-                .padding(.vertical, 5)
+                TButton(
+                    title: title,
+                    config: .small,
+                    state: state,
+                    action: tapAction
+                )
+                .frame(width: 66)
             }
         }
     }
