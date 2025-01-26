@@ -30,6 +30,8 @@ public struct CreateProfileFeature {
         // MARK: UI related state
         /// 텍스트 필드 상태 (빈 값 / 입력됨 / 유효하지 않음)
         var view_textFieldStatus: TTextField.Status
+        /// 텍스트 필드 최대 길이 제한
+        var view_textFieldMaxCount: Int?
         /// 포토 피커 표시 여부
         var view_isPhotoPickerPresented: Bool
         /// "다음" 버튼 활성화 여부
@@ -50,6 +52,7 @@ public struct CreateProfileFeature {
         ///   - userImageData: 선택된 이미지 데이터 (기본값: `nil`)
         ///   - viewState: UI 관련 상태 (기본값: `ViewState()`).
         ///   - view_textFieldStatus: 텍스트 필드 상태  (기본값: `.empty`)
+        ///   - view_textFieldMaxCount: 텍스트 필드 최대 길이 제한 (기본값: `nil`)
         ///   - view_isPhotoPickerPresented: 포토 피커 표시 여부  (기본값: `false`)
         ///   - view_isNextButtonEnabled: "다음" 버튼 활성화 여부  (기본값: `false`)
         ///   - view_isNavigating: 네비게이션 여부  (기본값: `false`)
@@ -59,6 +62,7 @@ public struct CreateProfileFeature {
             userImageData: Data? = nil,
             userName: String = "",
             view_textFieldStatus: TTextField.Status = .empty,
+            view_textFieldMaxCount: Int? = nil,
             view_isPhotoPickerPresented: Bool = false,
             view_isNextButtonEnabled: Bool = false,
             view_isNavigating: Bool = false,
@@ -68,12 +72,15 @@ public struct CreateProfileFeature {
             self.userImageData = userImageData
             self.userName = userName
             self.view_textFieldStatus = view_textFieldStatus
+            self.view_textFieldMaxCount = view_textFieldMaxCount
             self.view_isPhotoPickerPresented = view_isPhotoPickerPresented
             self.view_isNextButtonEnabled = view_isNextButtonEnabled
             self.view_isNavigating = view_isNavigating
             self.view_photoPickerItem = view_photoPickerItem
         }
     }
+    
+    @Dependency(\.userUseCase) private var userUseCase: UserUseCase
     
     public enum Action: Sendable, ViewAction {
         /// 네비게이션 여부 설정
@@ -141,20 +148,14 @@ public struct CreateProfileFeature {
 private extension CreateProfileFeature {
     /// 사용자 입력값을 검증하고 상태를 업데이트합니다.
     func validate(_ state: inout State) -> Effect<Action> {
-        guard !(state.userName.isEmpty) else {
-            state.view_textFieldStatus = .empty
+        guard !state.userName.isEmpty, userUseCase.validateUserName(state.userName) else {
+            state.view_textFieldStatus = state.userName.isEmpty ? .empty : .invalid
+            state.view_isNextButtonEnabled = false
             return .none
         }
         
-        let isNameValid: Bool = TextValidator.isValidInput(
-            state.userName,
-            maxLength: UserPolicy.maxNameLength,
-            regexPattern: UserPolicy.allowedCharactersRegex
-        )
-        
-        state.view_textFieldStatus = isNameValid ? .filled : .invalid
-        state.view_isNextButtonEnabled = isNameValid
-        
+        state.view_textFieldStatus = .filled
+        state.view_isNextButtonEnabled = true
         return .none
     }
 }

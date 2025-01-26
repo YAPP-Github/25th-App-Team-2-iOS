@@ -103,12 +103,12 @@ private extension CreateProfileView {
             header: .init(
                 isRequired: true,
                 title: "이름",
-                limitCount: UserPolicy.maxNameLength,
+                limitCount: store.view_textFieldMaxCount ?? 15,
                 textCount: store.userName.count
             ),
             footer: .init(
                 footerText: store.view_isFooterTextVisible
-                ? "\(UserPolicy.maxNameLength)자 이하로 입력해주세요"
+                ? "\(store.view_textFieldMaxCount ?? 15)자 이하로 입력해주세요"
                 : "",
                 status: store.view_textFieldStatus
             )
