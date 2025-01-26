@@ -108,7 +108,7 @@ public struct TraineeBasicInfoInputView: View {
                     text: $store.height,
                     textFieldStatus: $store.view_heightStatus,
                     rightView: {
-                        TTextField.RightView(style: .unit(text: UnitText.height.koreaUnit, status: .filled))
+                        TTextField.RightView(style: .unit(text: UnitType.height.koreaUnit, status: .filled))
                     }
                 )
                 .withSectionLayout(
@@ -123,7 +123,7 @@ public struct TraineeBasicInfoInputView: View {
                     text: $store.weight,
                     textFieldStatus: $store.view_weightStatus,
                     rightView: {
-                        TTextField.RightView(style: .unit(text: UnitText.weight.koreaUnit, status: .filled))
+                        TTextField.RightView(style: .unit(text: UnitType.weight.koreaUnit, status: .filled))
                     }
                 )
                 .withSectionLayout(
