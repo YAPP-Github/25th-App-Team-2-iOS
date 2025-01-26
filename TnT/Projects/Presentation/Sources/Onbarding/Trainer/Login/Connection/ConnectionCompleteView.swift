@@ -29,16 +29,10 @@ public struct ConnectionCompleteView: View {
                 VStack {
                     Spacer()
                     
-                    Text("김회원 트레이니와\n연결되었어요!")
-                        .typographyStyle(.heading1, with: .common0)
-                        .multilineTextAlignment(.center)
-                    
-                    HStack(spacing: 16) {
-                        userProfileView(imgae: .imgOnboardingTrainee, name: "김회원")
-                        userProfileView(imgae: .imgOnboardingTrainer, name: "김피티")
-                    }
+                    Header()
                     
                     Spacer()
+                    
                     Image(.imgBoom)
                     TBottomButton(title: "다음", state: .true) {
                         store.send(.view(.tappedNextButton))
@@ -47,6 +41,18 @@ public struct ConnectionCompleteView: View {
                 }
             }
             .navigationBarBackButtonHidden()
+        }
+    }
+    
+    @ViewBuilder
+    private func Header() -> some View {
+        Text("김회원 트레이니와\n연결되었어요!")
+            .typographyStyle(.heading1, with: .common0)
+            .multilineTextAlignment(.center)
+        
+        HStack(spacing: 16) {
+            userProfileView(imgae: .imgOnboardingTrainee, name: "김회원")
+            userProfileView(imgae: .imgOnboardingTrainer, name: "김피티")
         }
     }
     

@@ -20,23 +20,9 @@ public struct TrainerSignUpCompleteView: View {
     public var body: some View {
         NavigationStack {
             VStack(spacing: 10) {
-                Spacer().frame(height: 80.5)
-                
-                Text("만나서 반가워요\n김헬짱 트레이너님!")
-                    .typographyStyle(.heading1, with: .neutral950)
-                    .frame(maxWidth: .infinity)
-                    .multilineTextAlignment(.center)
-                    .padding(.horizontal, 24)
-                
-                Text("트레이니와 함께\n케미를 터뜨려보세요! 🧨")
-                    .multilineTextAlignment(.center)
-                
-                Spacer().frame(height: 18)
-                
-                Image(.imgDefaultProfileImage)
-                    .resizable()
-                    .frame(width: 200, height: 200)
-                    .clipShape(Circle())
+                Header()
+
+                profileImage()
                 
                 Spacer()
                 
@@ -46,5 +32,29 @@ public struct TrainerSignUpCompleteView: View {
             }
             .navigationBarBackButtonHidden()
         }
+    }
+    
+    @ViewBuilder
+    private func Header() -> some View {
+        Spacer().frame(height: 80.5)
+        
+        Text("만나서 반가워요\n김헬짱 트레이너님!")
+            .typographyStyle(.heading1, with: .neutral950)
+            .frame(maxWidth: .infinity)
+            .multilineTextAlignment(.center)
+            .padding(.horizontal, 24)
+        
+        Text("트레이니와 함께\n케미를 터뜨려보세요! 🧨")
+            .multilineTextAlignment(.center)
+        
+        Spacer().frame(height: 18)
+    }
+    
+    @ViewBuilder
+    private func profileImage() -> some View {
+        Image(.imgDefaultProfileImage)
+            .resizable()
+            .frame(width: 200, height: 200)
+            .clipShape(Circle())
     }
 }

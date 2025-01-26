@@ -21,48 +21,8 @@ struct TermView: View {
     var body: some View {
         VStack {
             VStack(alignment: .leading, spacing: 0) {
-                Text("약관에 동의해주세요")
-                    .typographyStyle(.heading3, with: .neutral900)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(.vertical, 20)
-                
-                Text("여러분의 개인정보와 서비스 이용 권리\n잘 지켜드릴게요")
-                    .typographyStyle(.body2Medium, with: .neutral500)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                
-                Spacer().frame(height: 40)
-                
-                VStack(spacing: 8) {
-                    HStack(spacing: 8) {
-                        Image(store.view_isAllAgreed ? .icnCheckButtonSelected : .icnCheckButtonUnselected)
-                            .resizable()
-                            .frame(width: 24, height: 24)
-                            .onTapGesture {
-                                store.send(.toggleAll(!store.view_isAllAgreed))
-                            }
-                        
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text("모두 동의")
-                                .typographyStyle(.body2Bold, with: .neutral900)
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                            Text("서비스 이용을 위해 아래 약관에 모두 동의합니다.")
-                                .typographyStyle(.body2Medium, with: .neutral500)
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                        }
-                    }
-                    
-                    TDivider(height: 2, color: .neutral100)
-                        .padding(.vertical, 8)
-                    
-                    ForEach(store.view_terms.keys.sorted(by: { $0.id < $1.id }), id: \.self) { term in
-                        termsView(
-                            term: term,
-                            isAgreed: store.view_terms[term] ?? false
-                        ) {
-                            store.send(.toggleTerm(term, !$0))
-                        }
-                    }
-                }
+                Header()
+                term()
             }
             .padding(.horizontal, 20)
             
@@ -76,7 +36,56 @@ struct TermView: View {
     }
     
     @ViewBuilder
-    private func termsView(term: Term, isAgreed: Bool, toggle: @escaping (Bool) -> Void) -> some View {
+    private func Header() -> some View {
+        Text("약관에 동의해주세요")
+            .typographyStyle(.heading3, with: .neutral900)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.vertical, 20)
+        
+        Text("여러분의 개인정보와 서비스 이용 권리\n잘 지켜드릴게요")
+            .typographyStyle(.body2Medium, with: .neutral500)
+            .frame(maxWidth: .infinity, alignment: .leading)
+        
+        Spacer().frame(height: 40)
+    }
+    
+    @ViewBuilder
+    private func term() -> some View {
+        VStack(spacing: 8) {
+            HStack(spacing: 8) {
+                Image(store.view_isAllAgreed ? .icnCheckButtonSelected : .icnCheckButtonUnselected)
+                    .resizable()
+                    .frame(width: 24, height: 24)
+                    .onTapGesture {
+                        store.send(.view(.toggleAll(!store.view_isAllAgreed)))
+                    }
+                
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("모두 동의")
+                        .typographyStyle(.body2Bold, with: .neutral900)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                    Text("서비스 이용을 위해 아래 약관에 모두 동의합니다.")
+                        .typographyStyle(.body2Medium, with: .neutral500)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                }
+            }
+            
+            TDivider(height: 2, color: .neutral100)
+                .padding(.vertical, 8)
+            
+            ForEach(store.view_terms.keys.sorted(by: { $0.id < $1.id }), id: \.self) { term in
+                termList(
+                    term: term,
+                    isAgreed: store.view_terms[term] ?? false
+                ) {
+                    store.send(.view(.toggleTerm(term, !$0)))
+                }
+            }
+        }
+    }
+    
+    @ViewBuilder
+    private func termList(term: Term, isAgreed: Bool, toggle: @escaping (Bool) -> Void) -> some View {
         HStack(spacing: 8) {
             Image(isAgreed ? .icnCheckButtonSelected : .icnCheckButtonUnselected)
                 .resizable()
