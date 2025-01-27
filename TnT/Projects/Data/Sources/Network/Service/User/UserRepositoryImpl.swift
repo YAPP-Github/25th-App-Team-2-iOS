@@ -37,16 +37,3 @@ public struct UserRepositoryImpl: UserRepository {
         )
     }
 }
-
-// MARK: - Swift-Dependencies
-private enum UserRepositoryKey: DependencyKey {
-    static let liveValue: UserRepository = UserRepositoryImpl()
-}
-
-// MARK: - DependencyValues
-public extension DependencyValues {
-    var userRepository: UserRepository {
-        get { self[UserRepositoryKey.self] }
-        set { self[UserRepositoryKey.self] = newValue }
-    }
-}

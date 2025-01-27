@@ -26,10 +26,7 @@ public struct UserTypeSelectionView: View {
     
     public var body: some View {
         NavigationStack {
-            VStack {
-                
-                Spacer(minLength: 60)
-                
+            VStack(spacing: 0) {
                 VStack(spacing: 48) {
                     Header()
                     
@@ -37,6 +34,7 @@ public struct UserTypeSelectionView: View {
                     
                     ButtonSection()
                 }
+                .padding(.top, 60)
                 
                 Spacer()
             }
@@ -60,6 +58,7 @@ public struct UserTypeSelectionView: View {
         }
     }
     
+    // MARK: - Sections
     @ViewBuilder
     private func Header() -> some View {
         VStack(alignment: .leading, spacing: 12) {

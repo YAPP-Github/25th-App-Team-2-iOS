@@ -13,21 +13,27 @@ struct KeyboardDismissModifier: ViewModifier {
     var dismissOnDrag: Bool = true
 
     func body(content: Content) -> some View {
-        content
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .background(Color.clear)
-            .onTapGesture {
-                dismissKeyboard()
-            }
-            .simultaneousGesture(
-                dismissOnDrag ? DragGesture().onChanged { _ in dismissKeyboard() } : nil
-            )
+        GeometryReader { proxy in
+            Color.clear
+                .contentShape(Rectangle())
+                .onTapGesture {
+                    dismissKeyboard()
+                }
+                .gesture(
+                    dismissOnDrag ? DragGesture().onChanged { _ in dismissKeyboard() } : nil
+                )
+                .overlay(content)
+        }
     }
-    
-    /// Modifier 내부에서 직접 키보드 내리는 함수
+
+    /// 키보드를 내리는 함수
     private func dismissKeyboard() {
-        guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene else { return }
-        windowScene.windows.forEach { $0.endEditing(true) }
+        guard let window = UIApplication.shared
+            .connectedScenes
+            .compactMap({ ($0 as? UIWindowScene)?.keyWindow })
+            .first else { return }
+
+        window.endEditing(true)
     }
 }
 

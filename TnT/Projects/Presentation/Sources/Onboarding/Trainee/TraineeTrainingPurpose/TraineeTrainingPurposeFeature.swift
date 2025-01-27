@@ -6,11 +6,9 @@
 //  Copyright © 2025 yapp25thTeamTnT. All rights reserved.
 //
 
-import UIKit
 import ComposableArchitecture
 
 import Domain
-import DesignSystem
 
 /// 트레이니의 PT 목적 선택을 관리하는 리듀서
 /// - 사용자가 다중 선택 가능한 PT 목적을 선택하고 검증하는 기능 포함

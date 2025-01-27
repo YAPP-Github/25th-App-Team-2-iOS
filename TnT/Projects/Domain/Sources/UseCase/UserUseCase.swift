@@ -28,27 +28,31 @@ public protocol UserUseCase {
 
 // MARK: - Default 구현체
 public struct DefaultUserUseCase: UserUseCase {
-    public init() {}
+    private let userRepository: UserRepository
+    
+    public init(userRepository: UserRepository) {
+        self.userRepository = userRepository
+    }
     
     public func validateUserName(_ name: String) -> Bool {
         return !name.isEmpty && UserPolicy.userNameInput.textValidation(name)
     }
-
+    
     public func validateBirthDate(_ birthDate: String) -> Bool {
         return birthDate.isEmpty || UserPolicy.birthDateInput.textValidation(birthDate)
     }
-
+    
     public func validateHeight(_ height: String) -> Bool {
         return !height.isEmpty && UserPolicy.heightInput.textValidation(height)
     }
-
+    
     public func validateWeight(_ weight: String) -> Bool {
         return !weight.isEmpty && UserPolicy.weightInput.textValidation(weight)
     }
     
     public func validatePrecaution(_ text: String) -> Bool {
-            return UserPolicy.precautionInput.textValidation(text)
-        }
+        return UserPolicy.precautionInput.textValidation(text)
+    }
     
     public func getMaxNameLength() -> Int {
         return UserPolicy.maxNameLength
@@ -56,18 +60,5 @@ public struct DefaultUserUseCase: UserUseCase {
     
     public func getPrecautionMaxLength() -> Int {
         return UserPolicy.maxPrecautionLength
-    }
-}
-
-// MARK: - Swift-Dependencies
-private enum UserUseCaseKey: DependencyKey {
-    static let liveValue: UserUseCase = DefaultUserUseCase()
-}
-
-// MARK: - DependencyValues
-public extension DependencyValues {
-    var userUseCase: UserUseCase {
-        get { self[UserUseCaseKey.self] }
-        set { self[UserUseCaseKey.self] = newValue }
     }
 }

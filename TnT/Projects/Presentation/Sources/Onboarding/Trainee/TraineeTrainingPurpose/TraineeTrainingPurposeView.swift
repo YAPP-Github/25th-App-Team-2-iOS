@@ -54,6 +54,7 @@ public struct TraineeTrainingPurposeView: View {
         }
     }
     
+    // MARK: - Sections
     @ViewBuilder
     private func Header() -> some View {
         VStack(spacing: 12) {

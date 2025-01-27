@@ -43,6 +43,12 @@ struct UserPolicy {
         textValidation: { $0.count <= maxPrecautionLength },
         isRequired: false
     )
+    
+    /// 초대코드 입력 검증(
+    static let invitationInput: InputInfo = .init(
+        textValidation: { TextValidator.isValidInput($0, maxLength: 8, regexPattern: "^[A-Z0-9]{8}$") },
+        isRequired: true
+    )
 }
 
 extension UserPolicy {

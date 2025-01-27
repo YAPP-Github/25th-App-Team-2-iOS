@@ -9,10 +9,11 @@
 
 let dependencyInfo: [DependencyInformation: [DependencyInformation]] = [
     .TnTApp: [.Presentation, .Data],
-    .Presentation: [.DesignSystem, .Domain, .ComposableArchitecture],
+    .Presentation: [.DIContainer, .DesignSystem, .Domain, .ComposableArchitecture],
     .Domain: [.SwiftDepedencies],
     .Data: [.Domain, .KakaoSDKUser, .SwiftDepedencies],
     .DesignSystem: [.Lottie],
+    .DIContainer: [.Domain, .Data]
 ]
 
 public enum DependencyInformation: String, CaseIterable, Sendable {
@@ -20,6 +21,7 @@ public enum DependencyInformation: String, CaseIterable, Sendable {
     case Presentation = "Presentation"
     case Domain = "Domain"
     case Data = "Data"
+    case DIContainer = "DIContainer"
     case DesignSystem = "DesignSystem"
     case Lottie = "Lottie"
     case ComposableArchitecture = "ComposableArchitecture"
