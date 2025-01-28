@@ -32,6 +32,13 @@ public struct TChip: View {
         self.style = style
     }
     
+    /// UIInfo를 이용한 초기화 메서드
+    public init(uiInfo: UIInfo) {
+        self.leadingEmoji = uiInfo.leadingEmoji
+        self.title = uiInfo.title
+        self.style = uiInfo.style
+    }
+    
     public var body: some View {
         HStack(spacing: 2) {
             if let leadingEmoji {
@@ -69,6 +76,21 @@ public extension TChip {
             case .pink:
                 return Color.pink100
             }
+        }
+    }
+    
+    struct UIInfo {
+        /// 좌측 이모지 아이콘
+        let leadingEmoji: String?
+        /// 칩 내부 텍스트
+        let title: String
+        /// 칩 스타일
+        let style: Style
+        
+        public init(leadingEmoji: String? = nil, title: String, style: Style) {
+            self.leadingEmoji = leadingEmoji
+            self.title = title
+            self.style = style
         }
     }
 }
