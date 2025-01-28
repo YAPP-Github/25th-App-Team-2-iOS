@@ -1,0 +1,12 @@
+{
+  "images" : [
+    {
+      "filename" : "Size=16, Type=clock.svg",
+      "idiom" : "universal"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}
