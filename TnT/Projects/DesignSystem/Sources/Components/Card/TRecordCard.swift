@@ -41,6 +41,7 @@ public struct TRecordCard: View {
                     Header()
                     Text(title)
                         .typographyStyle(.body1Bold, with: .neutral800)
+                        .lineLimit(imgURL == nil ? 3 : 2)
                 }
                 .padding(.horizontal, 16)
                 .padding(.top, 12)
