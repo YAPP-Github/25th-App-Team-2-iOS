@@ -9,11 +9,19 @@
 import ComposableArchitecture
 import SwiftUI
 
+import Domain
+import DIContainer
+
 @Reducer
 public struct OnboardingFeature {
     @ObservableState
     public struct State: Equatable {
         public var path = StackState<Path.State>()
+        public var userType: UserType?
+        public var nickname: String? = ""
+        public var socialType: LoginType?
+        public var termAgree: Bool = true
+        public var socialEmail: String? = ""
         
         public init(path: StackState<Path.State> = StackState<Path.State>()) {
             self.path = path
