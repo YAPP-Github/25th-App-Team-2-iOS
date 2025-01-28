@@ -136,4 +136,3 @@ public extension TraineeTrainingInfoInputView {
         case totalCount
     }
 }
-
