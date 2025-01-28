@@ -1,5 +1,5 @@
 //
-//  WrokoutType.swift
+//  WorkoutType.swift
 //  Domain
 //
 //  Created by 박민서 on 1/29/25.
