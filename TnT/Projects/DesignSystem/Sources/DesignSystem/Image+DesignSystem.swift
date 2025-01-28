@@ -19,7 +19,6 @@ public extension ImageResource {
     static let icnArrowDown: ImageResource = DesignSystemAsset.icnArrowDown.imageResource
     static let icnArrowLeft: ImageResource = DesignSystemAsset.icnArrowLeft.imageResource
     static let icnDelete: ImageResource = DesignSystemAsset.icnDelete.imageResource
-    static let icnDropDown: ImageResource = DesignSystemAsset.icnDropDown.imageResource
     static let icnFeedbackEmpty: ImageResource = DesignSystemAsset.icnFeedbackEmpty.imageResource
     static let icnFeedbackFilled: ImageResource = DesignSystemAsset.icnFeedbackFilled.imageResource
     static let icnHomeEmpty: ImageResource = DesignSystemAsset.icnHomeEmpty.imageResource
@@ -42,6 +41,31 @@ public extension ImageResource {
     static let icnHeartFilled: ImageResource = DesignSystemAsset.icnHeartFilled.imageResource
     static let icnKakao: ImageResource = DesignSystemAsset.icnKakao.imageResource
     static let icnApple: ImageResource = DesignSystemAsset.icnApple.imageResource
+    static let icnTriangleDown: ImageResource = DesignSystemAsset.icnTriangleDown.imageResource
+    static let icnTriangleRight: ImageResource = DesignSystemAsset.icnTriangleRight.imageResource
+    static let icnClock: ImageResource = DesignSystemAsset.icnClock.imageResource
+    static let icnStar: ImageResource = DesignSystemAsset.icnStartEmpty.imageResource
+    static let icnStarSmile: ImageResource = DesignSystemAsset.icnStarSmile.imageResource
+    static let icnWriteBlackFilled: ImageResource = DesignSystemAsset.icnWriteBlackFilled.imageResource
+    static let icnPlus: ImageResource = DesignSystemAsset.icnPlus.imageResource
+    static let icnAlarm: ImageResource = DesignSystemAsset.icnAlarm.imageResource
+    static let icnCalendar: ImageResource = DesignSystemAsset.icnCalendar.imageResource
+    static let icnDelete24px: ImageResource = DesignSystemAsset.icnDelete24.imageResource
+    static let icnSearch: ImageResource = DesignSystemAsset.icnSearch.imageResource
+    static let icnAddition: ImageResource = DesignSystemAsset.icnAddition.imageResource
+    static let icnImage: ImageResource = DesignSystemAsset.icnImage.imageResource
+    static let icnSubtraction: ImageResource = DesignSystemAsset.icnSubstraction.imageResource
+    static let icnBomb: ImageResource = DesignSystemAsset.icnBomb.imageResource
+    static let icnBombEmpty: ImageResource = DesignSystemAsset.icnBombEmpty.imageResource
+    static let icnSchedule: ImageResource = DesignSystemAsset.icnSchedule.imageResource
+    static let icnCheckBoxSelected: ImageResource = DesignSystemAsset.icnCheckBoxSelected.imageResource
+    static let icnCheckBoxUnselected: ImageResource = DesignSystemAsset.icnCheckBoxUnselected.imageResource
+    static let icnEllipsis: ImageResource = DesignSystemAsset.icnElipses.imageResource
+    static let icnArrowRight: ImageResource = DesignSystemAsset.icnArrowRight.imageResource
+    static let icnArrowUp: ImageResource = DesignSystemAsset.icnArrowUp.imageResource
+    static let icnTriangleLeft32px: ImageResource = DesignSystemAsset.icnTriangleLeft32.imageResource
+    static let icnTrianleRight32px: ImageResource = DesignSystemAsset.icnTriangleRight32.imageResource
+    static let icnWarning: ImageResource = DesignSystemAsset.icnWarning.imageResource
 }
 
 // MARK: Image
