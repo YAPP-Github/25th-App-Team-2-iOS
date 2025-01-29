@@ -1,5 +1,5 @@
 //
-//  TraineeConnectInfo.swift
+//  TraineeConnectInfoEntity.swift
 //  Domain
 //
 //  Created by 박민서 on 1/27/25.
@@ -9,7 +9,7 @@
 import Foundation
 
 /// 트레이너 연결을 위한 도메인 모델
-public struct TraineeConnectInfo {
+public struct TraineeConnectInfoEntity {
     /// 초대 코드
     public let invitationCode: String
     /// 시작 날짜

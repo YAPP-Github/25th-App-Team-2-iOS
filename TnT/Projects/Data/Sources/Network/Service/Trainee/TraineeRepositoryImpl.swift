@@ -17,7 +17,7 @@ public struct TraineeRepositoryImpl: TraineeRepository {
     
     public init() {}
     
-    public func postConnectTrainer(_ info: TraineeConnectInfo) async throws -> PostConnectTrainerResDTO {
+    public func postConnectTrainer(_ info: TraineeConnectInfoEntity) async throws -> PostConnectTrainerResDTO {
         let requestDTO = PostConnectTrainerReqDTO(
             invitationCode: info.invitationCode,
             startDate: info.startDate,

@@ -1,5 +1,5 @@
 //
-//  ConnectionInfo.swift
+//  ConnectionInfoEntity.swift
 //  Domain
 //
 //  Created by 박민서 on 1/27/25.
@@ -9,7 +9,7 @@
 import Foundation
 
 /// 트레이너와 트레이니가 연결된 정보
-public struct ConnectionInfo {
+public struct ConnectionInfoEntity {
     /// 트레이너 이름
     public let trainerName: String
     /// 트레이니 이름

@@ -1,5 +1,5 @@
 //
-//  UserSignUpInfo.swift
+//  UserSignUpInfoEntity.swift
 //  Domain
 //
 //  Created by 박민서 on 1/24/25.
@@ -9,7 +9,7 @@
 import Foundation
 
 /// 회원 가입 시 입력되는 기본 정보 구조체
-public struct UserSignUpInfo: Equatable {
+public struct UserSignUpInfoEntity: Equatable {
     /// 사용자 유형 (트레이너 / 트레이니)
     public var userType: UserType
     /// 프로필 이미지 (옵션)

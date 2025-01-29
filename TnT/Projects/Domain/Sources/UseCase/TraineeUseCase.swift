@@ -19,7 +19,7 @@ public protocol TraineeUseCase {
     /// API Call - 트레이너 초대 코드 인증 API 호출
     func verifyTrainerInvitationCode(_ code: String) async throws -> Bool
     /// API Call - 트레이니 - 트레이너 연결 API 호출
-    func connectTrainer(_ info: TraineeConnectInfo) async throws -> ConnectionInfo
+    func connectTrainer(_ info: TraineeConnectInfoEntity) async throws -> ConnectionInfoEntity
 }
 
 // MARK: - Default 구현체
@@ -50,9 +50,9 @@ public struct DefaultTraineeUseCase: TraineeUseCase {
         return result.isVerified
     }
     
-    public func connectTrainer(_ info: TraineeConnectInfo) async throws -> ConnectionInfo {
+    public func connectTrainer(_ info: TraineeConnectInfoEntity) async throws -> ConnectionInfoEntity {
         let resDTO: PostConnectTrainerResDTO = try await traineeRepository.postConnectTrainer(info)
-        return ConnectionInfo(
+        return ConnectionInfoEntity(
             trainerName: resDTO.trainerName,
             traineeName: resDTO.traineeName,
             trainerProfileImageUrl: resDTO.trainerProfileImageUrl,
