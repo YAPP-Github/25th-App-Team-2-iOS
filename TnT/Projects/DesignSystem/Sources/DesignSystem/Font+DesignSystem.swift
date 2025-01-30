@@ -78,6 +78,7 @@ public extension Typography.FontStyle {
     // Label Styles
     static let label1Bold: Typography.FontStyle = Typography.FontStyle(.bold, size: 13, lineHeightMultiplier: 1.3, letterSpacing: -0.02)
     static let label1Medium: Typography.FontStyle = Typography.FontStyle(.medium, size: 13, lineHeightMultiplier: 1.5, letterSpacing: -0.02)
+    static let label2Bold: Typography.FontStyle = Typography.FontStyle(.bold, size: 12, lineHeightMultiplier: 1.5, letterSpacing: -0.02)
     static let label2Medium: Typography.FontStyle = Typography.FontStyle(.medium, size: 12, lineHeightMultiplier: 1.5, letterSpacing: -0.02)
     
     // Caption Styles
