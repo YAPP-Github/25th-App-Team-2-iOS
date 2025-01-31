@@ -12,7 +12,12 @@ import Data
 
 // MARK: - Swift-Dependencies
 private enum UserUseCaseKey: DependencyKey {
-    static let liveValue: UserUseCase = DefaultUserUseCase(userRepository: UserRepositoryImpl())
+//    static let liveValue: UserUseCase
+    static let liveValue: UserUseCase = DefaultUserUseCase(userRepostiory: UserRepositoryImpl())
+}
+
+private enum UserUseCaseRepoKey: DependencyKey {
+    static let liveValue: UserRepository = DefaultUserUseCase(userRepostiory: UserRepositoryImpl())
 }
 
 private enum TraineeUseCaseKey: DependencyKey {
@@ -20,7 +25,7 @@ private enum TraineeUseCaseKey: DependencyKey {
 }
 
 private enum SocialUseCaseKey: DependencyKey {
-    static let liveValue: SocialLoginUserCase = DefaultSocialLoginUserCase(socialLoginRepository: SocialLogInRepositoryImpl())
+    static let liveValue: SocialLoginUseCase = SocialLoginUseCase(socialLoginRepository: SocialLogInRepositoryImpl(loginManager: SNSLoginManager()))
 }
 
 // MARK: - DependencyValues
@@ -30,12 +35,17 @@ public extension DependencyValues {
         set { self[UserUseCaseKey.self] = newValue }
     }
     
+    var userUseRepoCase: UserRepository {
+        get { self[UserUseCaseRepoKey.self] }
+        set { self[UserUseCaseRepoKey.self] = newValue }
+    }
+    
     var traineeUseCase: TraineeUseCase {
         get { self[TraineeUseCaseKey.self] }
         set { self[TraineeUseCaseKey.self] = newValue }
     }
     
-    var socialLogInUseCase: SocialLoginUserCase {
+    var socialLogInUseCase: SocialLoginUseCase {
         get { self[SocialUseCaseKey.self] }
         set { self[SocialUseCaseKey.self] = newValue }
     }
