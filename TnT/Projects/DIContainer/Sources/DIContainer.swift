@@ -16,7 +16,10 @@ private enum UserUseCaseKey: DependencyKey {
 }
 
 private enum TraineeUseCaseKey: DependencyKey {
-    static let liveValue: TraineeUseCase = DefaultTraineeUseCase(trainerRepository: TrainerRepositoryImpl())
+    static let liveValue: TraineeUseCase = DefaultTraineeUseCase(
+        trainerRepository: TrainerRepositoryImpl(),
+        traineeRepository: TraineeRepositoryImpl()
+    )
 }
 
 // MARK: - DependencyValues

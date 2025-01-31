@@ -1,8 +1,8 @@
 //
-//  TrainerTargetType.swift
+//  TraineeTargetType.swift
 //  Data
 //
-//  Created by 박민서 on 1/26/25.
+//  Created by 박민서 on 1/27/25.
 //  Copyright © 2025 yapp25thTeamTnT. All rights reserved.
 //
 
@@ -10,42 +10,42 @@ import Foundation
 
 import Domain
 
-/// 트레이너 관련 API 요청 타입 정의
-public enum TrainerTargetType {
-    /// 트레이너 초대코드 인증
-    case getVerifyInvitationCode(code: String)
+/// 트레이니 관련 API 요청 타입 정의
+public enum TraineeTargetType {
+    /// 트레이너 연결 요청
+    case postConnectTrainer(reqDto: PostConnectTrainerReqDTO)
 }
 
-extension TrainerTargetType: TargetType {
+extension TraineeTargetType: TargetType {
     var baseURL: URL {
-        let url: String = Config.apiBaseUrlDev + "/trainers"
+        let url: String = Config.apiBaseUrlDev + "/trainees"
         return URL(string: url)!
     }
     
     var path: String {
         switch self {
-        case .getVerifyInvitationCode(let code):
-            return "/invitation-code/verify/\(code)"
+        case .postConnectTrainer:
+            return "/connect-trainer"
         }
     }
     
     var method: HTTPMethod {
         switch self {
-        case .getVerifyInvitationCode:
-            return .get
+        case .postConnectTrainer:
+            return .post
         }
     }
     
     var task: RequestTask {
         switch self {
-        case .getVerifyInvitationCode:
-            return .requestPlain
+        case .postConnectTrainer(let reqDto):
+            return .requestJSONEncodable(encodable: reqDto)
         }
     }
     
     var headers: [String: String]? {
         switch self {
-        case .getVerifyInvitationCode:
+        case .postConnectTrainer:
             return ["Content-Type": "application/json"]
         }
     }
@@ -59,3 +59,4 @@ extension TrainerTargetType: TargetType {
         ]
     }
 }
+

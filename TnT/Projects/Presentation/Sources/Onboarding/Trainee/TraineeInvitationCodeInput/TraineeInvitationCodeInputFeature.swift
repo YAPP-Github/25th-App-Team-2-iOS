@@ -33,8 +33,10 @@ public struct TraineeInvitationCodeInputFeature {
         var view_isVerityButtonEnabled: Bool
         /// 다음 버튼 활성화 여부
         var view_isNextButtonEnabled: Bool
+        /// 팝업 표시 여부
+        var view_isPopupPresented: Bool
         
-        /// `TraineeBasicInfoInputFeature.State`의 생성자
+        /// `TraineeInvitationCodeInputFeature.State`의 생성자
         /// - Parameters:
         public init(
             invitationCode: String = "",
@@ -42,7 +44,8 @@ public struct TraineeInvitationCodeInputFeature {
             view_textFieldFooterText: String = "",
             view_isFieldFocused: Bool = false,
             view_isVerityButtonEnabled: Bool = false,
-            view_isNextButtonEnabled: Bool = false
+            view_isNextButtonEnabled: Bool = false,
+            view_isPopupPresented: Bool = true
         ) {
             self.invitationCode = invitationCode
             self.view_invitationCodeStatus = view_invitationCodeStatus
@@ -50,6 +53,7 @@ public struct TraineeInvitationCodeInputFeature {
             self.view_isFieldFocused = view_isFieldFocused
             self.view_isVerityButtonEnabled = view_isVerityButtonEnabled
             self.view_isNextButtonEnabled = view_isNextButtonEnabled
+            self.view_isPopupPresented = view_isPopupPresented
         }
     }
     
@@ -59,7 +63,7 @@ public struct TraineeInvitationCodeInputFeature {
         /// 뷰에서 발생한 액션을 처리합니다.
         case view(View)
         /// 네비게이션 여부 설정
-        case setNavigating
+        case setNavigating(RoutingScreen)
         /// 다음 버튼 활성화 상태 조작
         case updateVerificationStatus(Bool)
         
@@ -73,6 +77,12 @@ public struct TraineeInvitationCodeInputFeature {
             case tapNextButton
             /// 포커스 상태 변경
             case setFocus(Bool)
+            /// Nav바 건너뛰기 버튼이 눌렸을 때
+            case tapNavBarSkipButton
+            /// 팝업 "다음에 할게요" 버튼이 눌렸을 때
+            case tapPopupNextButton
+            /// 팝업 "확인" 버튼이 눌렸을 때
+            case tapPopupConfirmButton
         }
     }
     
@@ -98,10 +108,20 @@ public struct TraineeInvitationCodeInputFeature {
                     }
                     
                 case .tapNextButton:
-                    return .send(.setNavigating)
+                    return .send(.setNavigating(.trainingInfoInput))
                 
                 case .setFocus(let isFocused):
                     state.view_isFieldFocused = isFocused
+                    return .none
+                
+                case .tapNavBarSkipButton:
+                    return .send(.setNavigating(.traineeHome))
+                    
+                case .tapPopupNextButton:
+                    return .send(.setNavigating(.traineeHome))
+                    
+                case .tapPopupConfirmButton:
+                    state.view_isPopupPresented = false
                     return .none
                 }
                 
@@ -139,5 +159,12 @@ private extension TraineeInvitationCodeInputFeature {
         state.view_isVerityButtonEnabled = true
         
         return .none
+    }
+}
+
+public extension TraineeInvitationCodeInputFeature {
+    enum RoutingScreen: Sendable {
+        case traineeHome
+        case trainingInfoInput
     }
 }

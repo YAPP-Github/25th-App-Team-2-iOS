@@ -24,7 +24,7 @@ public struct TPopUpAlertView: View {
             // 텍스트 Section
             VStack(spacing: 8) {
                 Text(alertState.title)
-                    .typographyStyle(.heading4, with: .neutral900)
+                    .typographyStyle(.heading3, with: .neutral900)
                     .multilineTextAlignment(.center)
                     .padding(.top, 20)
                 if let message = alertState.message {

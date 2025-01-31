@@ -11,26 +11,26 @@ struct UserPolicy {
     static let maxNameLength: Int = 15
     
     /// 사용자 이름 검증 - 한글/영어/공백만 허용 (특수문자 불가)
-    static let userNameInput: InputInfo = .init(
+    static let userNameInput: PolicyInputInfo = .init(
         textValidation: { TextValidator.isValidInput($0, maxLength: maxNameLength, regexPattern: "^[ㄱ-ㅎㅏ-ㅣ가-힣a-zA-Z ]*$") },
         isRequired: true
     )
     
     /// 생년월일 입력 검증 (YYYY/MM/DD 형식)
-    static let birthDateInput: InputInfo = .init(
+    static let birthDateInput: PolicyInputInfo = .init(
         textValidation: { TextValidator.isValidDate(text: $0, format: .yyyyMMddSlash) },
         isRequired: false
     )
     
     /// 키 입력 검증 (정수 3자리, 필수)
-    static let heightInput: InputInfo = .init(
+    static let heightInput: PolicyInputInfo = .init(
         textValidation: { TextValidator.isValidInput($0, maxLength: 3, regexPattern: #"^\d{3}$"#) },
         isRequired: true
     )
     
     /// 몸무게 입력 검증 (정수 3자리 + 소수점 1자리, 필수)
     /// 정수 최소 2자리 이상, 소수점 1자리까지만
-    static let weightInput: InputInfo = .init(
+    static let weightInput: PolicyInputInfo = .init(
         textValidation: { TextValidator.isValidInput($0, maxLength: 5, regexPattern: #"^\d{2,3}(\.\d{1})?$"#) },
         isRequired: true
     )
@@ -39,23 +39,8 @@ struct UserPolicy {
     static let maxPrecautionLength: Int = 100
     
     /// 주의사항 입력 검증 (100자 제한, 외 제한 없음. 옵션)
-    static let precautionInput: InputInfo = .init(
+    static let precautionInput: PolicyInputInfo = .init(
         textValidation: { $0.count <= maxPrecautionLength },
         isRequired: false
     )
-    
-    /// 초대코드 입력 검증(
-    static let invitationInput: InputInfo = .init(
-        textValidation: { TextValidator.isValidInput($0, maxLength: 8, regexPattern: "^[A-Z0-9]{8}$") },
-        isRequired: true
-    )
-}
-
-extension UserPolicy {
-    struct InputInfo {
-        /// 입력 값이 유효한지 검증하는 함수
-        public let textValidation: (String) -> Bool
-        /// 필수 입력 여부
-        public let isRequired: Bool
-    }
 }
