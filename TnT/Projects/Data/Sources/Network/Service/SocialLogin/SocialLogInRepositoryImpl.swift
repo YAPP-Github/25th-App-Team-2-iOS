@@ -19,12 +19,29 @@ public enum LoginError: Error {
     case unknown(message: String)
 }
 
-//public struct SocialLogInRepositoryImpl: UserRepository {
-//    
-//    public let loginManager = SNSLoginManager()
-//    
-//    public init() {}
-//
+public struct SocialLogInRepositoryImpl: SocialLoginRepository {
+    
+    public let loginManager: SNSLoginManager
+    
+    public init(loginManager: SNSLoginManager) {
+        self.loginManager = loginManager
+    }
+
+    public func appleLogin() async -> AppleLoginInfo? {
+        let result = await loginManager.appleLogin()
+        
+        return result
+    }
+    
+    public func kakaoLogin() async -> KakaoLoginInfo? {
+        let result = await loginManager.kakaoLogin()
+        return result
+    }
+    
+    public func kakaoLogout() async {
+        // 미구현
+    }
+    
 //    public func appleLoginResult() async throws -> Result<PostSocialLoginReqDTO, Error> {
 //        let result = await loginManager.appleLogin()
 //        
@@ -60,12 +77,4 @@ public enum LoginError: Error {
 //        
 //        return .success(kakaoRequest)
 //    }
-//    
-//    public func postSocialLogin(_ reqDTO: Domain.PostSocialLoginReqDTO) async throws -> PostSocialLoginResDTO {
-//        
-//    }
-//    
-//    public func postSignUp(_ reqDTO: Domain.PostSignUpReqDTO, profileImage: Data?) async throws -> PostSignUpResDTO {
-//        <#code#>
-//    }    
-//}
+}

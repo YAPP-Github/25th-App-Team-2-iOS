@@ -7,6 +7,7 @@
 //
 
 import Dependencies
+import SwiftUI
 
 // MARK: - UserUseCase 프로토콜
 public protocol UserUseCase {
@@ -27,13 +28,15 @@ public protocol UserUseCase {
 }
 
 // MARK: - Default 구현체
-public struct DefaultUserUseCase: UserUseCase {
-    private let userRepository: UserRepository
+public struct DefaultUserUseCase: UserRepository, UserUseCase {
     
-    public init(userRepository: UserRepository) {
-        self.userRepository = userRepository
+    public let userRepostiory: UserRepository
+    
+    public init(userRepostiory: UserRepository) {
+        self.userRepostiory = userRepostiory
     }
     
+    // MARK: - Usecase
     public func validateUserName(_ name: String) -> Bool {
         return !name.isEmpty && UserPolicy.userNameInput.textValidation(name)
     }
@@ -61,4 +64,14 @@ public struct DefaultUserUseCase: UserUseCase {
     public func getPrecautionMaxLength() -> Int {
         return UserPolicy.maxPrecautionLength
     }
+    
+    // MARK: - Repository
+    public func postSocialLogin(_ reqDTO: PostSocialLoginReqDTO) async throws -> PostSocialLoginResDTO {
+        return try await userRepostiory.postSocialLogin(reqDTO)
+    }
+    
+    public func postSignUp(_ reqDTO: PostSignUpReqDTO, profileImage: Data?) async throws -> PostSignUpResDTO {
+        return try await userRepostiory.postSignUp(reqDTO, profileImage: profileImage)
+    }
+    
 }
