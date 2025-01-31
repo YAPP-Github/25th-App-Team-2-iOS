@@ -68,6 +68,7 @@ public extension Target {
             infoPlist: .file(path: .relativeToRoot("Tuist/Config/Info.plist")),
             sources: ["Sources/**"],
             resources: ["Resources/**"],
+            entitlements: "\(appName).entitlements",
             scripts: [.swiftLint],
             dependencies: dependencies
         )

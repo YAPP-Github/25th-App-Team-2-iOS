@@ -84,10 +84,8 @@ public struct OnboardingView: View {
                 .background(type.background)
                 .clipShape(RoundedRectangle(cornerRadius: 12))
                 .onTapGesture {
-                    store.send(.move(.toTermview))
-//                        type == .kakao
-//                        ? store.send(.view(.tappedAppleLogin))
-//                        : store.send(.view(.tappedAppleLogin))
+                        type == .kakao ? store.send(.view(.tappedKakaoLogin))
+                        : store.send(.view(.tappedAppleLogin))
                 }
             }
         }

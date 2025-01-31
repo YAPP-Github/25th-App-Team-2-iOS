@@ -115,13 +115,11 @@ public struct OnboardingFeature {
                         await send(.view(.postSocialLogin(entity: entity)))
                     }
                     
-                case .postSocialLogin:
-                    guard let postEntity = state.postUserEntity else { return .none }
-                    let entity = PostSocialMapper.toDTO(from: postEntity)
-                    
+                case .postSocialLogin(let entity):
+                    let post = PostSocialMapper.toDTO(from: entity)
                     return .run { send in
                         do {
-                            let result = try await userUseCaseRepo.postSocialLogin(entity)
+                            let result = try await userUseCaseRepo.postSocialLogin(post)
                             await send(.move(.toHome))
                         } catch {
                             await send(.move(.toTermview))
@@ -140,6 +138,7 @@ public struct OnboardingFeature {
                 case .toTermview:
                     state.path.append(.term(TermFeature.State()))
                     return .none
+                    
                 case .toselectRole:
                     state.path.append(.selectRole)
                     return .none

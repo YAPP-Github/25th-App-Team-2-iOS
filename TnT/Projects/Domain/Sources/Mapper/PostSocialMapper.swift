@@ -28,4 +28,26 @@ public struct PostSocialMapper {
             idToken: dto.idToken
         )
     }
+    
+    /// `PostSocialLoginResDTO` → `PostSocialLoginResEntity` 변환
+    public static func toResEntity(from dto: PostSocialLoginResDTO) -> PostSocialLoginResEntity {
+        return PostSocialLoginResEntity(
+            sessionId: dto.sessionId,
+            socialId: dto.socialId,
+            socialEmail: dto.socialEmail,
+            socialType: dto.socialType,
+            isSignUp: dto.isSignUp
+        )
+    }
+    
+    /// `PostSocialLoginResEntity` → `PostSocialLoginResDTO` 변환
+    public static func toDTO(from entity: PostSocialLoginResEntity) -> PostSocialLoginResDTO {
+            return PostSocialLoginResDTO(
+                sessionId: entity.sessionId,
+                socialId: entity.socialId,
+                socialEmail: entity.socialEmail,
+                socialType: entity.socialType,
+                isSignUp: entity.isSignUp
+            )
+        }
 }

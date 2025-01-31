@@ -12,7 +12,7 @@ import ComposableArchitecture
 import DesignSystem
 
 @ViewAction(for: TermFeature.self)
-struct TermView: View {
+public struct TermView: View {
     
     public let store: StoreOf<TermFeature>
     
@@ -20,7 +20,7 @@ struct TermView: View {
         self.store = store
     }
     
-    var body: some View {
+    public var body: some View {
         VStack {
             VStack(alignment: .leading, spacing: 0) {
                 Header()
@@ -80,7 +80,7 @@ struct TermView: View {
                     term: term,
                     isAgreed: store.view_terms[term] ?? false
                 ) {
-                    send(.toggleTerm(term, $0))
+                    send(.toggleTerm(term, !$0))
                 }
             }
         }

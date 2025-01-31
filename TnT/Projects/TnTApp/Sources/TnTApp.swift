@@ -8,6 +8,8 @@
 
 import SwiftUI
 
+import Presentation
+import ComposableArchitecture
 import DesignSystem
 
 @main
@@ -19,7 +21,10 @@ struct ToyProjectApp: App {
 
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            OnboardingView(store: Store(initialState: OnboardingFeature.State(), reducer: {
+                OnboardingFeature()
+            }))
+//            ContentView()
         }
     }
 }

@@ -13,13 +13,18 @@ import ComposableArchitecture
 public struct TermFeature {
     @ObservableState
     public struct State: Equatable {
-        var view_terms: [Term: Bool] = [:]
+        var view_terms: [Term: Bool]
         var view_isAllAgreed: Bool {
             view_terms.values.allSatisfy { $0 }
         }
         var isNavigaiton: Bool = false
         
-        public init() { }
+        public init() {
+            self.view_terms = [
+                .term: false,
+                .personalInfo: false
+            ]
+        }
     }
     
     public enum Action: Equatable, ViewAction {
