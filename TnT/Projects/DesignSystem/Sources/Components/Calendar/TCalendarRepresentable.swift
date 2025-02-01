@@ -9,12 +9,13 @@
 import SwiftUI
 import FSCalendar
 
-
 public struct TCalendarRepresentable: UIViewRepresentable {
     /// 선택한 날짜
     @Binding private var selectedDate: Date
     /// 현재 페이지
     @Binding private var currentPage: Date
+    /// 캘린더 높이
+    @Binding var calendarHeight: CGFloat
     /// 주간/월간 표시 여부
     private var isWeekMode: Bool
     /// 캘린더 표시 이벤트 딕셔너리
@@ -23,11 +24,13 @@ public struct TCalendarRepresentable: UIViewRepresentable {
     public init(
         selectedDate: Binding<Date>,
         currentPage: Binding<Date>,
+        calendarHeight: Binding<CGFloat>,
         isWeekMode: Bool = false,
         events: [Date: Int] = [:]
     ) {
         self._selectedDate = selectedDate
         self._currentPage = currentPage
+        self._calendarHeight = calendarHeight
         self.isWeekMode = isWeekMode
         self.events = events
     }
@@ -38,6 +41,7 @@ public struct TCalendarRepresentable: UIViewRepresentable {
     
     public func makeUIView(context: Context) -> FSCalendar {
         let calendar: FSCalendar = FSCalendar()
+        
         // Cell 설정
         calendar.register(TCalendarCell.self, forCellReuseIdentifier: TCalendarCell.identifier)
         calendar.collectionView.contentSize = TCalendarCell.cellSize
@@ -50,6 +54,8 @@ public struct TCalendarRepresentable: UIViewRepresentable {
         // UI 설정
         calendar.placeholderType = .none
         calendar.headerHeight = 0
+        calendar.weekdayHeight = 18
+        calendar.rowHeight = TCalendarCell.cellSize.height
         calendar.appearance.weekdayTextColor = UIColor(.neutral400)
         calendar.appearance.weekdayFont = Typography.FontStyle.label2Medium.uiFont
         calendar.appearance.selectionColor = .clear
@@ -76,6 +82,11 @@ public struct TCalendarRepresentable: UIViewRepresentable {
             uiView.scope = targetScope
         }
         
+        DispatchQueue.main.async {
+            uiView.bounds.size.height = self.calendarHeight
+            uiView.frame.size.height = self.calendarHeight
+        }
+        
         uiView.reloadData()
     }
 }
@@ -100,6 +111,16 @@ public extension TCalendarRepresentable {
         public func calendarCurrentPageDidChange(_ calendar: FSCalendar) {
             DispatchQueue.main.async {
                 self.parent.currentPage = calendar.currentPage
+            }
+        }
+        
+        // Week/Month 모드 전환
+        public func calendar(_ calendar: FSCalendar, boundingRectWillChange bounds: CGRect, animated: Bool) {
+            DispatchQueue.main.async {
+                calendar.bounds.size.height = bounds.height
+                calendar.frame.size.height = bounds.height
+                calendar.setNeedsLayout()
+                calendar.layoutIfNeeded()
             }
         }
         
