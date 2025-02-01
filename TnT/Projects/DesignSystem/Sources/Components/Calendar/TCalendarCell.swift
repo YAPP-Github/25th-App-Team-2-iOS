@@ -1,5 +1,5 @@
 //
-//  CustumCalendarCell.swift
+//  TCalendarCell.swift
 //  DesignSystem
 //
 //  Created by 박민서 on 2/1/25.
@@ -8,26 +8,35 @@
 
 import FSCalendar
 
-class FSCustomCalendarCell: FSCalendarCell {
-    
-    static let identifier: String = "CustomCalendarCell"
+/// TCalendar에 사용되는 Cell 입니다
+final class TCalendarCell: FSCalendarCell {
+    // MARK: Properties
+    static let identifier: String = "TCalendarCell"
     static let cellSize: CGSize = CGSize(width: 51, height: 54)
     
-    var customDate: Date?
-    var isCustomSelected: Bool = false
-    var style: Style = .default
-    var eventCount: Int = 0
-    var isWeekMode: Bool = false
+    /// Cell에 표시되는 날짜
+    private var customDate: Date?
+    /// Cell 이 선택되었는지 표시
+    private var isCellSelected: Bool = false
+    /// Cell 스타일
+    private var style: Style = .default
+    /// Cell에 표시되는 일정 카운트
+    private var eventCount: Int = 0
+    /// 주간/월간 모드인지 표시
+    private var isWeekMode: Bool = false
 
-    private let dayLabel = UILabel()
-    private let eventStackView = UIStackView()
-    private let eventIcon = UIImageView()
-    private let eventCountLabel = UILabel()
-    private let backgroundContainer = UIView()
+    // MARK: UI Elements
+    private let dayLabel: UILabel = UILabel()
+    private let eventStackView: UIStackView = UIStackView()
+    private let eventIcon: UIImageView = UIImageView()
+    private let eventCountLabel: UILabel = UILabel()
+    private let backgroundContainer: UIView = UIView()
     
     override init(frame: CGRect) {
         super.init(frame: frame)
         setupUI()
+        setUpHierarchy()
+        setUpConstraint()
     }
     
     required init(coder aDecoder: NSCoder) {
@@ -35,35 +44,34 @@ class FSCustomCalendarCell: FSCalendarCell {
     }
     
     private func setupUI() {
-        contentView.addSubview(backgroundContainer)
         backgroundContainer.layer.cornerRadius = 8
         
-        // 📌 날짜 라벨 설정
         dayLabel.font = Typography.FontStyle.body2Medium.uiFont
         dayLabel.textAlignment = .center
         
-        // 📌 이벤트 스택뷰 설정
         eventStackView.axis = .horizontal
         eventStackView.spacing = 2
         eventStackView.alignment = .center
         
-        // 📌 이벤트 아이콘 설정
         eventIcon.image = UIImage(resource: .icnStar).withRenderingMode(.alwaysTemplate)
         eventIcon.tintColor = UIColor(.red300)
         eventIcon.contentMode = .scaleAspectFit
         eventIcon.frame = CGRect(x: 0, y: 0, width: 12, height: 12)
         
-        // 📌 이벤트 카운트 라벨 설정
         eventCountLabel.font = Typography.FontStyle.label2Medium.uiFont
         eventCountLabel.textColor = UIColor(.neutral400)
-
+    }
+    
+    private func setUpHierarchy() {
         eventStackView.addArrangedSubview(eventIcon)
         eventStackView.addArrangedSubview(eventCountLabel)
         
+        contentView.addSubview(backgroundContainer)
         contentView.addSubview(dayLabel)
         contentView.addSubview(eventStackView)
-
-        // 📌 오토레이아웃 설정
+    }
+    
+    private func setUpConstraint() {
         dayLabel.translatesAutoresizingMaskIntoConstraints = false
         eventStackView.translatesAutoresizingMaskIntoConstraints = false
         backgroundContainer.translatesAutoresizingMaskIntoConstraints = false
@@ -84,34 +92,55 @@ class FSCustomCalendarCell: FSCalendarCell {
         ])
     }
     
-    /// 📌 스타일 및 이벤트 표시 업데이트
+    /// 셀 스타일 표시 업데이트
     private func updateAppearance() {
         dayLabel.textColor = style.textColor
         backgroundContainer.backgroundColor = style.backgroundColor
     }
     
+    /// 일정 카운트 표시 업데이트
     private func updateEventDisplay() {
         eventCountLabel.text = "\(eventCount)"
         let eventExists: Bool = eventCount > 0
         eventStackView.isHidden = !eventExists
-        let presentCount = !isWeekMode && eventExists
+        let presentCount: Bool = !isWeekMode && eventExists
         eventCountLabel.isHidden = !presentCount
     }
     
-    /// 📌 날짜 설정
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        // 날짜 및 선택 상태 초기화
+        customDate = nil
+        isCellSelected = false
+        isWeekMode = false
+        
+        // 일정 관련 초기화
+        eventCount = 0
+        eventStackView.isHidden = true
+        eventCountLabel.text = nil
+        
+        // 스타일 초기화
+        style = .default
+        updateAppearance()
+        updateEventDisplay()
+    }
+}
+
+extension TCalendarCell {
+    /// 셀 설정
     func configure(
         with date: Date,
-        isSelected: Bool,
+        isCellSelected: Bool,
         eventCount: Int = 0,
         isWeekMode: Bool = false
     ) {
         self.customDate = date
-        self.isCustomSelected = isSelected
+        self.isCellSelected = isCellSelected
         self.eventCount = eventCount
         self.isWeekMode = isWeekMode
         
-        // 🔹 현재 날짜 및 선택 상태를 반영하여 동적으로 Style 설정
-        if isSelected {
+        // 현재 날짜 및 선택 상태를 반영, Style 설정
+        if isCellSelected {
             self.style = .selected
         } else if Calendar.current.isDateInToday(date) {
             self.style = .today
@@ -123,29 +152,9 @@ class FSCustomCalendarCell: FSCalendarCell {
         self.updateAppearance()
         self.updateEventDisplay()
     }
-    
-    override func prepareForReuse() {
-        super.prepareForReuse()
-        // ✅ 날짜 및 선택 상태 초기화
-        customDate = nil
-        isCustomSelected = false
-        isWeekMode = false
-        
-        // ✅ 이벤트 관련 초기화
-        eventCount = 0
-        eventStackView.isHidden = true
-        eventCountLabel.text = nil
-        
-        // ✅ 스타일 초기화
-        style = .default
-        updateAppearance()
-        updateEventDisplay()
-    }
-    
 }
 
-// MARK: - 스타일 설정
-extension FSCustomCalendarCell {
+extension TCalendarCell {
     enum Style {
         case `default`
         case today
