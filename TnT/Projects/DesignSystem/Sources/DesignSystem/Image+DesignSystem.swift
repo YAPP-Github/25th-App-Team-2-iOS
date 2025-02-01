@@ -64,7 +64,7 @@ public extension ImageResource {
     static let icnArrowRight: ImageResource = DesignSystemAsset.icnArrowRight.imageResource
     static let icnArrowUp: ImageResource = DesignSystemAsset.icnArrowUp.imageResource
     static let icnTriangleLeft32px: ImageResource = DesignSystemAsset.icnTriangleLeft32.imageResource
-    static let icnTrianleRight32px: ImageResource = DesignSystemAsset.icnTriangleRight32.imageResource
+    static let icnTriangleRight32px: ImageResource = DesignSystemAsset.icnTriangleRight32.imageResource
     static let icnWarning: ImageResource = DesignSystemAsset.icnWarning.imageResource
 }
 
