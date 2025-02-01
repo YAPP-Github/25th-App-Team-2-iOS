@@ -45,7 +45,7 @@ public struct TWorkoutCard: View {
         }
         .padding(.horizontal, 12)
         .padding(.vertical, 16)
-        .background(Color.common0)
+        .background(Color.neutral100)
         .clipShape(.rect(cornerRadius: 12))
     }
     
