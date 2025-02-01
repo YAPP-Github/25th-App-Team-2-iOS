@@ -1,21 +1,23 @@
 //
-//  ScrollCalendarView.swift
+//  TCalendarView.swift
 //  DesignSystem
 //
-//  Created by 박민서 on 1/31/25.
+//  Created by 박민서 on 2/2/25.
 //  Copyright © 2025 yapp25thTeamTnT. All rights reserved.
 //
 
 import SwiftUI
-import FSCalendar
 
 /// 앱 전반적으로 사용되는 캘린더입니다.
 /// 주간/월간 표시를 포함합니다.
-public struct TCalendarView: UIViewRepresentable {
+public struct TCalendarView: View {
+    
     /// 선택한 날짜
-    @Binding private var selectedDate: Date
+    @Binding var selectedDate: Date
     /// 현재 페이지
-    @Binding private var currentPage: Date
+    @Binding var currentPage: Date
+    /// 업데이트 플래그
+    @State private var forceUpdate: UUID = UUID()
     /// 주간/월간 표시 여부
     private var isWeekMode: Bool
     /// 캘린더 표시 이벤트 딕셔너리
@@ -24,103 +26,27 @@ public struct TCalendarView: UIViewRepresentable {
     public init(
         selectedDate: Binding<Date>,
         currentPage: Binding<Date>,
-        isWeekMode: Bool = false,
-        events: [Date: Int] = [:]
+        forceUpdate: UUID = UUID(),
+        events: [Date: Int],
+        isWeekMode: Bool = false
     ) {
         self._selectedDate = selectedDate
         self._currentPage = currentPage
-        self.isWeekMode = isWeekMode
         self.events = events
+        self.forceUpdate = forceUpdate
+        self.isWeekMode = isWeekMode
     }
-    
-    public func makeCoordinator() -> Coordinator {
-        Coordinator(self)
-    }
-    
-    public func makeUIView(context: Context) -> FSCalendar {
-        let calendar: FSCalendar = FSCalendar()
-        // Cell 설정
-        calendar.register(TCalendarCell.self, forCellReuseIdentifier: TCalendarCell.identifier)
-        calendar.collectionView.contentSize = TCalendarCell.cellSize
-        
-        // 기본 설정
-        calendar.delegate = context.coordinator
-        calendar.dataSource = context.coordinator
-        calendar.locale = Locale(identifier: "ko_KR")
-        
-        // UI 설정
-        calendar.placeholderType = .none
-        calendar.headerHeight = 0
-        calendar.appearance.weekdayTextColor = UIColor(.neutral400)
-        calendar.appearance.weekdayFont = Typography.FontStyle.label2Medium.uiFont
-        calendar.appearance.selectionColor = .clear
-        calendar.appearance.todayColor = .clear
-        calendar.appearance.titleSelectionColor = .clear
-        calendar.appearance.titleDefaultColor = .clear
-        calendar.calendarWeekdayView.weekdayLabels[0].textColor = UIColor(.red500)
-        
-        return calendar
-    }
-    
-    public func updateUIView(_ uiView: FSCalendar, context: Context) {
-        // `selectedDate` 반영
-        uiView.select(selectedDate)
-        
-        // `currentPage` 반영
-        if uiView.currentPage != currentPage {
-            uiView.setCurrentPage(currentPage, animated: true)
-        }
-        
-        // `isWeekMode` 반영
-        let targetScope: FSCalendarScope = isWeekMode ? .week : .month
-        if uiView.scope != targetScope {
-            uiView.scope = targetScope
-        }
-        
-        uiView.reloadData()
-    }
-}
 
-public extension TCalendarView {
-    final class Coordinator: NSObject, FSCalendarDelegate, FSCalendarDataSource, FSCalendarDelegateAppearance {
-        var parent: TCalendarView
-        
-        init(_ parent: TCalendarView) {
-            self.parent = parent
-        }
-        
-        // 날짜 선택 이벤트
-        public func calendar(_ calendar: FSCalendar, didSelect date: Date, at monthPosition: FSCalendarMonthPosition) {
-            DispatchQueue.main.async {
-                self.parent.selectedDate = date
-                calendar.reloadData()
-            }
-        }
-        
-        // 현재 페이지 전환 이벤트
-        public func calendarCurrentPageDidChange(_ calendar: FSCalendar) {
-            DispatchQueue.main.async {
-                self.parent.currentPage = calendar.currentPage
-            }
-        }
-        
-        // 캘린더 셀 주입
-        public func calendar(_ calendar: FSCalendar, cellFor date: Date, at position: FSCalendarMonthPosition) -> FSCalendarCell {
-            
-            guard let cell = calendar.dequeueReusableCell(withIdentifier: TCalendarCell.identifier, for: date, at: position) as? TCalendarCell else {
-                return FSCalendarCell()
-            }
-            
-            let isSelected: Bool = Calendar.current.isDate(parent.selectedDate, inSameDayAs: date)
-            let eventCount: Int = parent.events[date] ?? 0
-            cell.configure(
-                with: date,
-                isCellSelected: isSelected,
-                eventCount: eventCount,
-                isWeekMode: parent.isWeekMode
-            )
-            
-            return cell
+    public var body: some View {
+        TCalendarRepresentable(
+            selectedDate: $selectedDate,
+            currentPage: $currentPage,
+            isWeekMode: isWeekMode,
+            events: events
+        )
+        .id(forceUpdate)
+        .onChange(of: events) {
+            forceUpdate = UUID()
         }
     }
 }
