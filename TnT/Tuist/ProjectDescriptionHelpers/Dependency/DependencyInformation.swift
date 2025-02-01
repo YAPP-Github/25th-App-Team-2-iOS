@@ -12,7 +12,7 @@ let dependencyInfo: [DependencyInformation: [DependencyInformation]] = [
     .Presentation: [.DIContainer, .DesignSystem, .Domain, .ComposableArchitecture],
     .Domain: [.SwiftDepedencies],
     .Data: [.Domain, .KakaoSDKUser, .SwiftDepedencies],
-    .DesignSystem: [.Lottie],
+    .DesignSystem: [.Lottie, .FSCalendar],
     .DIContainer: [.Domain, .Data]
 ]
 
@@ -27,6 +27,7 @@ public enum DependencyInformation: String, CaseIterable, Sendable {
     case ComposableArchitecture = "ComposableArchitecture"
     case KakaoSDKUser = "KakaoSDKUser"
     case SwiftDepedencies = "Dependencies"
+    case FSCalendar = "FSCalendar"
 }
 
 public extension DependencyInformation {

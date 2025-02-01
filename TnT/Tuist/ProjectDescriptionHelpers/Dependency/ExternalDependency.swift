@@ -11,5 +11,6 @@ let externalDependency: [DependencyInformation] = [
     .KakaoSDKUser,
     .Lottie,
     .ComposableArchitecture,
-    .SwiftDepedencies
+    .SwiftDepedencies,
+    .FSCalendar
 ]
