@@ -10,18 +10,24 @@ import SwiftUI
 
 /// TCalendarView의 헤더입니다
 /// 월 이동 로직을 추가합니다
-public struct TCalendarHeader: View {
+public struct TCalendarHeader<RightView: View>: View {
     
     @Binding private var currentPage: Date
     private var formatter: (Date) -> String
+    private var rightView: (() -> RightView)?
     
-    public init(currentPage: Binding<Date>, formatter: @escaping (Date) -> String) {
-            self._currentPage = currentPage
-            self.formatter = formatter
-        }
+    public init(
+        currentPage: Binding<Date>,
+        formatter: @escaping (Date) -> String,
+        rightView: (() -> RightView)? = nil
+    ) {
+        self._currentPage = currentPage
+        self.formatter = formatter
+        self.rightView = rightView
+    }
     
     public var body: some View {
-        HStack {
+        HStack(spacing: 0) {
             Button(action: {
                 movePage(-1)
             }, label: {
@@ -40,6 +46,11 @@ public struct TCalendarHeader: View {
                     .resizable()
                     .frame(width: 32, height: 32)
             })
+        }
+        .frame(maxWidth: .infinity)
+        .overlay(alignment: .trailing) {
+            rightView?()
+                .padding(.trailing, 20)
         }
     }
     
