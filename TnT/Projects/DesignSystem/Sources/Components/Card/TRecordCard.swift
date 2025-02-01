@@ -8,25 +8,29 @@
 
 import SwiftUI
 
+/// 트레이니 - 운동/식단 카드
 public struct TRecordCard: View {
     private let chipUIInfo: TChip.UIInfo
     private let timeText: String
     private let title: String
     private let imgURL: URL?
-    private let feedbackCount: Int?
+    private let hasFeedback: Bool
+    private let footerTapAction: (() -> Void)?
     
     public init(
         chipUIInfo: TChip.UIInfo,
         timeText: String,
         title: String,
         imgURL: URL?,
-        feedbackCount: Int?
+        hasFeedback: Bool,
+        footerTapAction: (() -> Void)?
     ) {
         self.chipUIInfo = chipUIInfo
         self.timeText = timeText
         self.title = title
         self.imgURL = imgURL
-        self.feedbackCount = feedbackCount
+        self.hasFeedback = hasFeedback
+        self.footerTapAction = footerTapAction
     }
     
     public var body: some View {
@@ -34,7 +38,6 @@ public struct TRecordCard: View {
             HStack(alignment: .top, spacing: 0) {
                 if let imgURL {
                     ImageSection(imgURL: imgURL)
-                        
                 }
                 
                 VStack(alignment: .leading, spacing: 12) {
@@ -48,12 +51,14 @@ public struct TRecordCard: View {
                 .padding(.bottom, imgURL == nil ? 20 : 16)
             }
             
-            if let feedbackCount {
-                Footer(feedbackCount: feedbackCount)
+            if hasFeedback {
+                Footer()
                     .padding(.horizontal, 16)
                     .padding(.bottom, 12)
             }
         }
+        .background(Color.common0)
+        .clipShape(.rect(cornerRadius: 12))
     }
     
     // MARK: Section
@@ -96,42 +101,20 @@ public struct TRecordCard: View {
     }
     
     @ViewBuilder
-    public func Footer(feedbackCount: Int) -> some View {
+    public func Footer() -> some View {
         HStack {
-            HStack(spacing: 2) {
-                Image(.icnStarSmile)
-                    .resizable()
-                    .frame(width: 24, height: 24)
-                Text("받은 피드백")
-                    .typographyStyle(.label2Medium)
-                Text("\(feedbackCount)")
-                    .typographyStyle(.label2Bold, with: .neutral500)
-            }
-            Spacer()
-        }
-    }
-}
-
-private extension TRecordCard {
-    struct TimeIndicator: View {
-        private let timeText: String
-        
-        init(timeText: String) {
-            self.timeText = timeText
-        }
-        
-        var body: some View {
-            HStack {
-                Spacer()
-                HStack(spacing: 4) {
-                    Image(.icnClock)
+            Button(action: {
+                footerTapAction?()
+            }, label: {
+                HStack(spacing: 2) {
+                    Image(.icnStarSmile)
                         .resizable()
-                        .scaledToFill()
-                        .frame(width: 16, height: 16)
-                    Text(timeText)
-                        .typographyStyle(.label2Medium, with: .neutral500)
+                        .frame(width: 24, height: 24)
+                    Text("받은 피드백")
+                        .typographyStyle(.label2Medium)
                 }
-            }
+            })
+            Spacer()
         }
     }
 }
