@@ -20,6 +20,8 @@ public enum TDateFormat: String {
     case yyyyMMddSlash = "yyyy/MM/dd"
     /// "yyyy.MM.dd"
     case yyyyMMddDot = "yyyy.MM.dd"
+    /// ""M월 d일"
+    case M월_d일 = "M월 d일"
     /// "EE"
     case EE = "EE"
 }
