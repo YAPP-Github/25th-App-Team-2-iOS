@@ -117,8 +117,8 @@ private extension TWorkoutCard {
                 case .success(let image):
                     image
                         .resizable()
+                        .aspectRatio(contentMode: .fill)
                         .frame(width: 24, height: 24)
-                        .scaledToFill()
                         .clipShape(Circle())
                     
                 case .failure(let error):

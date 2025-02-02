@@ -13,39 +13,37 @@ import Domain
 import DesignSystem
 
 /// 트레이니의 메인 홈 뷰입니다
+@ViewAction(for: TraineeHomeFeature.self)
 public struct TraineeHomeView: View {
     
-    // MARK: 임시 State
-    @State var ispresented: Bool = false
-    @State var selectedDate: Date = Date()
-    @State var currentPage: Date = Date()
-    @State var events: [Date: Int] = [:]
-    @State var todaysSessionInfo: WorkoutListItemEntity? = .init(currentCount: 8, startDate: .now, endDate: .now, trainerProfileImageUrl: nil, trainerName: "김민수", hasRecord: true)
-    @State var records: [RecordListItemEntity] = [
-        .init(type: .meal(type: .lunch), date: .now, title: "자고싶다", hasFeedBack: true, imageUrl: nil),
-        .init(type: .meal(type: .dinner), date: .now, title: "자고싶다", hasFeedBack: false, imageUrl: "https://images.genius.com/8e0b15e4847f8e59db7dfda22b4db4ec.1000x1000x1.png"),
-        .init(type: .meal(type: .morning), date: .now, title: "자고싶다", hasFeedBack: true, imageUrl: nil)
-    ]
-    @State var toggleMode: Bool = true
+    @Bindable public var store: StoreOf<TraineeHomeFeature>
     
-    
-    public init() {}
+    public init(store: StoreOf<TraineeHomeFeature>) {
+        self.store = store
+    }
     
     public var body: some View {
         ScrollView {
             VStack(spacing: 0) {
                 CalendarSection()
+                    .background(Color.common0)
                 
                 RecordListSection()
+                    .frame(maxWidth: .infinity)
                     .background(Color.neutral100)
-                
+                    
                 Spacer()
             }
         }
+        .background(
+            VStack {
+                Color.common0
+                Color.neutral100
+            }
+        )
         .overlay(alignment: .bottomTrailing) {
             Button(action: {
-                // TODO: STORE
-                ispresented = true
+                send(.tapAddRecordButton)
             }, label: {
                 Image(.icnPlus)
                     .renderingMode(.template)
@@ -60,16 +58,10 @@ public struct TraineeHomeView: View {
             .padding(.trailing, 12)
         }
         .navigationBarBackButtonHidden()
-        .sheet(isPresented: $ispresented) {
+        .sheet(isPresented: $store.view_isBottomSheetPresented) {
             TraineeRecordStartView(itemContents: [
-                ("🏋🏻‍♀️", "개인 운동", {
-                    // TODO: Store 연결
-                    print("pop")
-                }),
-                ("🥗", "식단", {
-                    // TODO: Store 연결
-                    print("pop")
-                })
+                ("🏋🏻‍♀️", "개인 운동", { send(.tapAddWorkoutRecordButton) }),
+                ("🥗", "식단", { send(.tapAddMealRecordButton) })
             ])
             .autoSizingBottomSheet()
         }
@@ -80,13 +72,11 @@ public struct TraineeHomeView: View {
     private func CalendarSection() -> some View {
         VStack(spacing: 16) {
             TCalendarHeader(
-                currentPage: $currentPage,
+                currentPage: $store.view_currentPage,
                 formatter: { TDateFormatUtility.formatter(for: .yyyy년_MM월).string(from: $0) },
                 rightView: {
                     Button(action: {
-                        // TODO: Store 연결
-                        print("pop")
-                        toggleMode.toggle()
+                        send(.tapAlarmPageButton)
                     }, label: {
                         Image(.icnAlarm)
                             .resizable()
@@ -99,23 +89,22 @@ public struct TraineeHomeView: View {
             // Calendar + 금일 수업 카드
             VStack(spacing: 12) {
                 TCalendarView(
-                    selectedDate: $selectedDate,
-                    currentPage: $currentPage,
-                    events: events,
-                    isWeekMode: toggleMode
+                    selectedDate: $store.selectedDate,
+                    currentPage: $store.view_currentPage,
+                    events: store.events,
+                    isWeekMode: true
                 )
                 .padding(.horizontal, 20)
                 
-                if let todaysSessionInfo {
+                if let sessionInfo = store.sessionInfo {
                     TWorkoutCard(
-                        chipUIInfo: RecordType.session(count: todaysSessionInfo.currentCount).chipInfo,
-                        timeText: "\(TDateFormatUtility.formatter(for: .a_HHmm).string(from: todaysSessionInfo.startDate)) ~ \(TDateFormatUtility.formatter(for: .a_HHmm).string(from: todaysSessionInfo.endDate))",
-                        title: "\(todaysSessionInfo.trainerName) 트레이너",
-                        imgURL: .init(string: todaysSessionInfo.trainerProfileImageUrl ?? ""),
-                        hasRecord: todaysSessionInfo.hasRecord,
+                        chipUIInfo: RecordType.session(count: sessionInfo.currentCount).chipInfo,
+                        timeText: store.view_sessionCardTimeString,
+                        title: "\(sessionInfo.trainerName) 트레이너",
+                        imgURL: .init(string: sessionInfo.trainerProfileImageUrl ?? ""),
+                        hasRecord: sessionInfo.hasRecord,
                         footerTapAction: {
-                            // TODO: STORe
-                            print("얍ㅂ삐")
+                            send(.tapShowSessionRecordButton(id: sessionInfo.id))
                         }
                     )
                     .padding(.horizontal, 20)
@@ -135,27 +124,36 @@ public struct TraineeHomeView: View {
     @ViewBuilder
     private func RecordListSection() -> some View {
         VStack(alignment: .leading, spacing: 0) {
-            Text(TDateFormatUtility.formatter(for: .MM월_dd일_EEEE).string(from: selectedDate))
-                .typographyStyle(.heading3, with: .neutral800)
-                .padding(20)
+            HStack {
+                Text(store.view_recordTitleString)
+                    .typographyStyle(.heading3, with: .neutral800)
+                    .padding(20)
+                Spacer()
+            }
             
             VStack(spacing: 12) {
-                ForEach(records.indices, id: \.self) { index in
-                    let item = records[index]
-                    TRecordCard(
-                        chipUIInfo: item.type.chipInfo,
-                        timeText: TDateFormatUtility.formatter(for: .a_HHmm).string(from: item.date),
-                        title: "자고 싶어요 진짜로 ㄴㅇㅁㄹㅁㄴㅇ래ㅣㅑㅕㅗㅁㅈㄷ;ㅐㅓㅑㅗㅁㅈㄷ래ㅑ;ㅗㅓㅁㄷㄹㅈ;ㅐㅗㅕㅑㄷㄹㅁㅈ",
-                        imgURL: URL(string: item.imageUrl ?? ""),
-                        hasFeedback: item.hasFeedBack,
-                        footerTapAction: {
-                            // TODO: STORE
-                            print("pop\(index)")
-                        }
-                    )
+                if !store.records.isEmpty {
+                    ForEach(store.records, id: \.id) { item in
+                        TRecordCard(
+                            chipUIInfo: item.type.chipInfo,
+                            timeText: TDateFormatUtility.formatter(for: .a_HHmm).string(from: item.date),
+                            title: item.title,
+                            imgURL: URL(string: item.imageUrl ?? ""),
+                            hasFeedback: item.hasFeedBack,
+                            footerTapAction: {
+                                send(.tapShowRecordFeedbackButton(id: item.id))
+                            }
+                        )
+                    }
+                } else {
+                    RecordEmptyView()
+                        .padding(.top, 80)
+                        .padding(.bottom, 100)
                 }
             }
             .padding(.horizontal, 16)
+            
+            Spacer()
         }
     }
 }
@@ -175,7 +173,7 @@ private extension TraineeHomeView {
     struct RecordEmptyView: View {
         var body: some View {
             VStack(spacing: 4) {
-                Text("추가 버튼을 눌러 식사와 운동을 기록해보세요")
+                Text("아직 기록이 없어요")
                     .typographyStyle(.body2Bold, with: .neutral600)
                     .frame(maxWidth: .infinity)
                 

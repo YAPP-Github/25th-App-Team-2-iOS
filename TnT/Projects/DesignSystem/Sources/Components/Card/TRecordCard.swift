@@ -76,8 +76,8 @@ public struct TRecordCard: View {
             case .success(let image):
                 image
                     .resizable()
+                    .aspectRatio(contentMode: .fill)
                     .frame(width: 140, height: 140)
-                    .scaledToFill()
                     .clipShape(.rect(cornerRadius: 16))
                     .padding(.leading, 12)
                     .padding(.vertical, 12)
