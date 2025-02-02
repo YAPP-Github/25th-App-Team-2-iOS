@@ -9,7 +9,9 @@
 import Foundation
 
 /// 트레이니 기록 목록 아이템 모델
-public struct RecordListItemEntity {
+public struct RecordListItemEntity: Equatable {
+    /// 기록 id
+    public let id: Int
     /// 기록 타입
     public let type: RecordType
     /// 기록 시간
@@ -22,12 +24,14 @@ public struct RecordListItemEntity {
     public let imageUrl: String?
     
     public init(
+        id: Int,
         type: RecordType,
         date: Date,
         title: String,
         hasFeedBack: Bool,
         imageUrl: String?
     ) {
+        self.id = id
         self.type = type
         self.date = date
         self.title = title

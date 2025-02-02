@@ -9,7 +9,9 @@
 import Foundation
 
 /// 트레이니 PT 운동 목록 아이템 모델
-public struct WorkoutListItemEntity {
+public struct WorkoutListItemEntity: Equatable {
+    /// 수업 Id
+    public let id: Int
     /// 현재 수업 차수
     public let currentCount: Int
     /// 수업 시작 시간
@@ -24,6 +26,7 @@ public struct WorkoutListItemEntity {
     public let hasRecord: Bool
     
     public init(
+        id: Int,
         currentCount: Int,
         startDate: Date,
         endDate: Date,
@@ -31,6 +34,7 @@ public struct WorkoutListItemEntity {
         trainerName: String,
         hasRecord: Bool
     ) {
+        self.id = id
         self.currentCount = currentCount
         self.startDate = startDate
         self.endDate = endDate
