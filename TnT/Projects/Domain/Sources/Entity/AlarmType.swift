@@ -9,7 +9,7 @@
 import Foundation
 
 /// 앱에서 존재하는 알람 유형을 정의한 열거형
-public enum AlarmType {
+public enum AlarmType: Equatable {
     /// 트레이니 연결 완료
     case traineeConnected(name: String)
     /// 트레이니 연결 해제

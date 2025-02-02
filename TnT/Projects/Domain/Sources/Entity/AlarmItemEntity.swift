@@ -9,7 +9,9 @@
 import Foundation
 
 /// 알람 확인시 사용되는 알람 정보 구조체
-public struct AlarmItemEntity {
+public struct AlarmItemEntity: Equatable {
+    /// 알람 id
+    public let alarmId: Int
     /// 알람 타입
     public let alarmType: AlarmType
     /// 알람 도착 시각
@@ -18,10 +20,12 @@ public struct AlarmItemEntity {
     public let alarmSeenBefore: Bool
     
     public init(
+        alarmId: Int,
         alarmType: AlarmType,
         alarmDate: Date,
         alarmSeenBefore: Bool
     ) {
+        self.alarmId = alarmId
         self.alarmType = alarmType
         self.alarmDate = alarmDate
         self.alarmSeenBefore = alarmSeenBefore
