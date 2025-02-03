@@ -55,6 +55,7 @@ public struct TrainerMypageView: View {
             StudentInfoItem(title: "관리 중인 회원", count: store.studentCount)
             StudentInfoItem(title: "함께했던 회원", count: store.oldStudentCount)
         }
+        .padding(.horizontal, 40)
     }
     
     @ViewBuilder
