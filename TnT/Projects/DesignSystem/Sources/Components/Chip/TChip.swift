@@ -46,9 +46,9 @@ public struct TChip: View {
                     .typographyStyle(.label1Bold)
             }
             Text(title)
-                .typographyStyle(.label1Bold, with: style.textColor)
+                .typographyStyle(.label2Bold, with: style.textColor)
         }
-        .padding(.horizontal, 8)
+        .padding(.horizontal, 10)
         .padding(.vertical, 6)
         .background(style.backgroundColor)
         .clipShape(.capsule)

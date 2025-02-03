@@ -44,7 +44,7 @@ public extension ImageResource {
     static let icnTriangleDown: ImageResource = DesignSystemAsset.icnTriangleDown.imageResource
     static let icnTriangleRight: ImageResource = DesignSystemAsset.icnTriangleRight.imageResource
     static let icnClock: ImageResource = DesignSystemAsset.icnClock.imageResource
-    static let icnStar: ImageResource = DesignSystemAsset.icnStartEmpty.imageResource
+    static let icnStar: ImageResource = DesignSystemAsset.icnStar.imageResource
     static let icnStarSmile: ImageResource = DesignSystemAsset.icnStarSmile.imageResource
     static let icnWriteBlackFilled: ImageResource = DesignSystemAsset.icnWriteBlackFilled.imageResource
     static let icnPlus: ImageResource = DesignSystemAsset.icnPlus.imageResource
@@ -64,7 +64,7 @@ public extension ImageResource {
     static let icnArrowRight: ImageResource = DesignSystemAsset.icnArrowRight.imageResource
     static let icnArrowUp: ImageResource = DesignSystemAsset.icnArrowUp.imageResource
     static let icnTriangleLeft32px: ImageResource = DesignSystemAsset.icnTriangleLeft32.imageResource
-    static let icnTrianleRight32px: ImageResource = DesignSystemAsset.icnTriangleRight32.imageResource
+    static let icnTriangleRight32px: ImageResource = DesignSystemAsset.icnTriangleRight32.imageResource
     static let icnWarning: ImageResource = DesignSystemAsset.icnWarning.imageResource
 }
 

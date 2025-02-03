@@ -8,7 +8,7 @@
 
 import Foundation
 
-enum TDateFormatUtility {
+public enum TDateFormatUtility {
     /// `NSCache`를 활용한 포맷별 `DateFormatter` 캐싱
     private static let cache: NSCache<NSString, DateFormatter> = {
         let cache: NSCache = NSCache<NSString, DateFormatter>()
@@ -16,7 +16,7 @@ enum TDateFormatUtility {
     }()
     
     /// 포맷에 맞는 `DateFormatter` 반환 (캐싱된 인스턴스 재사용)
-    static func formatter(for format: TDateFormat) -> DateFormatter {
+    public static func formatter(for format: TDateFormat) -> DateFormatter {
         // 캐시된 DateFormatter가 있으면 반환, 없으면 생성 후 저장
         if let cachedFormatter = cache.object(forKey: format.rawValue as NSString) {
             return cachedFormatter

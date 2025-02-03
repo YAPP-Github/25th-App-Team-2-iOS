@@ -10,6 +10,10 @@
 public extension Configuration {
     static func defaultSettings() -> Settings {
         return Settings.settings(
+            base: [
+                "OTHER_LDFLAGS": "$(inherited) -ObjC",
+                "CODE_SIGN_STYLE": "Manual"
+            ],
             configurations: [
                 .debug(name: .debug, xcconfig: .relativeToRoot("Tuist/Config/Secrets.xcconfig")),
                 .release(name: .release, xcconfig: .relativeToRoot("Tuist/Config/Secrets.xcconfig")),
