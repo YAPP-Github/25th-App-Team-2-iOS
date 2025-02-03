@@ -14,6 +14,8 @@ public enum TDateFormat: String {
     case yyyyMMdd = "yyyy-MM-dd"
     /// "yyyy-MM"
     case yyyyMM = "yyyy-MM"
+    /// "yyyy년 MM월"
+    case yyyy년_MM월 = "yyyy년 MM월"
     /// "MM-dd"
     case MMdd = "MM-dd"
     /// "yyyy/MM/dd"
@@ -22,6 +24,10 @@ public enum TDateFormat: String {
     case yyyyMMddDot = "yyyy.MM.dd"
     /// ""M월 d일"
     case M월_d일 = "M월 d일"
+    /// "01월 10일 화요일"
+    case MM월_dd일_EEEE = "MM월 dd일 EEEE"
     /// "EE"
     case EE = "EE"
+    /// "오후 17:00" (시간 포맷)
+    case a_HHmm = "a HH:mm"
 }
