@@ -55,16 +55,7 @@ public struct TraineeInvitationCodeInputView: View {
             }
         }
         .tPopUp(isPresented: $store.view_isPopupPresented) {
-            guard let popUp = store.presentPopUp else {
-                return TPopUpAlertView(alertState: .init(title: "Error"))
-            }
-            switch popUp {
-            case .invitePopUp:
-                return TrainerInvitePopup()
-                
-            case .dropAlert:
-                return DropAlertPopup()
-            }
+            PopUpView()
         }
     }
     
@@ -130,61 +121,33 @@ public struct TraineeInvitationCodeInputView: View {
             .padding(.horizontal, 20)
         }
     }
-}
-
-private extension TraineeInvitationCodeInputView {
-    @ViewBuilder
-    /// 진입 시 트레이너 초대 코드 권유 팝업
-    private func TrainerInvitePopup() -> TPopUpAlertView {
-        TPopUpAlertView(
-            alertState: .init(
-                title: "트레이너에게 받은\n초대 코드를 입력해보세요!",
-                message: "트레이너와 연결하지 않을 경우\n일부 기능이 제한될 수 있어요.",
-                buttons: [
-                    .init(
-                        title: "다음에 할게요",
-                        style: .secondary,
-                        action: .init(action: {
-                            send(.tapInvitePopupNextButton)
-                        })
-                    ),
-                    .init(
-                        title: "확인",
-                        style: .primary,
-                        action: .init(action: {
-                            send(.tapInvitePopupConfirmButton)
-                        })
-                    )
-                ]
-            )
-        )
-    }
     
     @ViewBuilder
-    /// 코드 인증 후 화면을 벗어나려는 경우 팝업
-    private func DropAlertPopup() -> TPopUpAlertView {
-        TPopUpAlertView(
-            alertState: .init(
-                title: "트레이너 연결을 중단하시겠어요?",
-                message: "중단 시 연결을 처음부터 다시 설정해야 해요",
-                showAlertIcon: true,
-                buttons: [
-                    .init(
-                        title: "중단하기",
-                        style: .secondary,
-                        action: .init(action: {
-                            send(.tapDropAlertStopButton)
-                        })
-                    ),
-                    .init(
-                        title: "계속 진행",
-                        style: .primary,
-                        action: .init(action: {
-                            send(.tapDropAlertKeepButton)
-                        })
-                    )
-                ]
+    private func PopUpView() -> some View {
+        if let popUp = store.view_popUp {
+            let buttons: [TPopupAlertState.ButtonState] = [
+                .init(
+                    title: popUp.secondaryButtonTitle,
+                    style: .secondary,
+                    action: .init(action: { send(popUp.secondaryAction) })
+                ),
+                .init(
+                    title: popUp.primaryButtonTitle,
+                    style: .primary,
+                    action: .init(action: { send(popUp.primaryAction) })
+                )
+            ]
+            
+            TPopUpAlertView(
+                alertState: .init(
+                    title: popUp.title,
+                    message: popUp.message,
+                    showAlertIcon: popUp.showAlertIcon,
+                    buttons: buttons
+                )
             )
-        )
+        } else {
+            EmptyView()
+        }
     }
 }

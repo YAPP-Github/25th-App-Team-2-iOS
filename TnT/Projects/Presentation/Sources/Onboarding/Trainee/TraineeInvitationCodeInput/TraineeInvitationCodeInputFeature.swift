@@ -21,8 +21,6 @@ public struct TraineeInvitationCodeInputFeature {
         // MARK: Data related state
         /// 입력된 초대코드
         var invitationCode: String
-        /// 표시되는 팝업
-        var presentPopUp: PopUp?
         
         // MARK: UI related state
         /// 텍스트 필드 상태 (빈 값 / 입력됨 / 유효하지 않음)
@@ -35,6 +33,8 @@ public struct TraineeInvitationCodeInputFeature {
         var view_isVerityButtonEnabled: Bool
         /// 다음 버튼 활성화 여부
         var view_isNextButtonEnabled: Bool
+        /// 표시되는 팝업
+        var view_popUp: PopUp?
         /// 팝업 표시 여부
         var view_isPopupPresented: Bool
         /// 상단 네비바 표시 상태
@@ -44,27 +44,27 @@ public struct TraineeInvitationCodeInputFeature {
         /// `TraineeInvitationCodeInputFeature.State`의 생성자
         /// - Parameters:
         ///   - invitationCode: 사용자가 입력한 초대 코드 (기본값: `""`)
-        ///   - presentPopUp: 현재 표시되는 팝업 (기본값: `nil`)
         ///   - view_invitationCodeStatus: 텍스트 필드 상태 (`.empty`, `.valid`, `.invalid` 등)
         ///   - view_textFieldFooterText: 텍스트 필드 하단에 표시될 메시지 (기본값: `""`)
         ///   - view_isFieldFocused: 현재 텍스트 필드가 포커스를 받고 있는지 여부 (기본값: `false`)
         ///   - view_isVerityButtonEnabled: "인증하기" 버튼 활성화 여부 (기본값: `false`)
         ///   - view_isNextButtonEnabled: "다음" 버튼 활성화 여부 (기본값: `false`)
+        ///   - view_popUp: 현재 표시되는 팝업 (기본값: `nil`)
         ///   - view_isPopupPresented: 팝업이 표시 중인지 여부 (기본값: `false`)
         ///   - view_navigationType: 현재 화면의 네비게이션 타입 (`.newUser`: "건너뛰기" 버튼 있음, `.existingUser`: "뒤로가기" 버튼 있음)
         public init(
             invitationCode: String = "",
-            presentPopUp: PopUp? = nil,
             view_invitationCodeStatus: TTextField.Status = .empty,
             view_textFieldFooterText: String = "",
             view_isFieldFocused: Bool = false,
             view_isVerityButtonEnabled: Bool = false,
             view_isNextButtonEnabled: Bool = false,
+            view_popUp: PopUp? = nil,
             view_isPopupPresented: Bool = false,
             view_navigationType: NavigationType = .newUser
         ) {
             self.invitationCode = invitationCode
-            self.presentPopUp = presentPopUp
+            self.view_popUp = view_popUp
             self.view_invitationCodeStatus = view_invitationCodeStatus
             self.view_textFieldFooterText = view_textFieldFooterText
             self.view_isFieldFocused = view_isFieldFocused
@@ -99,14 +99,11 @@ public struct TraineeInvitationCodeInputFeature {
             case tapNavBarSkipButton
             /// Nav바 back 버튼이 눌렸을 때
             case tapNavBarBackButton
-            /// 팝업 "다음에 할게요" 버튼이 눌렸을 때
-            case tapInvitePopupNextButton
-            /// 팝업 "확인" 버튼이 눌렸을 때
-            case tapInvitePopupConfirmButton
-            /// 팝업 "중단하기" 버튼이 눌렸을 때
-            case tapDropAlertStopButton
-            /// 팝업 "계속 진행" 버튼이 눌렸을 때
-            case tapDropAlertKeepButton
+            
+            /// 팝업 좌측 secondary 버튼 탭
+            case tapPopUpSecondaryButton(popUp: PopUp?)
+            /// 팝업 우측 primary 버튼 탭
+            case tapPopUpPrimaryButton(popUp: PopUp?)
         }
     }
     
@@ -143,11 +140,11 @@ public struct TraineeInvitationCodeInputFeature {
                     return state.view_invitationCodeStatus == .valid
                     ? self.setPopUpStatus(&state, status: .dropAlert)
                     : .send(.setNavigating(.traineeHome))
-                    
-                case .tapInvitePopupNextButton, .tapDropAlertStopButton:
+                        
+                case .tapPopUpSecondaryButton(let popUp):
                     return .send(.setNavigating(.traineeHome))
                     
-                case .tapDropAlertKeepButton, .tapInvitePopupConfirmButton:
+                case .tapPopUpPrimaryButton(let popUp):
                     return self.setPopUpStatus(&state, status: nil)
                 }
                 
@@ -188,8 +185,9 @@ private extension TraineeInvitationCodeInputFeature {
     }
     
     /// 팝업 상태, 표시 상태를 업데이트
+    /// status nil 입력인 경우 팝업 표시 해제
     func setPopUpStatus(_ state: inout State, status: PopUp?) -> Effect<Action> {
-        state.presentPopUp = status
+        state.view_popUp = status
         state.view_isPopupPresented = status != nil
         return .none
     }
@@ -202,19 +200,72 @@ public extension TraineeInvitationCodeInputFeature {
         case trainingInfoInput
     }
     
-    /// 본 화면에 팝업으로 표시되는 목록
-    enum PopUp: Sendable {
-        /// 진입 시 초대 코드를 입력해주세요
-        case invitePopUp
-        /// 연결을 중단하시겠어요?
-        case dropAlert
-    }
-    
     /// 본 화면의 네비게이션 타입
     enum NavigationType: Equatable {
         /// 신규 유저 (우측 건너뛰기 버튼)
         case newUser
         /// 기존 유저 (좌측 뒤로가기 버튼)
         case existingUser
+    }
+    
+    /// 본 화면에 팝업으로 표시되는 목록
+    enum PopUp: Equatable, Sendable {
+        /// 진입 시 초대 코드를 입력해주세요
+        case invitePopUp
+        /// 연결을 중단하시겠어요?
+        case dropAlert
+        
+        var title: String {
+            switch self {
+            case .invitePopUp:
+                return "트레이너에게 받은\n초대 코드를 입력해보세요!"
+            case .dropAlert:
+                return "트레이너 연결을 중단하시겠어요?"
+            }
+        }
+        
+        var message: String {
+            switch self {
+            case .invitePopUp:
+                return "트레이너와 연결하지 않을 경우\n일부 기능이 제한될 수 있어요."
+            case .dropAlert:
+                return "중단 시 연결을 처음부터 다시 설정해야 해요"
+            }
+        }
+        
+        var showAlertIcon: Bool {
+            switch self {
+            case .invitePopUp:
+                return false
+            case .dropAlert:
+                return true
+            }
+        }
+        
+        var secondaryButtonTitle: String {
+            switch self {
+            case .invitePopUp:
+                return "다음에 할게요"
+            case .dropAlert:
+                return "중단하기"
+            }
+        }
+        
+        var primaryButtonTitle: String {
+            switch self {
+            case .invitePopUp:
+                return "확인"
+            case .dropAlert:
+                return "계속 진행"
+            }
+        }
+        
+        var secondaryAction: Action.View {
+            return .tapPopUpSecondaryButton(popUp: self)
+        }
+        
+        var primaryAction: Action.View {
+            return .tapPopUpPrimaryButton(popUp: self)
+        }
     }
 }
