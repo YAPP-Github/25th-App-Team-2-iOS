@@ -27,15 +27,7 @@ public struct TraineeInvitationCodeInputView: View {
     
     public var body: some View {
         VStack(spacing: 0) {
-            TNavigation(
-                type: .RTextWithTitle(
-                    centerTitle: "연결하기",
-                    rightText: "건너뛰기"
-                ),
-                rightAction: {
-                    send(.tapNavBarSkipButton)
-                }
-            )
+            NavigationBar()
             .padding(.bottom, 24)
             
             Header()
@@ -63,18 +55,46 @@ public struct TraineeInvitationCodeInputView: View {
             }
         }
         .tPopUp(isPresented: $store.view_isPopupPresented) {
-            PopUpView(
-                secondaryAction: {
-                    send(.tapPopupNextButton)
-                },
-                primaryAction: {
-                    send(.tapPopupConfirmButton)
+            guard let popUp = store.presentPopUp else {
+                return TPopUpAlertView(alertState: .init(title: "Error"))
+            }
+            switch popUp {
+            case .invitePopUp:
+                return TrainerInvitePopup()
+                
+            case .dropAlert:
+                return DropAlertPopup()
+            }
+        }
+    }
+    
+    // MARK: - Sections
+    @ViewBuilder
+    private func NavigationBar() -> some View {
+        switch store.view_navigationType {
+        case .newUser:
+            TNavigation(
+                type: .RTextWithTitle(
+                    centerTitle: "연결하기",
+                    rightText: "건너뛰기"
+                ),
+                rightAction: {
+                    send(.tapNavBarSkipButton)
+                }
+            )
+        case .existingUser:
+            TNavigation(
+                type: .LButtonWithTitle(
+                    leftImage: .icnArrowLeft,
+                    centerTitle: "연결하기"
+                ),
+                leftAction: {
+                    send(.tapNavBarBackButton)
                 }
             )
         }
     }
     
-    // MARK: - Sections
     @ViewBuilder
     private func Header() -> some View {
         TInfoTitleHeader(title: "트레이너에게 받은\n초대 코드를 입력해 주세요")
@@ -113,42 +133,58 @@ public struct TraineeInvitationCodeInputView: View {
 }
 
 private extension TraineeInvitationCodeInputView {
-    
-    struct PopUpView: View {
-        let secondaryAction: () -> Void
-        let primaryAction: () -> Void
-        
-        init(
-            secondaryAction: @escaping () -> Void,
-            primaryAction: @escaping () -> Void
-        ) {
-            self.secondaryAction = secondaryAction
-            self.primaryAction = primaryAction
-        }
-        
-        var body: some View {
-            TPopUpAlertView(
-                alertState: .init(
-                    title: "트레이너에게 받은\n초대 코드를 입력해보세요!",
-                    message: "트레이너와 연결하지 않을 경우\n일부 기능이 제한될 수 있어요.",
-                    buttons: [
-                        .init(
-                            title: "다음에 할게요",
-                            style: .secondary,
-                            action: .init(action: {
-                                secondaryAction()
-                            })
-                        ),
-                        .init(
-                            title: "확인",
-                            style: .primary,
-                            action: .init(action: {
-                                primaryAction()
-                            })
-                        )
-                    ]
-                )
+    @ViewBuilder
+    /// 진입 시 트레이너 초대 코드 권유 팝업
+    private func TrainerInvitePopup() -> TPopUpAlertView {
+        TPopUpAlertView(
+            alertState: .init(
+                title: "트레이너에게 받은\n초대 코드를 입력해보세요!",
+                message: "트레이너와 연결하지 않을 경우\n일부 기능이 제한될 수 있어요.",
+                buttons: [
+                    .init(
+                        title: "다음에 할게요",
+                        style: .secondary,
+                        action: .init(action: {
+                            send(.tapInvitePopupNextButton)
+                        })
+                    ),
+                    .init(
+                        title: "확인",
+                        style: .primary,
+                        action: .init(action: {
+                            send(.tapInvitePopupConfirmButton)
+                        })
+                    )
+                ]
             )
-        }
+        )
+    }
+    
+    @ViewBuilder
+    /// 코드 인증 후 화면을 벗어나려는 경우 팝업
+    private func DropAlertPopup() -> TPopUpAlertView {
+        TPopUpAlertView(
+            alertState: .init(
+                title: "트레이너 연결을 중단하시겠어요?",
+                message: "중단 시 연결을 처음부터 다시 설정해야 해요",
+                showAlertIcon: true,
+                buttons: [
+                    .init(
+                        title: "중단하기",
+                        style: .secondary,
+                        action: .init(action: {
+                            send(.tapDropAlertStopButton)
+                        })
+                    ),
+                    .init(
+                        title: "계속 진행",
+                        style: .primary,
+                        action: .init(action: {
+                            send(.tapDropAlertKeepButton)
+                        })
+                    )
+                ]
+            )
+        )
     }
 }
