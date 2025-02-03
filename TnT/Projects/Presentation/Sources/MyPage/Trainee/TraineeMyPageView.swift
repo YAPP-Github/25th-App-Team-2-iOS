@@ -36,6 +36,9 @@ public struct TraineeMyPageView: View {
         }
         .background(Color.neutral50)
         .navigationBarBackButtonHidden()
+        .tPopUp(isPresented: $store.view_isPopUpPresented) {
+            PopUpView()
+        }
     }
     
     // MARK: - Sections
@@ -47,9 +50,9 @@ public struct TraineeMyPageView: View {
             
             Text(store.userName)
                 .typographyStyle(.heading2, with: .neutral950)
-                .padding(.bottom, store.isTrainerConnected ? 8 : 16)
+                .padding(.bottom, store.view_isTrainerConnected ? 8 : 16)
             
-            if store.isTrainerConnected {
+            if store.view_isTrainerConnected {
                 TButton(
                     title: "개인정보 수정",
                     config: .small,
@@ -64,7 +67,7 @@ public struct TraineeMyPageView: View {
     @ViewBuilder
     private func TopItemSection() -> some View {
         VStack(spacing: 12) {
-            if !store.isTrainerConnected {
+            if !store.view_isTrainerConnected {
                 ProfileItemView(title: "트레이너 연결하기", tapAction: { send(.tapConnectTrainerButton) })
                     .padding(.vertical, 4)
                     .background(Color.common0)
@@ -100,7 +103,7 @@ public struct TraineeMyPageView: View {
     @ViewBuilder
     private func BottomItemSection() -> some View {
         VStack(spacing: 12) {
-            if store.isTrainerConnected {
+            if store.view_isTrainerConnected {
                 ProfileItemView(title: "트레이너와 연결끊기", tapAction: { send(.tapDisconnectTrainerButton) })
                     .padding(.vertical, 4)
                     .background(Color.common0)
@@ -114,6 +117,30 @@ public struct TraineeMyPageView: View {
             .padding(.vertical, 12)
             .background(Color.common0)
             .clipShape(.rect(cornerRadius: 12))
+        }
+    }
+    
+    @ViewBuilder
+    private func PopUpView() -> some View {
+        if let popUp = store.view_popUp {
+            // secondaryAction nil 인 경우 제외하고 버튼 배열 구성
+            let buttons: [TPopupAlertState.ButtonState] = [
+                popUp.secondaryAction.map { action in
+                    .init(title: "취소", style: .secondary, action: .init(action: { send(action) }))
+                },
+                .init(title: "확인", style: .primary, action: .init(action: { send(popUp.primaryAction) }))
+            ].compactMap { $0 }
+            
+            TPopUpAlertView(
+                alertState: .init(
+                    title: popUp.title,
+                    message: popUp.message,
+                    showAlertIcon: popUp.showAlertIcon,
+                    buttons: buttons
+                )
+            )
+        } else {
+            EmptyView()
         }
     }
 }
