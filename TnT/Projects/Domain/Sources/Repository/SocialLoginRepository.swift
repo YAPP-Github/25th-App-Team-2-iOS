@@ -14,6 +14,4 @@ public protocol SocialLoginRepository {
     func appleLogin() async -> AppleLoginInfo?
     /// 카카오 로그인을 수행합니다
     func kakaoLogin() async -> KakaoLoginInfo?
-    /// 카카오 로그아웃을 수행합니다
-    func kakaoLogout() async
 }

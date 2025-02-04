@@ -11,6 +11,8 @@ let dependencyInfo: [DependencyInformation: [DependencyInformation]] = [
     .TnTApp: [.Presentation, .Data],
     .Presentation: [.DIContainer, .DesignSystem, .Domain, .ComposableArchitecture],
     .Domain: [.SwiftDepedencies],
+    .Data: [.Domain, .KakaoSDKUser, .SwiftDepedencies, .FirebaseMessaging],
+    .DesignSystem: [.Lottie],
     .Data: [.Domain, .KakaoSDKUser, .SwiftDepedencies],
     .DesignSystem: [.Lottie, .FSCalendar],
     .DIContainer: [.Domain, .Data]
@@ -27,6 +29,7 @@ public enum DependencyInformation: String, CaseIterable, Sendable {
     case ComposableArchitecture = "ComposableArchitecture"
     case KakaoSDKUser = "KakaoSDKUser"
     case SwiftDepedencies = "Dependencies"
+    case FirebaseMessaging = "FirebaseMessaging"
     case FSCalendar = "FSCalendar"
 }
 

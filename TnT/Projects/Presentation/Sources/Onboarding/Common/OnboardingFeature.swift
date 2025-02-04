@@ -9,16 +9,29 @@
 import ComposableArchitecture
 import SwiftUI
 
+import Domain
+import DIContainer
+
 @Reducer
 public struct OnboardingFeature {
     @ObservableState
     public struct State: Equatable {
         public var path = StackState<Path.State>()
+        public var userType: UserType?
+        public var nickname: String? = ""
+        public var socialType: LoginType?
+        public var termAgree: Bool = true
+        public var socialEmail: String? = ""
+        public var postUserEntity: PostSocailEntity?
         
         public init(path: StackState<Path.State> = StackState<Path.State>()) {
             self.path = path
         }
     }
+    
+    @Dependency(\.userUseCase) private var userUseCase: UserUseCase
+    @Dependency(\.userUseRepoCase) private var userUseCaseRepo: UserRepository
+    @Dependency(\.socialLogInUseCase) private var socialLoginUseCase: SocialLoginUseCase
     
     public enum Action: ViewAction {
         /// 뷰에서 일어나는 액션을 처리합니다.(카카오,애플로그인 실행)
@@ -32,6 +45,9 @@ public struct OnboardingFeature {
         public enum View: Equatable {
             case tappedAppleLogin
             case tappedKakaoLogin
+            case postSocialLogin(entity: PostSocailEntity)
+            case postSignUp
+            case socailLoginFail
         }
         
         @CasePathable
@@ -56,6 +72,8 @@ public struct OnboardingFeature {
             case toRegisterInvitationCode
             /// 트레이니의 pt 횟수 및 정보 입력화면으로 이동
             case toRegisterPtClassInfo
+            /// 홈으로 이동
+            case toHome
         }
     }
     
@@ -67,10 +85,51 @@ public struct OnboardingFeature {
             case let .view(view):
                 switch view {
                 case .tappedAppleLogin:
-                    state.path.append(.term(TermFeature.State()))
-                    return .none
+                    return .run { @Sendable send in
+                        let result = await socialLoginUseCase.appleLogin()
+                        guard let result else { return }
+                        let entity = PostSocailEntity(
+                            socialType: "APPLE",
+                            fcmToken: "",
+                            socialAccessToken: "",
+                            authorizationCode: result.authorizationCode,
+                            idToken: result.identityToken
+                        )
+                        
+                        await send(.view(.postSocialLogin(entity: entity)))
+                    }
+                    
                 case .tappedKakaoLogin:
-                    state.path.append(.term(TermFeature.State()))
+                    return .run { @Sendable send in
+                        let result = await socialLoginUseCase.kakaoLogin()
+                        guard let result else { return }
+                        
+                        let entity = PostSocailEntity(
+                            socialType: "KAKAO",
+                            fcmToken: "",
+                            socialAccessToken: result.accessToken,
+                            authorizationCode: "",
+                            idToken: ""
+                        )
+                        
+                        await send(.view(.postSocialLogin(entity: entity)))
+                    }
+                    
+                case .postSocialLogin(let entity):
+                    let post = PostSocialMapper.toDTO(from: entity)
+                    return .run { send in
+                        do {
+                            let result = try await userUseCaseRepo.postSocialLogin(post)
+                            await send(.move(.toHome))
+                        } catch {
+                            await send(.move(.toTermview))
+                        }
+                    }
+                    
+                case .socailLoginFail:
+                    return .none
+                    
+                case .postSignUp:
                     return .none
                 }
                 
@@ -79,6 +138,7 @@ public struct OnboardingFeature {
                 case .toTermview:
                     state.path.append(.term(TermFeature.State()))
                     return .none
+                    
                 case .toselectRole:
                     state.path.append(.selectRole)
                     return .none
@@ -90,6 +150,9 @@ public struct OnboardingFeature {
                     return .none
                 case .toMakeInvitationCode:
                     state.path.append(.makeInvitationCode(MakeInvitationCodeFeature.State()))
+                    return .none
+                case .toHome:
+                    print("post 사인 성공..")
                     return .none
                 default:
                     return .none
@@ -115,9 +178,6 @@ public struct OnboardingFeature {
                 default:
                     return .none
                 }
-                
-            default:
-                return .none
             }
         }
         .forEach(\.path, action: \.path)
@@ -145,5 +205,7 @@ public struct OnboardingFeature {
         case registerInvitationCode
         /// 트레이니 수업 정보 입력
         case registerPtClassInfo
+        /// 홈
+        case home
     }
 }
