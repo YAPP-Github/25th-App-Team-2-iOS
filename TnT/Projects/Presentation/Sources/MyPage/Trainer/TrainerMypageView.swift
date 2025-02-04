@@ -37,6 +37,32 @@ public struct TrainerMypageView: View {
         }
         .background(Color.neutral50)
         .navigationBarBackButtonHidden()
+        .tPopUp(isPresented: $store.view_isPopUpPresented) {
+            PopUpView()
+        }
+    }
+    
+    @ViewBuilder
+    private func PopUpView() -> some View {
+        if let popUp = store.view_popUp {
+            let buttons: [TPopupAlertState.ButtonState] = [
+                popUp.secondaryAction.map({ action in
+                    TPopupAlertState.ButtonState(title: "취소", style: .secondary, action: .init(action: { send(action) }))
+                }),
+                TPopupAlertState.ButtonState(title: "확인", style: .primary, action: .init(action: { send(popUp.primaryAction) }))
+            ].compactMap { $0 }
+            
+            TPopUpAlertView(
+                alertState: TPopupAlertState(
+                    title: popUp.title,
+                    message: popUp.message,
+                    showAlertIcon: popUp.alertIcon,
+                    buttons: buttons
+                )
+            )
+        } else {
+            EmptyView()
+        }
     }
     
     @ViewBuilder
