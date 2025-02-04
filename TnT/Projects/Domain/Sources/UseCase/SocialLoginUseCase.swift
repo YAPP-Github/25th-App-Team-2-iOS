@@ -23,8 +23,4 @@ public struct SocialLoginUseCase {
     public func kakaoLogin() async -> KakaoLoginInfo? {
         return await socialLoginRepository.kakaoLogin()
     }
-    
-    public func kakaoLogout() async {
-        // 미구현
-    }
 }

@@ -13,7 +13,6 @@ import Domain
 
 /// 사용자 관련 네트워크 요청을 처리하는 UserRepository 구현체
 public struct UserRepositoryImpl: UserRepository {
-    private let loginManager = SNSLoginManager()
     private let networkService: NetworkService = .shared
     
     public init() {}

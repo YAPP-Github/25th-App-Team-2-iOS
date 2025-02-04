@@ -7,7 +7,7 @@
 //
 
 import Dependencies
-import SwiftUI
+import Foundation
 
 // MARK: - UserUseCase 프로토콜
 public protocol UserUseCase {
@@ -64,14 +64,16 @@ public struct DefaultUserUseCase: UserRepository, UserUseCase {
     public func getPrecautionMaxLength() -> Int {
         return UserPolicy.maxPrecautionLength
     }
-    
-    // MARK: - Repository
+}
+
+// MARK: - Repository
+extension DefaultUserUseCase {
     public func postSocialLogin(_ reqDTO: PostSocialLoginReqDTO) async throws -> PostSocialLoginResDTO {
         return try await userRepostiory.postSocialLogin(reqDTO)
     }
-    
+
     public func postSignUp(_ reqDTO: PostSignUpReqDTO, profileImage: Data?) async throws -> PostSignUpResDTO {
         return try await userRepostiory.postSignUp(reqDTO, profileImage: profileImage)
     }
-    
 }
+

@@ -12,7 +12,6 @@ import Data
 
 // MARK: - Swift-Dependencies
 private enum UserUseCaseKey: DependencyKey {
-//    static let liveValue: UserUseCase
     static let liveValue: UserUseCase = DefaultUserUseCase(userRepostiory: UserRepositoryImpl())
 }
 
@@ -25,10 +24,6 @@ private enum TraineeUseCaseKey: DependencyKey {
         trainerRepository: TrainerRepositoryImpl(),
         traineeRepository: TraineeRepositoryImpl()
     )
-}
-
-private enum SocialUseCaseKey: DependencyKey {
-    static let liveValue: SocialLoginUseCase = SocialLoginUseCase(socialLoginRepository: SocialLogInRepositoryImpl(loginManager: SNSLoginManager()))
 }
 
 private enum SocialUseCaseKey: DependencyKey {
