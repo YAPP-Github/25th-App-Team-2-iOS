@@ -27,15 +27,7 @@ public struct TraineeInvitationCodeInputView: View {
     
     public var body: some View {
         VStack(spacing: 0) {
-            TNavigation(
-                type: .RTextWithTitle(
-                    centerTitle: "연결하기",
-                    rightText: "건너뛰기"
-                ),
-                rightAction: {
-                    send(.tapNavBarSkipButton)
-                }
-            )
+            NavigationBar()
             .padding(.bottom, 24)
             
             Header()
@@ -63,18 +55,37 @@ public struct TraineeInvitationCodeInputView: View {
             }
         }
         .tPopUp(isPresented: $store.view_isPopupPresented) {
-            PopUpView(
-                secondaryAction: {
-                    send(.tapPopupNextButton)
-                },
-                primaryAction: {
-                    send(.tapPopupConfirmButton)
+            PopUpView()
+        }
+    }
+    
+    // MARK: - Sections
+    @ViewBuilder
+    private func NavigationBar() -> some View {
+        switch store.view_navigationType {
+        case .newUser:
+            TNavigation(
+                type: .RTextWithTitle(
+                    centerTitle: "연결하기",
+                    rightText: "건너뛰기"
+                ),
+                rightAction: {
+                    send(.tapNavBarSkipButton)
+                }
+            )
+        case .existingUser:
+            TNavigation(
+                type: .LButtonWithTitle(
+                    leftImage: .icnArrowLeft,
+                    centerTitle: "연결하기"
+                ),
+                leftAction: {
+                    send(.tapNavBarBackButton)
                 }
             )
         }
     }
     
-    // MARK: - Sections
     @ViewBuilder
     private func Header() -> some View {
         TInfoTitleHeader(title: "트레이너에게 받은\n초대 코드를 입력해 주세요")
@@ -110,45 +121,33 @@ public struct TraineeInvitationCodeInputView: View {
             .padding(.horizontal, 20)
         }
     }
-}
-
-private extension TraineeInvitationCodeInputView {
     
-    struct PopUpView: View {
-        let secondaryAction: () -> Void
-        let primaryAction: () -> Void
-        
-        init(
-            secondaryAction: @escaping () -> Void,
-            primaryAction: @escaping () -> Void
-        ) {
-            self.secondaryAction = secondaryAction
-            self.primaryAction = primaryAction
-        }
-        
-        var body: some View {
+    @ViewBuilder
+    private func PopUpView() -> some View {
+        if let popUp = store.view_popUp {
+            let buttons: [TPopupAlertState.ButtonState] = [
+                .init(
+                    title: popUp.secondaryButtonTitle,
+                    style: .secondary,
+                    action: .init(action: { send(popUp.secondaryAction) })
+                ),
+                .init(
+                    title: popUp.primaryButtonTitle,
+                    style: .primary,
+                    action: .init(action: { send(popUp.primaryAction) })
+                )
+            ]
+            
             TPopUpAlertView(
                 alertState: .init(
-                    title: "트레이너에게 받은\n초대 코드를 입력해보세요!",
-                    message: "트레이너와 연결하지 않을 경우\n일부 기능이 제한될 수 있어요.",
-                    buttons: [
-                        .init(
-                            title: "다음에 할게요",
-                            style: .secondary,
-                            action: .init(action: {
-                                secondaryAction()
-                            })
-                        ),
-                        .init(
-                            title: "확인",
-                            style: .primary,
-                            action: .init(action: {
-                                primaryAction()
-                            })
-                        )
-                    ]
+                    title: popUp.title,
+                    message: popUp.message,
+                    showAlertIcon: popUp.showAlertIcon,
+                    buttons: buttons
                 )
             )
+        } else {
+            EmptyView()
         }
     }
 }
