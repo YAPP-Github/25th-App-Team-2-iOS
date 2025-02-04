@@ -26,6 +26,8 @@ public enum TDateFormat: String {
     case M월_d일 = "M월 d일"
     /// "01월 10일 화요일"
     case MM월_dd일_EEEE = "MM월 dd일 EEEE"
+    /// "1월 10일 화요일"
+    case M월_d일_EEEE = "M월 d일 EEEE"
     /// "EE"
     case EE = "EE"
     /// "오후 17:00" (시간 포맷)

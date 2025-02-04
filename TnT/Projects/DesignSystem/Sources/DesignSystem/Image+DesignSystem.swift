@@ -48,6 +48,7 @@ public extension ImageResource {
     static let icnStarSmile: ImageResource = DesignSystemAsset.icnStarSmile.imageResource
     static let icnWriteBlackFilled: ImageResource = DesignSystemAsset.icnWriteBlackFilled.imageResource
     static let icnPlus: ImageResource = DesignSystemAsset.icnPlus.imageResource
+    static let icnPlusEmpty: ImageResource = DesignSystemAsset.icnPlusEmpty.imageResource
     static let icnAlarm: ImageResource = DesignSystemAsset.icnAlarm.imageResource
     static let icnCalendar: ImageResource = DesignSystemAsset.icnCalendar.imageResource
     static let icnDelete24px: ImageResource = DesignSystemAsset.icnDelete24.imageResource

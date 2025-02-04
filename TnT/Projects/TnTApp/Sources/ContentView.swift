@@ -12,8 +12,7 @@ import ComposableArchitecture
 
 struct ContentView: View {
     var body: some View {
-        Text("dasdasdf")
-        Text("Hello, World!")
+        Text("")
     }
 }
 

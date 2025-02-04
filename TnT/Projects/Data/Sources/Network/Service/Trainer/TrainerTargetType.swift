@@ -14,6 +14,12 @@ import Domain
 public enum TrainerTargetType {
     /// 트레이너 초대코드 인증
     case getVerifyInvitationCode(code: String)
+    /// 트레이너 초대코드 불러오기
+    case getFirstInvitationCode
+    /// 트레이너 캘린더, 특정 날짜의 PT 리스트 불러오기
+    case getDateLessionList(date: String)
+    /// 트레이너 초대코드 재발급
+    case getReissuanceInvitationCode
 }
 
 extension TrainerTargetType: TargetType {
@@ -26,6 +32,12 @@ extension TrainerTargetType: TargetType {
         switch self {
         case .getVerifyInvitationCode(let code):
             return "/invitation-code/verify/\(code)"
+        case .getFirstInvitationCode:
+            return "/invitation-code"
+        case .getDateLessionList(let date):
+            return "/lessions/\(date)"
+        case .getReissuanceInvitationCode:
+            return "/invitation-code/reissue"
         }
     }
     
@@ -33,6 +45,12 @@ extension TrainerTargetType: TargetType {
         switch self {
         case .getVerifyInvitationCode:
             return .get
+        case .getFirstInvitationCode:
+            return .get
+        case .getDateLessionList:
+            return .get
+        case .getReissuanceInvitationCode:
+            return .put
         }
     }
     
@@ -40,12 +58,24 @@ extension TrainerTargetType: TargetType {
         switch self {
         case .getVerifyInvitationCode:
             return .requestPlain
+        case .getFirstInvitationCode:
+            return .requestPlain
+        case .getDateLessionList:
+            return .requestPlain
+        case .getReissuanceInvitationCode:
+            return .requestPlain
         }
     }
     
     var headers: [String: String]? {
         switch self {
         case .getVerifyInvitationCode:
+            return ["Content-Type": "application/json"]
+        case .getFirstInvitationCode:
+            return nil
+        case .getDateLessionList:
+            return ["Content-Type": "application/json"]
+        case .getReissuanceInvitationCode:
             return ["Content-Type": "application/json"]
         }
     }
