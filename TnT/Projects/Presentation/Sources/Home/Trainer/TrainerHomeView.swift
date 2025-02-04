@@ -41,7 +41,7 @@ public struct TrainerHomeFeature {
         }
         /// 기록 제목 표시
         var view_recordTitleString: String {
-            return TDateFormatUtility.formatter(for: .MM월_dd일_EEEE).string(from: selectedDate)
+            return TDateFormatUtility.formatter(for: .M월_d일_EEEE).string(from: selectedDate)
         }
         /// 선택 바텀 시트 표시
         var view_isBottomSheetPresented: Bool
@@ -140,9 +140,10 @@ public struct TrainerHomeView: View {
                 RecordTitle()
                 RecordList()
             }
-            .overlay {
-                SessionAddButton()
-            }
+            .background(Color.neutral100)
+        }
+        .overlay(alignment: .bottomTrailing) {
+            SessionAddButton()
         }
     }
     
@@ -165,7 +166,7 @@ public struct TrainerHomeView: View {
                 }
             )
             
-            // Calendar + 금일 수업 카드
+            // Calendar
             VStack(spacing: 12) {
                 TCalendarView(
                     selectedDate: $store.selectedDate,
@@ -186,18 +187,22 @@ public struct TrainerHomeView: View {
         HStack {
             Text(store.view_recordTitleString)
                 .typographyStyle(.heading3, with: .neutral800)
-                .padding(20)
+                .padding(.vertical, 20)
             
             Spacer()
             
             HStack(spacing: 0) {
                 Text("🧨")
+                    .typographyStyle(.label1Medium)
                 Text("\(store.sessionCount)")
+                    .typographyStyle(.label2Bold, with: Color.red500)
                 Text("개의 수업이 있어요")
+                    .typographyStyle(.label2Medium, with: Color.neutral800)
             }
         }
-        .background(Color.neutral100)
         .padding(.horizontal, 20)
+        .background(Color.neutral100)
+        
     }
     
     /// 수업 리스트
@@ -206,7 +211,7 @@ public struct TrainerHomeView: View {
         VStack {
             if let record = store.tappedsessionInfo {
                 ForEach(record.lessons, id: \.id) { record in
-                    sessionCellView(session: record) {
+                    SessionCellView(session: record) {
                         send(.tapSessionCompleted(id: record.ptLessonId))
                     }
                 }
@@ -225,7 +230,9 @@ public struct TrainerHomeView: View {
             .frame(width: 126, height: 58)
             .overlay {
                 HStack(spacing: 4) {
-                    Image(.icnPlus)
+                    Image(.icnPlusEmpty)
+                        .resizable()
+                        .frame(width: 24, height: 24)
                     Text("수업추가")
                         .typographyStyle(.body1Medium, with: .neutral50)
                 }
@@ -233,6 +240,8 @@ public struct TrainerHomeView: View {
             .onTapGesture {
                 send(.tapAddSessionRecordButton)
             }
+            .padding(.trailing, 22)
+            .padding(.bottom, 28)
     }
 }
 
@@ -249,11 +258,13 @@ extension TrainerHomeView {
                     .typographyStyle(.label1Medium, with: .neutral400)
                     .frame(maxWidth: .infinity)
             }
+            .padding(.top, 80)
+            .padding(.bottom, 100)
         }
     }
     
     /// 수업 목록리스트의 셀
-    struct sessionCellView: View {
+    struct SessionCellView: View {
         var session: SessonEntity
         var onTapComplete: () -> Void
         
@@ -286,7 +297,6 @@ extension TrainerHomeView {
                                     .typographyStyle(.label2Medium, with: .neutral400)
                             }
                             .frame(maxWidth: .infinity)
-                            .background(Color.neutral100)
                             .clipShape(RoundedRectangle(cornerRadius: 8))
                         }
                     }
