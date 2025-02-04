@@ -13,6 +13,8 @@ let dependencyInfo: [DependencyInformation: [DependencyInformation]] = [
     .Domain: [.SwiftDepedencies],
     .Data: [.Domain, .KakaoSDKUser, .SwiftDepedencies, .FirebaseMessaging],
     .DesignSystem: [.Lottie],
+    .Data: [.Domain, .KakaoSDKUser, .SwiftDepedencies],
+    .DesignSystem: [.Lottie, .FSCalendar],
     .DIContainer: [.Domain, .Data]
 ]
 
@@ -28,6 +30,7 @@ public enum DependencyInformation: String, CaseIterable, Sendable {
     case KakaoSDKUser = "KakaoSDKUser"
     case SwiftDepedencies = "Dependencies"
     case FirebaseMessaging = "FirebaseMessaging"
+    case FSCalendar = "FSCalendar"
 }
 
 public extension DependencyInformation {

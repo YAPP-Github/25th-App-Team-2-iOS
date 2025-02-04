@@ -7,7 +7,7 @@
 //
 
 /// 앱에서 존재하는 기록 유형을 정의한 열거형
-public enum RecordType: Sendable {
+public enum RecordType: Sendable, Equatable {
     /// n회차 수업
     case session(count: Int)
     /// 운동

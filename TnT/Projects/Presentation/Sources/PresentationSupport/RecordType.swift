@@ -31,4 +31,9 @@ extension RecordType {
             return type.emoji
         }
     }
+    
+    /// 앱에서 사용되는 Chip에 연결되는 전체 UI 정보 입니다
+    var chipInfo: TChip.UIInfo {
+        return .init(leadingEmoji: self.emoji, title: self.koreanName, style: self.chipStyle)
+    }
 }

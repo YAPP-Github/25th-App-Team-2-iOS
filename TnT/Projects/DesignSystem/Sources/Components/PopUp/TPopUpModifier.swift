@@ -23,7 +23,7 @@ public struct TPopUpModifier<InnerContent: View>: ViewModifier {
     /// 팝업 그림자의 기본 반경
     private let defaultShadowRadius: CGFloat = 10
     /// 팝업 콘텐츠의 기본 크기
-    private let defaultContentSize: CGSize = .init(width: 297, height: 175)
+    private let defaultContentSize: CGSize = .init(width: 297, height: 151)
     
     /// 팝업에 표시될 내부 콘텐츠 클로저
     private let innerContent: () -> InnerContent

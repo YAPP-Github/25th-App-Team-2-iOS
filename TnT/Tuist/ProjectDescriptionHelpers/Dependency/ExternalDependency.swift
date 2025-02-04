@@ -12,5 +12,6 @@ let externalDependency: [DependencyInformation] = [
     .Lottie,
     .ComposableArchitecture,
     .SwiftDepedencies,
-    .FirebaseMessaging
+    .FirebaseMessaging,
+    .FSCalendar
 ]

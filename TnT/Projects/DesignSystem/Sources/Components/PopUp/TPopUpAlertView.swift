@@ -23,10 +23,20 @@ public struct TPopUpAlertView: View {
         VStack(spacing: 20) {
             // 텍스트 Section
             VStack(spacing: 8) {
-                Text(alertState.title)
-                    .typographyStyle(.heading3, with: .neutral900)
-                    .multilineTextAlignment(.center)
-                    .padding(.top, 20)
+                VStack(spacing: 0) {
+                    if alertState.showAlertIcon {
+                        Image(.icnWarning)
+                            .resizable()
+                            .frame(width: 80, height: 80)
+                    } else {
+                        Color.clear
+                            .frame(height: 20)
+                    }
+                    Text(alertState.title)
+                        .typographyStyle(.heading3, with: .neutral900)
+                        .multilineTextAlignment(.center)
+                }
+                
                 if let message = alertState.message {
                     Text(message)
                         .typographyStyle(.body2Medium, with: .neutral500)
