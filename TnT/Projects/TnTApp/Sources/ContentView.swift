@@ -12,9 +12,7 @@ import ComposableArchitecture
 
 struct ContentView: View {
     var body: some View {
-        TermView(store: Store(initialState: TermFeature.State(), reducer: {
-            TermFeature()
-        }))
+        Text("")
     }
 }
 
