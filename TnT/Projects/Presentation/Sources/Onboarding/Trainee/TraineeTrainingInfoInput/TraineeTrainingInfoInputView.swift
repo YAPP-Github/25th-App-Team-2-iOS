@@ -56,10 +56,15 @@ public struct TraineeTrainingInfoInputView: View {
             }
         }
         .sheet(isPresented: $store.view_isDatePickerPresented) {
-            TDatePickerView(title: "PT 시작일") { date in
+            TDatePickerView(
+                title: "PT 시작일",
+                monthFormatter: {
+                    TDateFormatUtility.formatter(for: .yyyy년_MM월).string(from: $0)
+                }
+            ) { date in
                 send(.tapStartDatePickerDoneButton(date))
             }
-            .presentationDetents([.medium])
+            .autoSizingBottomSheet(presentationDragIndicator: .hidden)
             .interactiveDismissDisabled(true)
         }
         .onChange(of: focusedField) { oldValue, newValue in

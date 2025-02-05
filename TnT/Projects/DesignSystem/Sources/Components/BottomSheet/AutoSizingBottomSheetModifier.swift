@@ -26,10 +26,10 @@ struct AutoSizingBottomSheetModifier: ViewModifier {
                 GeometryReader { proxy in
                     Color.clear
                         .onAppear {
-                            contentHeight = proxy.size.height + 50
+                            contentHeight = proxy.size.height + 10
                         }
                         .onChange(of: proxy.size.height) { _, newHeight in
-                            contentHeight = newHeight + 50
+                            contentHeight = newHeight + 10
                         }
                 }
             )
