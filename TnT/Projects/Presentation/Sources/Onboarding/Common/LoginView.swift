@@ -1,5 +1,5 @@
 //
-//  OnboardingView.swift
+//  LoginView.swift
 //  Presentation
 //
 //  Created by 박서연 on 1/24/25.
@@ -11,48 +11,32 @@ import SwiftUI
 
 import DesignSystem
 
-public struct OnboardingView: View {
-    @Bindable public var store: StoreOf<OnboardingFeature>
+@ViewAction(for: LoginFeature.self)
+public struct LoginView: View {
+    @Bindable public var store: StoreOf<LoginFeature>
     
-    public init(store: StoreOf<OnboardingFeature>) {
+    public init(store: StoreOf<LoginFeature>) {
         self.store = store
     }
     
     public var body: some View {
-        NavigationStack(path: $store.scope(state: \.path, action: \.path)) {
-            VStack {
-                Header()
-                
-                Spacer()
-                
-                Image(.imgOnboardingLogin)
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: 310, height: 310)
-                
-                Bottom()
-                
-                Spacer()
-                
-            }
-            .padding(.horizontal, 28)
-            .navigationBarBackButtonHidden()
-        } destination: { store in
-            switch store.case {
-            case .term(let store):
-                TermView(store: store)
-//            case .selectRole(let store):
-//                Text("selectRole") // 역할 선택 화면으로 추후 수정
-//            case .registerNickname(let store):
-//                EmptyView() // 프로필 생성 (이름+사진) 공통 화면으로 추후 수정
-            case .completeSignup(let store):
-                TrainerSignUpCompleteView(store: store)
-            case .makeInvitationCode(let store):
-                MakeInvitationCodeView(store: store)
-            default:
-                EmptyView()
-            }
+        VStack {
+            Header()
+            
+            Spacer()
+            
+            Image(.imgOnboardingLogin)
+                .resizable()
+                .scaledToFit()
+                .frame(width: 310, height: 310)
+            
+            Bottom()
+            
+            Spacer()
+            
         }
+        .padding(.horizontal, 28)
+        .navigationBarBackButtonHidden()
     }
     
     @ViewBuilder
@@ -84,8 +68,12 @@ public struct OnboardingView: View {
                 .background(type.background)
                 .clipShape(RoundedRectangle(cornerRadius: 12))
                 .onTapGesture {
-                        type == .kakao ? store.send(.view(.tappedKakaoLogin))
-                        : store.send(.view(.tappedAppleLogin))
+                    switch type {
+                    case .apple:
+                        send(.tappedAppleLogin)
+                    case .kakao:
+                        send(.tappedKakaoLogin)
+                    }
                 }
             }
         }
