@@ -1,5 +1,5 @@
 //
-//  TraineeMainNavigationTabView.swift
+//  TrainerMainTabView.swift
 //  Presentation
 //
 //  Created by 박민서 on 2/4/25.
@@ -11,11 +11,11 @@ import ComposableArchitecture
 
 import DesignSystem
 
-@ViewAction(for: TraineeMainTabFeature.self)
-public struct TraineeMainTabView: View {
-    @Bindable public var store: StoreOf<TraineeMainTabFeature>
-    
-    public init(store: StoreOf<TraineeMainTabFeature>) {
+@ViewAction(for: TrainerMainTabFeature.self)
+public struct TrainerMainTabView: View {
+    @Bindable public var store: StoreOf<TrainerMainTabFeature>
+
+    public init(store: StoreOf<TrainerMainTabFeature>) {
         self.store = store
     }
 
@@ -24,11 +24,21 @@ public struct TraineeMainTabView: View {
             switch store.state {
             case .home:
                 if let store = store.scope(state: \.home, action: \.subFeature.homeAction) {
-                    TraineeHomeView(store: store)
+                    TrainerHomeView(store: store)
+                }
+            case .feedback:
+                if let store = store.scope(state: \.feedback, action: \.subFeature.feedbackAction) {
+                    Color.clear
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                }
+            case .traineeList:
+                if let store = store.scope(state: \.traineeList, action: \.subFeature.traineeListAction) {
+                    Color.clear
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
                 }
             case .myPage:
                 if let store = store.scope(state: \.myPage, action: \.subFeature.myPageAction) {
-                    TraineeMyPageView(store: store)
+                    TrainerMypageView(store: store)
                 }
             }
             
@@ -41,7 +51,7 @@ public struct TraineeMainTabView: View {
     @ViewBuilder
     private func BottomTabBar() -> some View {
         HStack(alignment: .top) {
-            ForEach(TraineeTabInfo.allCases, id: \.hashValue) { tab in
+            ForEach(TrainerTabInfo.allCases, id: \.hashValue) { tab in
                 Spacer()
                 TabButton(
                     icon: store.state.tabInfo == tab ? tab.filledIcn : tab.emptyIcn,
@@ -58,7 +68,7 @@ public struct TraineeMainTabView: View {
     }
 }
 
-private extension TraineeMainTabView {
+private extension TrainerMainTabView {
     struct TabButton: View {
         let icon: ImageResource
         let text: String
