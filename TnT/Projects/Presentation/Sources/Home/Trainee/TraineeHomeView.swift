@@ -92,7 +92,7 @@ public struct TraineeHomeView: View {
                     selectedDate: $store.selectedDate,
                     currentPage: $store.view_currentPage,
                     events: store.events,
-                    isWeekMode: true
+                    mode: .week
                 )
                 .padding(.horizontal, 20)
                 

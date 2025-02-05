@@ -60,8 +60,7 @@ public struct TrainerHomeView: View {
                 TCalendarView(
                     selectedDate: $store.selectedDate,
                     currentPage: $store.view_currentPage,
-                    events: store.events,
-                    isWeekMode: false
+                    events: store.events
                 )
                 .padding(.horizontal, 20)
             }
