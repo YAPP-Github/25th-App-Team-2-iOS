@@ -60,14 +60,14 @@ public struct TraineeHomeFeature {
     
     @Dependency(\.traineeUseCase) private var traineeUseCase: TraineeUseCase
     
-    public enum Action: Sendable, ViewAction {
+    public enum Action: Equatable, Sendable, ViewAction {
         /// 뷰에서 발생한 액션을 처리합니다.
         case view(View)
         /// 네비게이션 여부 설정
-        case setNavigating
+        case setNavigating(RoutingScreen)
         
         @CasePathable
-        public enum View: Sendable, BindableAction {
+        public enum View: Equatable, Sendable, BindableAction {
             /// 바인딩할 액션을 처리
             case binding(BindingAction<State>)
             /// 우측 상단 알림 페이지 보기 버튼 탭
@@ -96,14 +96,11 @@ public struct TraineeHomeFeature {
             case .view(let action):
                 switch action {
                 case .binding(\.selectedDate):
-                    print(state.events[state.selectedDate])
                     return .none
                 case .binding:
                     return .none
                 case .tapAlarmPageButton:
-                    // TODO: 네비게이션 연결 시 추가
-                    print("tapAlarmPageButton")
-                    return .none
+                    return .send(.setNavigating(.alarmPage))
                 case .tapShowSessionRecordButton(let id):
                     // TODO: 네비게이션 연결 시 추가
                     print("tapShowSessionRecordButton \(id)")
@@ -128,5 +125,20 @@ public struct TraineeHomeFeature {
                 return .none
             }
         }
+    }
+}
+
+extension TraineeHomeFeature {
+    public enum RoutingScreen: Sendable {
+        /// 알림 페이지
+        case alarmPage
+        /// 수업 기록 상세 페이지
+        case sessionRecordPage
+        /// 기록 피드백 페이지
+        case recordFeedbackPage
+        /// 운동 기록 추가 페이지
+        case addWorkoutRecordPage
+        /// 식단 기록 추가 페이지
+        case addMealRecordPage
     }
 }

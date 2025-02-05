@@ -12,8 +12,6 @@ let dependencyInfo: [DependencyInformation: [DependencyInformation]] = [
     .Presentation: [.DIContainer, .DesignSystem, .Domain, .ComposableArchitecture],
     .Domain: [.SwiftDepedencies],
     .Data: [.Domain, .KakaoSDKUser, .SwiftDepedencies, .FirebaseMessaging],
-    .DesignSystem: [.Lottie],
-    .Data: [.Domain, .KakaoSDKUser, .SwiftDepedencies],
     .DesignSystem: [.Lottie, .FSCalendar],
     .DIContainer: [.Domain, .Data]
 ]

@@ -35,12 +35,12 @@ public struct TrainerMypageFeature {
         var view_isPopUpPresented: Bool = false
         
         public init(
-            userName: String,
+            userName: String = "",
             userImageUrl: String? = nil,
-            studentCount: Int,
-            oldStudentCount: Int,
-            appPushNotificationAllowed: Bool,
-            versionInfo: String,
+            studentCount: Int = 0,
+            oldStudentCount: Int = 0,
+            appPushNotificationAllowed: Bool = false,
+            versionInfo: String = "",
             view_popUp: PopUp? = nil,
             view_isPopUpPresented: Bool = false
         ) {

@@ -75,7 +75,7 @@ public struct TraineeMyPageFeature {
         /// 뷰에서 발생한 액션을 처리합니다.
         case view(View)
         /// 네비게이션 여부 설정
-        case setNavigating
+        case setNavigating(RoutingScreen)
         
         @CasePathable
         public enum View: Sendable, BindableAction {
@@ -178,6 +178,16 @@ private extension TraineeMyPageFeature {
         state.view_popUp = status
         state.view_isPopUpPresented = status != nil
         return .none
+    }
+}
+
+extension TraineeMyPageFeature {
+    /// 본 화면에서 라우팅(파생)되는 화면
+    public enum RoutingScreen: Sendable {
+        /// 트레이니 정보 수정 페이지
+        case traineeInfoEdit
+        /// 초대코드 입력 페이지
+        case traineeInvitationCodeInput
     }
 }
 
