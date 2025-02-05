@@ -16,6 +16,16 @@ public struct TraineeMainTabFeature {
         case home(TraineeHomeFeature.State)
         case myPage(TraineeMyPageFeature.State)
         
+        /// state case와 tabinfo 연결
+        var tabInfo: TraineeTabInfo {
+            switch self {
+            case .home:
+                return .home
+            case .myPage:
+                return .mypage
+            }
+        }
+        
         public init() {
             self = .home(TraineeHomeFeature.State())
         }
@@ -31,7 +41,8 @@ public struct TraineeMainTabFeature {
         
         @CasePathable
         public enum View: Sendable {
-            case selectTab(Tab)
+            /// 탭바 선택
+            case selectTab(TraineeTabInfo)
         }
         
         @CasePathable
@@ -55,7 +66,7 @@ public struct TraineeMainTabFeature {
                     case .home:
                         state = .home(.init())
                         return .none
-                    case .myPage:
+                    case .mypage:
                         state = .myPage(.init())
                         return .none
                     }
@@ -71,7 +82,7 @@ public struct TraineeMainTabFeature {
                     return .none
                 }
                 
-            case .setNavigating(let screen):
+            case .setNavigating:
                 return .none
             }
         }
@@ -85,11 +96,6 @@ public struct TraineeMainTabFeature {
 }
 
 extension TraineeMainTabFeature {
-    public enum Tab: Equatable, Sendable {
-        case home
-        case myPage
-    }
-    
     /// 하위 화면에서 파생되는 라우팅을 전달합니다
     public enum RoutingScreen: Sendable {
         /// 트레이니 홈
