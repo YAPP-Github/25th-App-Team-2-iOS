@@ -67,7 +67,7 @@ public struct TraineeMainTabFeature {
                         state = .home(.init())
                         return .none
                     case .mypage:
-                        state = .myPage(.init())
+                            state = .myPage(.init())
                         return .none
                     }
                 }
