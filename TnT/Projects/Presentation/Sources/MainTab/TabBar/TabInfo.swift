@@ -13,7 +13,7 @@ public enum TrainerTabInfo: String, CaseIterable, Equatable, Sendable {
     case home = "홈"
     case feedback = "피드백"
     case traineeList = "회원목록"
-    case mypage = "마이페이지"
+    case mypage = "내 정보"
     
     public var filledIcn: ImageResource {
         switch self {
@@ -44,7 +44,7 @@ public enum TrainerTabInfo: String, CaseIterable, Equatable, Sendable {
 
 public enum TraineeTabInfo: String, CaseIterable, Equatable, Sendable {
     case home = "홈"
-    case mypage = "마이페이지"
+    case mypage = "내 정보"
     
     var filledIcn: ImageResource {
         switch self {

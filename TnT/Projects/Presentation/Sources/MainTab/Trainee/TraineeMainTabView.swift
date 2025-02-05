@@ -43,10 +43,12 @@ public struct TraineeMainTabView: View {
         HStack(alignment: .top) {
             ForEach(TraineeTabInfo.allCases, id: \.hashValue) { tab in
                 Spacer()
-                TabButton(
-                    icon: store.state.tabInfo == tab ? tab.filledIcn : tab.emptyIcn,
+                TMainTabButton(
+                    unselectedIcon: tab.emptyIcn,
+                    selectedIcon: tab.filledIcn,
                     text: tab.rawValue,
-                    action: { send(.selectTab(tab))}
+                    isSelected: store.state.tabInfo == tab,
+                    action: { send(.selectTab(tab)) }
                 )
                 .frame(maxHeight: .infinity, alignment: .top)
                 Spacer()
@@ -55,26 +57,5 @@ public struct TraineeMainTabView: View {
         .frame(height: 54 + .safeAreaBottom)
         .padding(.horizontal, 24)
         .background(Color.white.shadow(radius: 5).opacity(0.5))
-    }
-}
-
-private extension TraineeMainTabView {
-    struct TabButton: View {
-        let icon: ImageResource
-        let text: String
-        let action: () -> Void
-
-        var body: some View {
-            Button(action: action) {
-                VStack(spacing: 4) {
-                    Image(icon)
-                        .resizable()
-                        .frame(width: 24, height: 24)
-                    Text(text)
-                        .typographyStyle(.label2Bold, with: .neutral900)
-                }
-            }
-            .padding(.vertical, 8)
-        }
     }
 }
