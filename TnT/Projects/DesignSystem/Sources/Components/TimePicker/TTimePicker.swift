@@ -10,42 +10,51 @@ import SwiftUI
 
 /// 시간, 분, 오전/오후 세 열을 나란히 배치하는 커스텀 타임 피커
 public struct TTimePicker: View {
-    @State private var selectedHour: Int    // 0 ~ 11 (표시 시에는 +1 해서 1~12)
-    @State private var selectedMinute: Int     // 0 ~ 59
-    @State private var selectedPeriod: Int    // 0: AM, 1: PM
+    /// 선택된 시간이 종합되는 date
+    @Binding private var date: Date
+    /// 0 ~ 11 (표시 시에는 +1 해서 1~12)
+    @State private var selectedHour: Int
+    /// 분 선택은 내부적으로 분 배열의 인덱스로 저장 (예, minuteStep이 5면 0~11)
+    @State private var selectedMinuteIndex: Int
+    /// 0: AM, 1: PM
+    @State private var selectedPeriod: Int
     
-    // 설정값
+    /// 셀 높이
     let rowHeight: CGFloat = 35
+    /// 피커에 표시되는 셀 개수
     let visibleCount: Int = 5
+    /// 선택되지 않은 시간 텍스트 폰트
     let normalFont: Font = Typography.FontStyle.heading4.font
+    /// 선택된 시간 텍스트 폰트
     let selectedFont: Font = Typography.FontStyle.heading3.font
+    /// 선택되지 않은 시간 텍스트 컬러
     let normalColor: Color = .neutral400
+    /// 선택된 시간 텍스트 컬러
     let selectedColor: Color = .neutral900
+    /// 분 단위 설정
+    let minuteStep: Int
+    // 무한 스크롤 사용 여부 - false로 설정하면 유한 스크롤
+    let infiniteScroll: Bool = true
+    /// 실제 분 값을 계산
+    /// ex - minuteStep이 5이면 내부 저장값 7 -> 35분
+    public var selectedMinute: Int {
+        selectedMinuteIndex * minuteStep
+    }
     
-    // 무한 스크롤 사용 여부 (여기서 전체 피커에 대해 동일하게 설정할 수 있음)
-    let infiniteScroll: Bool = true // false로 설정하면 유한 스크롤이 됩니다.
-    
-    /// 현재 날짜와 시각을 기준으로 기본 선택값을 지정하는 initializer
-        public init(
-            selectedHour: Int = {
-                let calendar = Calendar.current
-                let hour24 = calendar.component(.hour, from: .now)
-                // 12시간제로 변환 (0일 경우 12로, 나머지는 그대로)
-                let hour12 = hour24 % 12 == 0 ? 12 : hour24 % 12
-                // TTimePicker는 0이 "1시", 11이 "12시"에 해당하므로 -1 처리
-                return hour12 - 1
-            }(),
-            selectedMinute: Int = Calendar.current.component(.minute, from: .now),
-            selectedPeriod: Int = {
-                let hour24 = Calendar.current.component(.hour, from: .now)
-                // 0: AM, 1: PM (오전이면 0, 오후면 1)
-                return hour24 < 12 ? 0 : 1
-            }()
-        ) {
-            _selectedHour = State(initialValue: selectedHour)
-            _selectedMinute = State(initialValue: selectedMinute)
-            _selectedPeriod = State(initialValue: selectedPeriod)
-        }
+    public init(selectedDate: Binding<Date>, minuteStep: Int = 1) {
+        _date = selectedDate
+        
+        let hour24 = Calendar.current.component(.hour, from: selectedDate.wrappedValue)
+        let hour12 = hour24 % 12 == 0 ? 12 : hour24 % 12
+        let hour = hour12 - 1
+        _selectedHour = State(initialValue: hour)
+        
+        let minute = Calendar.current.component(.minute, from: selectedDate.wrappedValue)
+        _selectedMinuteIndex = State(initialValue: minute / minuteStep)
+        
+        _selectedPeriod = State(initialValue: hour24 < 12 ? 0 : 1)
+        self.minuteStep = minuteStep
+    }
     
     public var body: some View {
         ZStack {
@@ -64,13 +73,19 @@ public struct TTimePicker: View {
                     normalColor: normalColor,
                     selectedColor: selectedColor,
                     infiniteScroll: infiniteScroll,
-                    selected: $selectedHour
+                    selected: Binding(get: {
+                        selectedHour
+                    }, set: {
+                        selectedHour = $0
+                        updateDate()
+                    })
                 )
                 Text(":")
                     .typographyStyle(.heading4, with: .neutral900)
-                // 분 열: "00" ~ "59"
+                // 분 열: 생성 시 minuteStep에 따라 아이템 생성 (예, minuteStep 5 → ["00","05",..., "55"])
                 FlatPickerColumn(
-                    items: (0..<60).map { String(format: "%02d", $0) },
+                    items: stride(from: 0, to: 60, by: minuteStep)
+                        .map { String(format: "%02d", $0) },
                     rowHeight: rowHeight,
                     visibleCount: visibleCount,
                     normalFont: normalFont,
@@ -78,7 +93,13 @@ public struct TTimePicker: View {
                     normalColor: normalColor,
                     selectedColor: selectedColor,
                     infiniteScroll: infiniteScroll,
-                    selected: $selectedMinute
+                    selected: Binding(
+                        get: { selectedMinuteIndex },
+                        set: { newValue in
+                            selectedMinuteIndex = newValue
+                            updateDate()
+                        }
+                    )
                 )
                 Text(":")
                     .typographyStyle(.heading4, with: .clear)
@@ -92,9 +113,31 @@ public struct TTimePicker: View {
                     normalColor: normalColor,
                     selectedColor: selectedColor,
                     infiniteScroll: false,
-                    selected: $selectedPeriod
+                    selected: Binding(
+                        get: { selectedPeriod },
+                        set: { newValue in
+                            selectedPeriod = newValue
+                            updateDate()
+                        }
+                    )
                 )
             }
+        }
+    }
+    
+    private func updateDate() {
+        var calendar: Calendar = Calendar.current
+        calendar.timeZone = TimeZone(secondsFromGMT: 0) ?? .current  // UTC로 설정
+        var components: DateComponents = calendar.dateComponents([.year, .month, .day, .hour, .minute], from: date)
+        
+        // 24시간대로 시간 포맷 설정
+        let hour24: Int = (selectedHour + 1) % 12 + (selectedPeriod == 1 ? 12 : 0)
+        
+        components.hour = hour24
+        components.minute = selectedMinute
+        
+        if let newDate = calendar.date(from: components) {
+            date = newDate
         }
     }
 }
