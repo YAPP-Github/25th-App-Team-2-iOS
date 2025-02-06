@@ -1,0 +1,171 @@
+//
+//  TrainerSelectSessionTraineeView.swift
+//  Presentation
+//
+//  Created by 박민서 on 2/6/25.
+//  Copyright © 2025 yapp25thTeamTnT. All rights reserved.
+//
+
+import SwiftUI
+
+import DesignSystem
+
+/// TrainerAppPTSessionView에서 사용하는 회원 선택용 바텀 시트 뷰
+public struct TrainerSelectSessionTraineeView: View {
+    /// 회원 리스트
+    var traineeList: [(id: Int, name: String, action: () -> Void)]
+    /// 선택된 회원 id
+    var selectedTraineeId: Int?
+    /// 바텀시트 높이
+    @State private var contentHeight: CGFloat = 708
+    /// 최대 높이
+    let maxHeight: CGFloat = 708
+    @State private var isScrollEnabled: Bool = false
+    
+    @Environment(\.dismiss) var dismiss
+    
+    public init(
+        traineeList: [(id: Int, name: String, action: () -> Void)],
+        selectedTraineeId: Int? = nil
+    ) {
+        self.traineeList = traineeList
+        self.selectedTraineeId = selectedTraineeId
+    }
+    
+    public var body: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            if isScrollEnabled {
+                Spacer()
+                    .frame(height: 24)
+            }
+            
+            Header()
+            
+            if isScrollEnabled {
+                ScrollView {
+                    Contents()
+                }
+                .overlay {
+                    GradientCover()
+                        .ignoresSafeArea(.all, edges: .bottom)
+                }
+            } else {
+                Contents()
+            }
+        }
+        .background(
+            GeometryReader { proxy in
+                Color.clear
+                    .onAppear {
+                        updateHeight(with: proxy.size.height)
+                    }
+                    .onChange(of: proxy.size.height) { _, newHeight in
+                        updateHeight(with: newHeight)
+                    }
+            }
+        )
+        .presentationDetents([.height(contentHeight)])
+        .presentationDragIndicator(contentHeight == maxHeight ? .visible : .hidden)
+    }
+    
+    // MARK: Section
+    @ViewBuilder
+    private func Header() -> some View {
+        HStack {
+            Text("회원선택하기")
+                .typographyStyle(.heading3, with: .neutral900)
+            
+            Spacer()
+            
+            Button(action: { dismiss() }) {
+                Image(.icnDelete)
+                    .renderingMode(.template)
+                    .resizable()
+                    .tint(.neutral400)
+                    .frame(width: 32, height: 32)
+            }
+        }
+        .padding(20)
+    }
+    
+    @ViewBuilder
+    private func Contents() -> some View {
+        VStack(spacing: 12) {
+            ForEach(traineeList, id: \.id) { item in
+                TraineeListItem(
+                    isSelected: item.id == selectedTraineeId,
+                    name: item.name,
+                    action: item.action
+                )
+                .frame(height: 40)
+            }
+        }
+    }
+    
+    @ViewBuilder
+    private func GradientCover() -> some View {
+        VStack {
+            LinearGradient(
+                gradient: Gradient(stops: [
+                    .init(color: Color.white.opacity(1), location: 0.0),
+                    .init(color: Color.white.opacity(0), location: 1.0)
+                ]),
+                startPoint: .top,
+                endPoint: .bottom
+            )
+            .frame(height: 100)
+            
+            Spacer()
+            
+            LinearGradient(
+                gradient: Gradient(stops: [
+                    .init(color: Color.white.opacity(0), location: 0.0),
+                    .init(color: Color.white.opacity(1), location: 1.0)
+                ]),
+                startPoint: .top,
+                endPoint: .bottom
+            )
+            .frame(height: 100)
+        }
+        .allowsHitTesting(false)
+    }
+}
+
+private extension TrainerSelectSessionTraineeView {
+    /// 바텀 시트 높이 업데이트 함수
+    func updateHeight(with newHeight: CGFloat) {
+        if newHeight >= maxHeight {
+            isScrollEnabled = true
+            contentHeight = maxHeight
+        } else {
+            isScrollEnabled = false
+            contentHeight = newHeight
+        }
+    }
+}
+
+private extension TrainerSelectSessionTraineeView {
+    struct TraineeListItem: View {
+        let isSelected: Bool
+        let name: String
+        let action: () -> Void
+        
+        var body: some View {
+            Button(action: action) {
+                HStack(spacing: 0) {
+                    Text(name)
+                        .typographyStyle(.body1Semibold, with: .neutral600)
+                        .lineLimit(1)
+                    Spacer(minLength: 4)
+                    if isSelected {
+                        Image(.icnCheckMarkFilled)
+                            .resizable()
+                            .frame(width: 32, height: 32)
+                    }
+                }
+            }
+            .padding(.horizontal, 20)
+            .padding(.vertical, 8)
+        }
+    }
+}
