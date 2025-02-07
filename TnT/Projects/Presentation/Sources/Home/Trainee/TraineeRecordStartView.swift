@@ -14,8 +14,6 @@ import DesignSystem
 struct TraineeRecordStartView: View {
     /// 버튼 아이템 리스트
     var itemContents: [(emoji: String, title: String, action: () -> Void)]
-    /// 바텀시트 높이
-    @State private var contentHeight: CGFloat = 300
     
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
@@ -30,19 +28,6 @@ struct TraineeRecordStartView: View {
                 }
             }
         }
-        .background(
-            GeometryReader { proxy in
-                Color.clear
-                    .onAppear {
-                        contentHeight = proxy.size.height + 50  // ✅ 내부 높이를 측정하여 저장
-                    }
-                    .onChange(of: proxy.size.height) { _, newHeight in
-                        contentHeight = newHeight + 50  // ✅ 높이 변경 감지 시 업데이트
-                    }
-            }
-        )
-        .presentationDetents([.height(contentHeight)])  // ✅ 측정한 높이 적용
-        .presentationDragIndicator(.visible)
     }
 }
 
