@@ -90,6 +90,9 @@ public struct TrainerAddPTSessionView: View {
                 .autoSizingBottomSheet(presentationDragIndicator: .hidden)
             }
         }
+        .tPopUp(isPresented: $store.view_isPopUpPresented) {
+            PopUpView()
+        }
         .onChange(of: store.view_bottomSheetItem) { oldValue, newValue in
             if oldValue != newValue {
                 send(.setFocus(oldValue?.field, newValue?.field))
@@ -250,6 +253,29 @@ public struct TrainerAddPTSessionView: View {
             .focused($focusedField, equals: .memo)
         }
         .padding(.horizontal, 20)
+    }
+    
+    @ViewBuilder
+    private func PopUpView() -> some View {
+        if let popUp = store.view_popUp {
+            let buttons: [TPopupAlertState.ButtonState] = [
+                popUp.secondaryAction.map { action in
+                    .init(title: "취소", style: .secondary, action: .init(action: { send(action) }))
+                },
+                .init(title: popUp.primaryTitle, style: .primary, action: .init(action: { send(popUp.primaryAction) }))
+            ].compactMap { $0 }
+            
+            TPopUpAlertView(
+                alertState: .init(
+                    title: popUp.title,
+                    message: popUp.message,
+                    showAlertIcon: popUp.showAlertIcon,
+                    buttons: buttons
+                )
+            )
+        } else {
+            EmptyView()
+        }
     }
 }
 

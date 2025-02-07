@@ -381,6 +381,15 @@ public extension TrainerAddPTSessionFeature {
             }
         }
         
+        var primaryTitle: String {
+            switch self {
+            case .sessionAdded:
+                return "확인"
+            case .cancelSessionAdd:
+                return "계속 수정"
+            }
+        }
+        
         var primaryAction: Action.View {
             return .tapPopUpPrimaryButton(popUp: self)
         }
