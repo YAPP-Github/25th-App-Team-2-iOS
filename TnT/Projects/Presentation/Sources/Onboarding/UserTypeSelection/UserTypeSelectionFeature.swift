@@ -17,6 +17,8 @@ public struct UserTypeSelectionFeature {
     @ObservableState
     public struct State: Equatable {
         // MARK: Data related state
+        /// 현재 회원가입 정보
+        @Shared var signUpEntity: PostSignUpEntity
         /// 현재 선택된 유저 타입 (트레이너/트레이니)
         var userType: UserType
         
@@ -28,9 +30,14 @@ public struct UserTypeSelectionFeature {
         /// - Parameters:
         ///   - userType: 현재 선택된 유저 타입 (기본값: `.trainer`)
         ///   - isNavigating: 네비게이션 여부 (기본값: `false`)
-        public init(userType: UserType = .trainer, view_isNavigating: Bool = false) {
+        public init(
+            userType: UserType = .trainer,
+            view_isNavigating: Bool = false,
+            signUpEntity: Shared<PostSignUpEntity>
+        ) {
             self.userType = userType
             self.view_isNavigating = view_isNavigating
+            self._signUpEntity = signUpEntity
         }
     }
     
@@ -67,6 +74,7 @@ public struct UserTypeSelectionFeature {
                     return .none
                     
                 case .tapNextButton:
+                    state.$signUpEntity.withLock { $0.memberType = state.userType }
                     switch state.userType {
                     case .trainer:
                         return .send(.setNavigating(.createProfileTrainer))

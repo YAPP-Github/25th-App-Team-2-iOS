@@ -16,27 +16,15 @@ import DIContainer
 public struct LoginFeature {
     @ObservableState
     public struct State: Equatable {
-        public var userType: UserType?
-        public var nickname: String?
-        public var socialType: LoginType?
-        public var termAgree: Bool
-        public var socialEmail: String?
+        @Shared var signUpEntity: PostSignUpEntity
         public var postUserEntity: PostSocialEntity?
         @Presents var termFeature: TermFeature.State?
         
         public init(
-            userType: UserType? = nil,
-            nickname: String? = nil,
-            socialType: LoginType? = nil,
-            termAgree: Bool = false,
-            socialEmail: String? = nil,
+            signUpEntity: Shared<PostSignUpEntity>,
             postUserEntity: PostSocialEntity? = nil
         ) {
-            self.userType = userType
-            self.nickname = nickname
-            self.socialType = socialType
-            self.termAgree = termAgree
-            self.socialEmail = socialEmail
+            self._signUpEntity = signUpEntity
             self.postUserEntity = postUserEntity
         }
     }
@@ -56,6 +44,8 @@ public struct LoginFeature {
         case postSocialLogin(entity: PostSocialEntity)
         /// 소셜 로그인 실패
         case socialLoginFail
+        /// signUpEntity를 소셜로그인 정보로 업데이트
+        case updateSignUpEntityWithSocialInfo(res: PostSocialLoginResDTO)
         /// 약관 동의 화면 표시
         case showTermView
         
@@ -110,6 +100,9 @@ public struct LoginFeature {
                 
             case .subFeature(.termAction(.presented(.setNavigating))):
                 state.termFeature = nil
+                state.$signUpEntity.withLock { $0.collectionAgreement = true }
+                state.$signUpEntity.withLock { $0.serviceAgreement = true }
+                state.$signUpEntity.withLock { $0.advertisementAgreement = true }
                 return .send(.setNavigating(.userTypeSelection))
             
             case .subFeature(.termAction(.dismiss)):
@@ -124,13 +117,14 @@ public struct LoginFeature {
                 return .run { send in
                     do {
                         let result = try await userUseCaseRepo.postSocialLogin(post)
+                        
                         switch result.memberType {
                         case .trainer:
                             await send(.setNavigating(.trainerHome))
                         case .trainee:
                             await send(.setNavigating(.traineeHome))
                         case .unregistered:
-                            await send(.showTermView)
+                            await send(.updateSignUpEntityWithSocialInfo(res: result))
                         case .unknown:
                             print("unknown 타입이에요 토스트해줏요")
                         }
@@ -142,6 +136,13 @@ public struct LoginFeature {
             case .socialLoginFail:
                 print("네트워크 에러 발생")
                 return .none
+                
+            case .updateSignUpEntityWithSocialInfo(let res):
+                guard let socialType = SocialType(rawValue: res.socialType ?? "") else { return .none }
+                state.$signUpEntity.withLock { $0.socialId = res.socialId }
+                state.$signUpEntity.withLock { $0.socialEmail = res.socialEmail }
+                state.$signUpEntity.withLock { $0.socialType = socialType }
+                return .send(.showTermView)
                 
             case .showTermView:
                 state.termFeature = .init()

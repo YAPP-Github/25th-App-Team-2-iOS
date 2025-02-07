@@ -52,54 +52,51 @@ public struct PostSocialLoginResEntity: Equatable {
 }
 
 /// 회원가입 요청 DTO
-public struct PostSignUpReqEntity {
+public struct PostSignUpEntity: Equatable {
     /// FCM 토큰
-    let fcmToken: String
+    public var fcmToken: String?
     /// 회원 타입 (trainer, trainee)
-    let memberType: String
+    public var memberType: UserType?
     /// 소셜 로그인 타입 (KAKAO, APPLE)
-    let socialType: String
+    public var socialType: SocialType?
     /// 소셜 로그인 ID
-    let socialId: String
+    public var socialId: String?
     /// 소셜 로그인 이메일
-    let socialEmail: String
+    public var socialEmail: String?
     /// 서비스 이용 약관 동의 여부
-    let serviceAgreement: Bool
+    public var serviceAgreement: Bool
     /// 개인정보 수집 동의 여부
-    let collectionAgreement: Bool
+    public var collectionAgreement: Bool
     /// 광고성 알림 수신 동의 여부
-    let advertisementAgreement: Bool
-    /// 푸시 알림 수신 동의 여부
-    let pushAgreement: Bool
+    public var advertisementAgreement: Bool
     /// 회원 이름
-    let name: String
+    public var name: String?
     /// 생년월일 (yyyy-MM-dd)
-    let birthday: String?
+    public var birthday: String?
     /// 키 (cm)
-    let height: Double?
+    public var height: Double?
     /// 몸무게 (kg, 소수점 1자리까지 가능)
-    let weight: Double?
+    public var weight: Double?
     /// 트레이너에게 전달할 주의사항
-    let cautionNote: String?
+    public var cautionNote: String?
     /// PT 목적 (체중 감량, 근력 향상 등)
-    let goalContents: [String]?
+    public var goalContents: [String]?
     
     public init(
-        fcmToken: String,
-        memberType: String,
-        socialType: String,
-        socialId: String,
-        socialEmail: String,
-        serviceAgreement: Bool,
-        collectionAgreement: Bool,
-        advertisementAgreement: Bool,
-        pushAgreement: Bool,
-        name: String,
-        birthday: String?,
-        height: Double?,
-        weight: Double?,
-        cautionNote: String?,
-        goalContents: [String]?
+        fcmToken: String? = nil,
+        memberType: UserType? = nil,
+        socialType: SocialType? = nil,
+        socialId: String? = nil,
+        socialEmail: String? = nil,
+        serviceAgreement: Bool = false,
+        collectionAgreement: Bool = false,
+        advertisementAgreement: Bool = false,
+        name: String? = nil,
+        birthday: String? = nil,
+        height: Double? = nil,
+        weight: Double? = nil,
+        cautionNote: String? = nil,
+        goalContents: [String]? = nil
     ) {
         self.fcmToken = fcmToken
         self.memberType = memberType
@@ -109,7 +106,6 @@ public struct PostSignUpReqEntity {
         self.serviceAgreement = serviceAgreement
         self.collectionAgreement = collectionAgreement
         self.advertisementAgreement = advertisementAgreement
-        self.pushAgreement = pushAgreement
         self.name = name
         self.birthday = birthday
         self.height = height

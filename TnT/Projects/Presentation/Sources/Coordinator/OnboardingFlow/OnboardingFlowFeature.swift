@@ -16,9 +16,15 @@ public struct OnboardingFlowFeature {
     @ObservableState
     public struct State: Equatable {
         public var path: StackState<Path.State>
+        @Shared var signUpEntity: PostSignUpEntity
         
-        public init(path: StackState<Path.State> = .init([.snsLogin(.init())])) {
-            self.path = path
+        public init(
+            signUpEntity: PostSignUpEntity = .init(),
+            path: StackState<Path.State>? = nil
+        ) {
+            let shared = Shared(value: signUpEntity)
+            self._signUpEntity = shared
+            self.path = path ?? .init([.snsLogin(.init(signUpEntity: shared))])
         }
     }
 
