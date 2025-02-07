@@ -40,6 +40,7 @@ public struct LoginView: View {
             TermView(store: store)
                 .padding(.top, 10)
                 .presentationDetents([.height(512)])
+                .presentationDragIndicator(.visible)
         }
     }
     

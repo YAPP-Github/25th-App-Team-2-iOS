@@ -37,7 +37,7 @@ public struct OnboardingFlowFeature {
             switch action {
             case let .path(action):
                 switch action {
-                
+                /// SNS 로그인 화면 로그인 완료 -> 트레이너/트레이니/회원가입
                 case .element(id: _, action: .snsLogin(.setNavigating(let screen))):
                     switch screen {
                     case .traineeHome:
@@ -49,7 +49,16 @@ public struct OnboardingFlowFeature {
                     }
                     
                     return .none
-                
+                    
+                case .element(id: _, action: .userTypeSelection(.setNavigating(let screen))):
+                    switch screen {
+                    case .createProfileTrainee:
+                        state.path.append(.createProfile(.init(userType: .trainee)))
+                    case .createProfileTrainer:
+                        state.path.append(.createProfile(.init(userType: .trainer)))
+                    }
+                    return .none
+                    
                 /// 트레이너 프로필 생성 완료 -> 다음 버튼 tapped
                 case .element(id: _, action: .trainerSignUpComplete(.setNavigating)):
                     state.path.append(.trainerMakeInvitationCode(MakeInvitationCodeFeature.State()))
