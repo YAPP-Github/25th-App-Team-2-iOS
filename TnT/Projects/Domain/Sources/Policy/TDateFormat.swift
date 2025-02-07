@@ -32,4 +32,6 @@ public enum TDateFormat: String {
     case EE = "EE"
     /// "오후 17:00" (시간 포맷)
     case a_HHmm = "a HH:mm"
+    /// "17:00"
+    case HHmm = "HH:mm"
 }
