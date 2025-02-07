@@ -36,8 +36,16 @@ public struct OnboardingFlowFeature {
             case let .path(action):
                 switch action {
                 
-                case .element(id: _, action: .snsLogin(.view(.tappedAppleLogin))):
-                    state.path.append(.trainerSignUpComplete(.init()))
+                case .element(id: _, action: .snsLogin(.setNavigating(let screen))):
+                    switch screen {
+                    case .traineeHome:
+                        return .send(.switchFlow(.traineeMainFlow))
+                    case .trainerHome:
+                        return .send(.switchFlow(.trainerMainFlow))
+                    case .term:
+                        state.path.append(.term(.init()))
+                    }
+                    
                     return .none
                 
                 /// 트레이너 프로필 생성 완료 -> 다음 버튼 tapped

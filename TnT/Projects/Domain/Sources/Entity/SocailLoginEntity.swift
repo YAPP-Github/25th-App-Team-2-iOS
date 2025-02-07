@@ -8,30 +8,31 @@
 
 import Foundation
 
+public enum SocialType: String {
+    case kakao = "KAKAO"
+    case apple = "APPLE"
+}
+
 /// 소셜 로그인 요청 DTO
-public struct PostSocailEntity: Equatable {
+public struct PostSocialEntity: Equatable {
     /// 소셜 로그인 타입 (KAKAO, APPLE)
-    let socialType: String
+    let socialType: SocialType
     /// FCM 토큰
     let fcmToken: String
     /// 소셜 액세스 토큰
     let socialAccessToken: String?
-    /// 애플 인가 코드 (Apple 로그인 시 필요)
-    let authorizationCode: String?
-    /// 애플 ID 토큰 (Apple 로그인 시 필요)
+    /// 애플 ID 토큰 (Apple z로그인 시 필요)
     let idToken: String?
     
     public init(
-        socialType: String,
+        socialType: SocialType,
         fcmToken: String,
-        socialAccessToken: String?,
-        authorizationCode: String?,
-        idToken: String?
+        socialAccessToken: String? = nil,
+        idToken: String? = nil
     ) {
         self.socialType = socialType
         self.fcmToken = fcmToken
         self.socialAccessToken = socialAccessToken
-        self.authorizationCode = authorizationCode
         self.idToken = idToken
     }
 }
@@ -41,11 +42,11 @@ public struct PostSocialLoginResEntity: Equatable {
     /// 세션 ID
     public let sessionId: String?
     /// 소셜 로그인 ID
-    public let socialId: String
+    public let socialId: String?
     /// 소셜 이메일
-    public let socialEmail: String
+    public let socialEmail: String?
     /// 소셜 로그인 타입 (KAKAO, APPLE)
-    public let socialType: String
+    public let socialType: String?
     /// 가입 여부 (`true`: 이미 가입됨, `false`: 미가입)
     public let isSignUp: Bool
 }

@@ -16,8 +16,6 @@ public struct PostSocialLoginReqDTO: Encodable {
     let fcmToken: String
     /// 소셜 액세스 토큰
     let socialAccessToken: String?
-    /// 애플 인가 코드 (Apple 로그인 시 필요)
-    let authorizationCode: String?
     /// 애플 ID 토큰 (Apple 로그인 시 필요)
     let idToken: String?
     
@@ -25,13 +23,11 @@ public struct PostSocialLoginReqDTO: Encodable {
         socialType: String,
         fcmToken: String,
         socialAccessToken: String?,
-        authorizationCode: String?,
         idToken: String?
     ) {
         self.socialType = socialType
         self.fcmToken = fcmToken
         self.socialAccessToken = socialAccessToken
-        self.authorizationCode = authorizationCode
         self.idToken = idToken
     }
 }

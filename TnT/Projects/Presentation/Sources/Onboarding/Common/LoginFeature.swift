@@ -21,7 +21,7 @@ public struct LoginFeature {
         public var socialType: LoginType?
         public var termAgree: Bool
         public var socialEmail: String?
-        public var postUserEntity: PostSocailEntity?
+        public var postUserEntity: PostSocialEntity?
         
         public init(
             userType: UserType? = nil,
@@ -29,7 +29,7 @@ public struct LoginFeature {
             socialType: LoginType? = nil,
             termAgree: Bool = false,
             socialEmail: String? = nil,
-            postUserEntity: PostSocailEntity? = nil
+            postUserEntity: PostSocialEntity? = nil
         ) {
             self.userType = userType
             self.nickname = nickname
@@ -50,7 +50,7 @@ public struct LoginFeature {
         /// 네비게이션 여부 설정
         case setNavigating(RoutingScreen)
         /// 소셜 로그인 post 요청
-        case postSocialLogin(entity: PostSocailEntity)
+        case postSocialLogin(entity: PostSocialEntity)
         /// 소셜 로그인 실패
         case socialLoginFail
         
