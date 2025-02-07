@@ -89,7 +89,17 @@ public struct OnboardingFlowFeature {
                 // MARK: Trainee
                 /// 트레이니 기본 정보 입력 -> PT 목적 설정 화면 이동
                 case .element(id: _, action: .traineeBasicInfoInput(.setNavigating)):
-                    state.path.append(.traineeTrainingPurpose(.init()))
+                    state.path.append(.traineeTrainingPurpose(.init(signUpEntity: state.$signUpEntity)))
+                    return .none
+                    
+                /// 트레이니 PT 목표 입력 -> 주의사항 입력 화면 이동
+                case .element(id: _, action: .traineeTrainingPurpose(.setNavigating)):
+                    state.path.append(.traineePrecautionInput(.init(signUpEntity: state.$signUpEntity)))
+                    return .none
+                    
+                /// 트레이니 주의사항 입력 -> 트레이니 회원 가입 완료 화면 이동
+                case .element(id: _, action: .traineePrecautionInput(.setNavigating)):
+                    state.path.append(.traineeProfileCompletion(.init()))
                     return .none
                     
                 default:

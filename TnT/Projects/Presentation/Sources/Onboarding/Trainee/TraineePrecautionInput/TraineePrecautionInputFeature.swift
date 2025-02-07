@@ -20,6 +20,8 @@ public struct TraineePrecautionInputFeature {
     @ObservableState
     public struct State: Equatable {
         // MARK: Data related state
+        /// 현재 회원가입 정보
+        @Shared var signUpEntity: PostSignUpEntity
         /// 사용자가 입력한 주의사항
         var precaution: String
         
@@ -35,18 +37,21 @@ public struct TraineePrecautionInputFeature {
         
         /// `TraineePrecautionInputFeature.State`의 생성자
         /// - Parameters:
+        ///   - signUpEntity: 현재 회원가입 정보 @Shared
         ///   - precaution: 입력된 주의사항 (기본값: `""`)
         ///   - view_editorStatus: 텍스트 에디터 상태 (기본값: `.empty`)
         ///   - view_editorMaxCount: 텍스트 에디터 최대 길이 제한 (기본값: `nil`)
         ///   - view_focusField: 텍스트 에디터 포커스 여부 (기본값: `false`)
         ///   - view_isNextButtonEnabled: "다음" 버튼 활성화 여부 (기본값: `true`)
         public init(
+            signUpEntity: Shared<PostSignUpEntity>,
             precaution: String = "",
             view_editorStatus: TTextEditor.Status = .empty,
             view_editorMaxCount: Int? = nil,
             view_focusField: Bool = false,
             view_isNextButtonEnabled: Bool = true
         ) {
+            self._signUpEntity = signUpEntity
             self.precaution = precaution
             self.view_editorStatus = view_editorStatus
             self.view_editorMaxCount = view_editorMaxCount
@@ -94,6 +99,7 @@ public struct TraineePrecautionInputFeature {
                     return .none
                     
                 case .tapNextButton:
+                    state.$signUpEntity.withLock { $0.cautionNote = state.precaution }
                     return .send(.setNavigating)
                 }
 
