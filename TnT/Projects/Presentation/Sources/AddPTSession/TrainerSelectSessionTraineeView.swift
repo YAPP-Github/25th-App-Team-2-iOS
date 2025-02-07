@@ -8,24 +8,24 @@
 
 import SwiftUI
 
+import Domain
 import DesignSystem
 
 /// TrainerAppPTSessionView에서 사용하는 회원 선택용 바텀 시트 뷰
 public struct TrainerSelectSessionTraineeView: View {
     /// 회원 리스트
-    var traineeList: [(id: Int, name: String, action: () -> Void)]
+    var traineeList: [(listItem: TraineeListItemEntity, action: () -> Void)]
     /// 선택된 회원 id
     var selectedTraineeId: Int?
     /// 바텀시트 높이
     @State private var contentHeight: CGFloat = 708
     /// 최대 높이
     let maxHeight: CGFloat = 708
-    @State private var isScrollEnabled: Bool = false
     
     @Environment(\.dismiss) var dismiss
     
     public init(
-        traineeList: [(id: Int, name: String, action: () -> Void)],
+        traineeList: [(listItem: TraineeListItemEntity, action: () -> Void)],
         selectedTraineeId: Int? = nil
     ) {
         self.traineeList = traineeList
@@ -34,22 +34,9 @@ public struct TrainerSelectSessionTraineeView: View {
     
     public var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            if isScrollEnabled {
-                Spacer()
-                    .frame(height: 24)
-            }
-            
             Header()
             
-            if isScrollEnabled {
-                ScrollView {
-                    Contents()
-                }
-                .overlay {
-                    GradientCover()
-                        .ignoresSafeArea(.all, edges: .bottom)
-                }
-            } else {
+            ScrollView {
                 Contents()
             }
         }
@@ -71,76 +58,46 @@ public struct TrainerSelectSessionTraineeView: View {
     // MARK: Section
     @ViewBuilder
     private func Header() -> some View {
-        HStack {
-            Text("회원선택하기")
-                .typographyStyle(.heading3, with: .neutral900)
-            
-            Spacer()
-            
-            Button(action: { dismiss() }) {
-                Image(.icnDelete)
-                    .renderingMode(.template)
-                    .resizable()
-                    .tint(.neutral400)
-                    .frame(width: 32, height: 32)
+        VStack(spacing: 0) {
+            HStack {
+                Text("회원선택하기")
+                    .typographyStyle(.heading3, with: .neutral900)
+                
+                Spacer()
+                
+                Button(action: { dismiss() }) {
+                    Image(.icnDelete)
+                        .renderingMode(.template)
+                        .resizable()
+                        .tint(.neutral400)
+                        .frame(width: 32, height: 32)
+                }
             }
+            .padding(20)
+            TDivider(height: 2, color: .neutral100)
         }
-        .padding(20)
+        .padding(.top, 24)
     }
     
     @ViewBuilder
     private func Contents() -> some View {
         VStack(spacing: 12) {
-            ForEach(traineeList, id: \.id) { item in
+            ForEach(traineeList, id: \.listItem.id) { item in
                 TraineeListItem(
-                    isSelected: item.id == selectedTraineeId,
-                    name: item.name,
+                    isSelected: item.listItem.id == selectedTraineeId,
+                    name: item.listItem.name,
                     action: item.action
                 )
                 .frame(height: 40)
             }
         }
     }
-    
-    @ViewBuilder
-    private func GradientCover() -> some View {
-        VStack {
-            LinearGradient(
-                gradient: Gradient(stops: [
-                    .init(color: Color.white.opacity(1), location: 0.0),
-                    .init(color: Color.white.opacity(0), location: 1.0)
-                ]),
-                startPoint: .top,
-                endPoint: .bottom
-            )
-            .frame(height: 100)
-            
-            Spacer()
-            
-            LinearGradient(
-                gradient: Gradient(stops: [
-                    .init(color: Color.white.opacity(0), location: 0.0),
-                    .init(color: Color.white.opacity(1), location: 1.0)
-                ]),
-                startPoint: .top,
-                endPoint: .bottom
-            )
-            .frame(height: 100)
-        }
-        .allowsHitTesting(false)
-    }
 }
 
 private extension TrainerSelectSessionTraineeView {
     /// 바텀 시트 높이 업데이트 함수
     func updateHeight(with newHeight: CGFloat) {
-        if newHeight >= maxHeight {
-            isScrollEnabled = true
-            contentHeight = maxHeight
-        } else {
-            isScrollEnabled = false
-            contentHeight = newHeight
-        }
+        contentHeight = newHeight >= maxHeight ? maxHeight : newHeight
     }
 }
 
