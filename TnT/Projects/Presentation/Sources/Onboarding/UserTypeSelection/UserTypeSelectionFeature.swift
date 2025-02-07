@@ -30,6 +30,7 @@ public struct UserTypeSelectionFeature {
         /// - Parameters:
         ///   - userType: 현재 선택된 유저 타입 (기본값: `.trainer`)
         ///   - isNavigating: 네비게이션 여부 (기본값: `false`)
+        ///   - signUpEntity: 현재 회원가입 정보 @Shared
         public init(
             userType: UserType = .trainer,
             view_isNavigating: Bool = false,
@@ -91,7 +92,7 @@ public struct UserTypeSelectionFeature {
 }
 
 extension UserTypeSelectionFeature {
-    /// 하위 화면에서 파생되는 라우팅을 전달합니다
+    /// 본 화면에서 라우팅(파생)되는 화면
     public enum RoutingScreen: Sendable {
         /// 트레이니 회원가입
         case createProfileTrainee

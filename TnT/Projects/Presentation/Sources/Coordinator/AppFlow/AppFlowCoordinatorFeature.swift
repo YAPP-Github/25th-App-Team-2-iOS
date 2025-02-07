@@ -81,7 +81,7 @@ public struct AppFlowCoordinatorFeature {
                 return .none
             }
         }
-        .ifLet(\.onboardingState, action: \.subFeature.onboardingFlow) { OnboardingFlowFeature() }
+        .ifLet(\.onboardingState, action: \.subFeature.onboardingFlow) { OnboardingFlowFeature()._printChanges() }
         .ifLet(\.trainerMainState, action: \.subFeature.trainerMainFlow) { TrainerMainFlowFeature() }
         .ifLet(\.traineeMainState, action: \.subFeature.traineeMainFlow) { TraineeMainFlowFeature() }
     }

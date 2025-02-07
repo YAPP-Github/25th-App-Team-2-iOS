@@ -71,6 +71,8 @@ public struct PostSignUpEntity: Equatable {
     public var advertisementAgreement: Bool
     /// 회원 이름
     public var name: String?
+    /// 프로필 이미지 데이터
+    public var imageData: Data?
     /// 생년월일 (yyyy-MM-dd)
     public var birthday: String?
     /// 키 (cm)
@@ -92,6 +94,7 @@ public struct PostSignUpEntity: Equatable {
         collectionAgreement: Bool = false,
         advertisementAgreement: Bool = false,
         name: String? = nil,
+        imageData: Data? = nil,
         birthday: String? = nil,
         height: Double? = nil,
         weight: Double? = nil,
@@ -107,6 +110,7 @@ public struct PostSignUpEntity: Equatable {
         self.collectionAgreement = collectionAgreement
         self.advertisementAgreement = advertisementAgreement
         self.name = name
+        self.imageData = imageData
         self.birthday = birthday
         self.height = height
         self.weight = weight

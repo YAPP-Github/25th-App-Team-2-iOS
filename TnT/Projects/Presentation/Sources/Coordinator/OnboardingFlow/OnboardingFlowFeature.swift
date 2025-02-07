@@ -43,7 +43,7 @@ public struct OnboardingFlowFeature {
             switch action {
             case let .path(action):
                 switch action {
-                /// SNS 로그인 화면 로그인 완료 -> 트레이너/트레이니/회원가입
+                    /// SNS 로그인 화면 로그인 완료 -> 트레이너/트레이니/회원가입
                 case .element(id: _, action: .snsLogin(.setNavigating(let screen))):
                     switch screen {
                     case .traineeHome:
@@ -51,18 +51,31 @@ public struct OnboardingFlowFeature {
                     case .trainerHome:
                         return .send(.switchFlow(.trainerMainFlow))
                     case .userTypeSelection:
-                        state.path.append(.userTypeSelection(.init()))
+                        state.path.append(.userTypeSelection(.init(signUpEntity: state.$signUpEntity)))
+                    }
+                    
+                    return .none
+                
+                    /// 유저 타입 선택 완료 -> 트레이니/트레이너 프로필 입력
+                case .element(id: _, action: .userTypeSelection(.setNavigating(let screen))):
+                    switch screen {
+                    case .createProfileTrainee:
+                        state.path.append(.createProfile(.init(signUpEntity: state.$signUpEntity, userType: .trainee)))
+                    case .createProfileTrainer:
+                        state.path.append(.createProfile(.init(signUpEntity: state.$signUpEntity, userType: .trainer)))
                     }
                     
                     return .none
                     
-                case .element(id: _, action: .userTypeSelection(.setNavigating(let screen))):
+                    ///  약관 화면 -> 트레이너/트레이니 선택 화면 이동
+                case .element(id: _, action: .createProfile(.setNavigating(let screen))):
                     switch screen {
-                    case .createProfileTrainee:
-                        state.path.append(.createProfile(.init(userType: .trainee)))
-                    case .createProfileTrainer:
-                        state.path.append(.createProfile(.init(userType: .trainer)))
+                    case .traineeBasicInfoInput:
+                        state.path.append(.traineeBasicInfoInput(.init()))
+                    case .trainerSignUpComplete:
+                        state.path.append(.trainerSignUpComplete(.init()))
                     }
+                    
                     return .none
                     
                 /// 트레이너 프로필 생성 완료 -> 다음 버튼 tapped
@@ -73,10 +86,6 @@ public struct OnboardingFlowFeature {
                 /// 트레이너의 초대코드 화면 -> 건너뛰기 버튼 tapped
                 case .element(id: _, action: .trainerMakeInvitationCode(.setNavigation)):
                     // 추후에 홈과 연결
-                    return .none
-                    
-                ///  약관 화면 -> 트레이너/트레이니 선택 화면 이동
-                case .element(id: _, action: .userTypeSelection):
                     return .none
                     
                 default:
