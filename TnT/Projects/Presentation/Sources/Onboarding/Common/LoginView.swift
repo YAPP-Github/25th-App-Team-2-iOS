@@ -23,20 +23,24 @@ public struct LoginView: View {
         VStack {
             Header()
             
-            Spacer()
-            
-            Image(.imgOnboardingLogin)
-                .resizable()
-                .scaledToFit()
-                .frame(width: 310, height: 310)
+            VStack {
+                Spacer()
+                Image(.imgOnboardingLogin)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 310, height: 310)
+                Spacer()
+            }
             
             Bottom()
-            
-            Spacer()
-            
         }
         .padding(.horizontal, 28)
         .navigationBarBackButtonHidden()
+        .sheet(item: $store.scope(state: \.termFeature, action: \.subFeature.termAction)) { store in
+            TermView(store: store)
+                .padding(.top, 10)
+                .presentationDetents([.height(512)])
+        }
     }
     
     @ViewBuilder
@@ -106,7 +110,7 @@ public enum LoginType: String, CaseIterable {
     var background: Color {
         switch self {
         case .kakao:
-            return .yellow
+            return Color(hex: "FDE500")
         case .apple:
             return .neutral900
         }

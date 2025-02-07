@@ -25,6 +25,8 @@ public struct OnboardingFlowFeature {
     public enum Action: Sendable {
         /// 현재 표시되고 있는 path 화면 내부에서 일어나는 액션을 처리합니다.
         case path(StackActionOf<Path>)
+        /// Flow 변경을 AppCoordinator로 전달합니다
+        case switchFlow(AppFlow)
         case onAppear
     }
 
@@ -42,8 +44,8 @@ public struct OnboardingFlowFeature {
                         return .send(.switchFlow(.traineeMainFlow))
                     case .trainerHome:
                         return .send(.switchFlow(.trainerMainFlow))
-                    case .term:
-                        state.path.append(.term(.init()))
+                    case .userTypeSelection:
+                        state.path.append(.userTypeSelection(.init()))
                     }
                     
                     return .none
@@ -66,6 +68,9 @@ public struct OnboardingFlowFeature {
                     return .none
                 }
                 
+            case .switchFlow:
+                return .none
+                
             case .onAppear:
                 return .none
             }
@@ -80,8 +85,6 @@ extension OnboardingFlowFeature {
         // MARK: Common
         /// SNS 로그인 뷰
         case snsLogin(LoginFeature)
-        /// 약관동의뷰
-        case term(TermFeature)
         /// 트레이너/트레이니 선택 뷰
         case userTypeSelection(UserTypeSelectionFeature)
         /// 트레이너/트레이니의 이름 입력 뷰

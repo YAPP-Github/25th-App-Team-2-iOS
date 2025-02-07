@@ -11,6 +11,12 @@ import ComposableArchitecture
 
 import Domain
 
+public enum AppFlow: Sendable {
+    case onboardingFlow
+    case traineeMainFlow
+    case trainerMainFlow
+}
+
 @Reducer
 public struct AppFlowCoordinatorFeature {
     @ObservableState
@@ -58,13 +64,16 @@ public struct AppFlowCoordinatorFeature {
             switch action {
             case .subFeature(let internalAction):
                 switch internalAction {
-                case .onboardingFlow:
-                    return .none
+                case .onboardingFlow(.switchFlow(let flow)):
+                    return self.setFlow(flow, state: &state)
                     
                 case .trainerMainFlow:
                     return .none
                     
                 case .traineeMainFlow:
+                    return .none
+                    
+                default:
                     return .none
                 }
                 
@@ -75,5 +84,24 @@ public struct AppFlowCoordinatorFeature {
         .ifLet(\.onboardingState, action: \.subFeature.onboardingFlow) { OnboardingFlowFeature() }
         .ifLet(\.trainerMainState, action: \.subFeature.trainerMainFlow) { TrainerMainFlowFeature() }
         .ifLet(\.traineeMainState, action: \.subFeature.traineeMainFlow) { TraineeMainFlowFeature() }
+    }
+}
+
+extension AppFlowCoordinatorFeature {
+    private func setFlow(_ flow: AppFlow, state: inout State) -> Effect<Action> {
+        state.onboardingState = nil
+        state.traineeMainState = nil
+        state.trainerMainState = nil
+        
+        switch flow {
+        case .onboardingFlow:
+            state.onboardingState = .init()
+        case .traineeMainFlow:
+            state.traineeMainState = .init()
+        case .trainerMainFlow:
+            state.trainerMainState = .init()
+        }
+        
+        return .none
     }
 }

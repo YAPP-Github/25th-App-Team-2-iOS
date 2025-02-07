@@ -26,8 +26,6 @@ public struct OnboardingFlowView: View {
                 // MARK: Common
             case .snsLogin(let store):
                 LoginView(store: store)
-            case .term(let store):
-                TermView(store: store)
             case .userTypeSelection(let store):
                 UserTypeSelectionView(store: store)
             case .createProfile(let store):

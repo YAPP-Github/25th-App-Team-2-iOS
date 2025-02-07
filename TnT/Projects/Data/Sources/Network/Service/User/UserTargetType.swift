@@ -63,10 +63,7 @@ extension UserTargetType: TargetType {
             return ["Content-Type": "application/json"]
             
         case .postSignUp:
-            return [
-                "Content-Type": "multipart/form-data",
-                "Authorization": "SESSION-ID 1111"
-            ]
+            return ["Content-Type": "multipart/form-data"]
         }
     }
     

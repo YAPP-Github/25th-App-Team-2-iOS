@@ -22,6 +22,7 @@ public struct LoginFeature {
         public var termAgree: Bool
         public var socialEmail: String?
         public var postUserEntity: PostSocialEntity?
+        @Presents var termFeature: TermFeature.State?
         
         public init(
             userType: UserType? = nil,
@@ -47,17 +48,27 @@ public struct LoginFeature {
     public enum Action: ViewAction {
         /// 뷰에서 일어나는 액션을 처리합니다.(카카오,애플로그인 실행)
         case view(View)
+        /// 하위 화면에서 일어나는 액션을 처리합니다
+        case subFeature(SubFeatureAction)
         /// 네비게이션 여부 설정
         case setNavigating(RoutingScreen)
         /// 소셜 로그인 post 요청
         case postSocialLogin(entity: PostSocialEntity)
         /// 소셜 로그인 실패
         case socialLoginFail
+        /// 약관 동의 화면 표시
+        case showTermView
         
         @CasePathable
         public enum View: Equatable {
             case tappedAppleLogin
             case tappedKakaoLogin
+        }
+        
+        @CasePathable
+        public enum SubFeatureAction: Equatable {
+            /// 역관 동의 화면에서 발생하는 액션 처리
+            case termAction(PresentationAction<TermFeature.Action>)
         }
     }
     
@@ -72,11 +83,10 @@ public struct LoginFeature {
                     return .run { @Sendable send in
                         let result = await socialLoginUseCase.appleLogin()
                         guard let result else { return }
-                        let entity = PostSocailEntity(
-                            socialType: "APPLE",
-                            fcmToken: "",
-                            socialAccessToken: "",
-                            authorizationCode: result.authorizationCode,
+                        
+                        let entity = PostSocialEntity(
+                            socialType: .apple,
+                            fcmToken: "asdfg", // TODO: FCM 로직 나오면 추후 수정
                             idToken: result.identityToken
                         )
                         
@@ -88,34 +98,42 @@ public struct LoginFeature {
                         let result = await socialLoginUseCase.kakaoLogin()
                         guard let result else { return }
                         
-                        let entity = PostSocailEntity(
-                            socialType: "KAKAO",
-                            fcmToken: "",
-                            socialAccessToken: result.accessToken,
-                            authorizationCode: "",
-                            idToken: ""
+                        let entity = PostSocialEntity(
+                            socialType: .kakao,
+                            fcmToken: "asdfg", // TODO: FCM 로직 나오면 추후 수정
+                            socialAccessToken: result.accessToken
                         )
                         
                         await send(.postSocialLogin(entity: entity))
                     }
                 }
                 
+            case .subFeature(.termAction(.presented(.setNavigating))):
+                state.termFeature = nil
+                return .send(.setNavigating(.userTypeSelection))
+            
+            case .subFeature(.termAction(.dismiss)):
+                state.termFeature = nil
+                return .none
+                
+            case .subFeature:
+                return .none
+                
             case .postSocialLogin(let entity):
-                let post = PostSocialMapper.toDTO(from: entity)
+                let post = entity.toDTO()
                 return .run { send in
                     do {
                         let result = try await userUseCaseRepo.postSocialLogin(post)
-                        // TODO: res에 MemberType 추가해주세요!
-//                            switch result.memberType {
-//                            case .trainer:
-//                                await send(.setNavigating(.trainerHome))
-//                            case .trainee:
-//                                await send(.setNavigating(.traineeHome))
-//                            case .unregistered:
-//                                await send(.setNavigating(.term))
-//                            }
-                        // For test
-                        await send(.setNavigating(.term))
+                        switch result.memberType {
+                        case .trainer:
+                            await send(.setNavigating(.trainerHome))
+                        case .trainee:
+                            await send(.setNavigating(.traineeHome))
+                        case .unregistered:
+                            await send(.showTermView)
+                        case .unknown:
+                            print("unknown 타입이에요 토스트해줏요")
+                        }
                     } catch {
                         await send(.socialLoginFail)
                     }
@@ -125,9 +143,16 @@ public struct LoginFeature {
                 print("네트워크 에러 발생")
                 return .none
                 
+            case .showTermView:
+                state.termFeature = .init()
+                return .none
+                
             case .setNavigating:
                 return .none
             }
+        }
+        .ifLet(\.termFeature, action: \.subFeature.termAction.presented) {
+            TermFeature()
         }
     }
 }
@@ -137,6 +162,6 @@ extension LoginFeature {
     public enum RoutingScreen {
         case traineeHome
         case trainerHome
-        case term
+        case userTypeSelection
     }
 }
