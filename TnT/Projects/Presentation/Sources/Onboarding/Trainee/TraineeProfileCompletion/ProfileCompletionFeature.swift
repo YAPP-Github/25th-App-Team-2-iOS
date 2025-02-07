@@ -13,7 +13,7 @@ import Domain
 
 /// 회원가입 완료 후 프로필 정보를 표시하는 리듀서
 @Reducer
-public struct TraineeProfileCompletionFeature {
+public struct ProfileCompletionFeature {
     
     @ObservableState
     public struct State: Equatable {

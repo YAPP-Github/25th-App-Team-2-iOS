@@ -33,7 +33,7 @@ public extension PostSocialLoginResDTO {
 
 public extension PostSignUpEntity {
     func toDTO() -> PostSignUpReqDTO? {
-        guard let memberType, let socialType, let socialId, let socialEmail, let name, let goalContents else { return nil }
+        guard let memberType, let socialType, let socialId, let socialEmail, let name else { return nil }
         return .init(
             // TODO: FCM 서버 로직 나오면 수정
             fcmToken: self.fcmToken ?? "temp",
@@ -45,11 +45,11 @@ public extension PostSignUpEntity {
             collectionAgreement: self.collectionAgreement,
             advertisementAgreement: self.advertisementAgreement,
             name: name,
-            birthday: self.birthday,
+            birthday: self.birthday?.replacingOccurrences(of: "/", with: "-"),
             height: self.height,
             weight: self.weight,
             cautionNote: self.cautionNote,
-            goalContents: goalContents
+            goalContents: self.goalContents ?? []
         )
     }
 }

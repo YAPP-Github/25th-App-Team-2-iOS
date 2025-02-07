@@ -70,8 +70,8 @@ public struct OnboardingFlowFeature {
                     switch screen {
                     case .traineeBasicInfoInput:
                         state.path.append(.traineeBasicInfoInput(.init(signUpEntity: state.$signUpEntity)))
-                    case .trainerSignUpComplete:
-                        state.path.append(.trainerSignUpComplete(.init()))
+                    case .trainerSignUpComplete(let info):
+                        state.path.append(.trainerSignUpComplete(.init(userType: .trainer, userName: info.name, profileImage: info.profileImageUrl)))
                     }
                     return .none
                 
@@ -132,7 +132,7 @@ extension OnboardingFlowFeature {
         // MARK: Trainer
         /// 트레이너 회원 가입 완료 뷰
         /// TODO: 트레이너/트레이니 회원 가입 완료 화면으로 통합 필요
-        case trainerSignUpComplete(TrainerSignUpCompleteFeature)
+        case trainerSignUpComplete(ProfileCompletionFeature)
         /// 트레이너의 초대코드 발급 뷰
         case trainerMakeInvitationCode(MakeInvitationCodeFeature)
         /// 트레이너의 트레이니 프로필 확인 뷰
@@ -147,7 +147,7 @@ extension OnboardingFlowFeature {
         case traineePrecautionInput(TraineePrecautionInputFeature)
         /// 트레이니 프로필 생성 완료
         /// TODO: 트레이너/트레이니 회원 가입 완료 화면으로 통합 필요
-        case traineeProfileCompletion(TraineeProfileCompletionFeature)
+        case traineeProfileCompletion(ProfileCompletionFeature)
         /// 트레이니 초대 코드입력
         case traineeInvitationCodeInput(TraineeInvitationCodeInputFeature)
         /// 트레이니 수업 정보 입력

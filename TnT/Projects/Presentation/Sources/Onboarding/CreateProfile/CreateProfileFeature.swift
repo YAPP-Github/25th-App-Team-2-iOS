@@ -91,6 +91,7 @@ public struct CreateProfileFeature {
     }
     
     @Dependency(\.userUseCase) private var userUseCase: UserUseCase
+    @Dependency(\.userUseRepoCase) private var userUseRepoCase: UserRepository
     
     public enum Action: Sendable, ViewAction {
         /// 네비게이션 여부 설정
@@ -99,6 +100,8 @@ public struct CreateProfileFeature {
         case imagePicked(Data?)
         /// 뷰에서 발생한 액션을 처리합니다.
         case view(View)
+        /// 회원가입 POST
+        case postSignUp
         
         @CasePathable
         public enum View: Sendable, BindableAction {
@@ -145,8 +148,20 @@ public struct CreateProfileFeature {
                     case .trainee:
                         return .send(.setNavigating(.traineeBasicInfoInput))
                     case .trainer:
-                        return .send(.setNavigating(.trainerSignUpComplete))
+                        return .send(.postSignUp)
                     }
+                }
+                
+            case .postSignUp:
+                guard let reqDTO = state.signUpEntity.toDTO() else {
+                    return .none
+                }
+                let imgData = state.signUpEntity.imageData
+                
+                return .run { send in
+                    let result = try await userUseRepoCase.postSignUp(reqDTO, profileImage: imgData).toEntity()
+                    // TODO: 세션, 유저타입 정보 키체인 저장
+                    await send(.setNavigating(.trainerSignUpComplete(result)))
                 }
                 
             case .setNavigating:
@@ -182,7 +197,6 @@ extension CreateProfileFeature {
         /// 트레이니 회원가입
         case traineeBasicInfoInput
         /// 트레이너 프로필 생성 완료
-        case trainerSignUpComplete
-        
+        case trainerSignUpComplete(PostSignUpResEntity)
     }
 }
