@@ -114,6 +114,8 @@ public struct TrainerHomeView: View {
                 ForEach(record.lessons, id: \.id) { record in
                     SessionCellView(session: record) {
                         send(.tapSessionCompleted(id: record.ptLessonId))
+                    } onTap: {
+                        // TODO: - 트레이너 기록 추가
                     }
                 }
             } else {
@@ -131,9 +133,10 @@ public struct TrainerHomeView: View {
             .frame(width: 126, height: 58)
             .overlay {
                 HStack(spacing: 4) {
-                    Image(.icnPlusEmpty)
+                    Image(.icnPlus)
                         .resizable()
                         .frame(width: 24, height: 24)
+                        .tint(Color.common0)
                     Text("수업추가")
                         .typographyStyle(.body1Medium, with: .neutral50)
                 }
@@ -215,6 +218,7 @@ extension TrainerHomeView {
     struct SessionCellView: View {
         var session: SessonEntity
         var onTapComplete: () -> Void
+        var onTap: (() -> Void)?
         
         var body: some View {
             HStack(spacing: 20) {
@@ -237,7 +241,7 @@ extension TrainerHomeView {
                     
                     if session.isCompleted {
                         Button {
-                            //
+                            onTap?()
                         } label: {
                             HStack(spacing: 4) {
                                 Image(.icnWriteWhite)
