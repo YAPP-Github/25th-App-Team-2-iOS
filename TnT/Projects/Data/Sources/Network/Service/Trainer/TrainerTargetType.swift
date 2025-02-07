@@ -20,6 +20,8 @@ public enum TrainerTargetType {
     case getDateLessionList(date: String)
     /// 트레이너 초대코드 재발급
     case getReissuanceInvitationCode
+    /// 회원 조희
+    case getMemebersList
 }
 
 extension TrainerTargetType: TargetType {
@@ -38,6 +40,8 @@ extension TrainerTargetType: TargetType {
             return "/lessions/\(date)"
         case .getReissuanceInvitationCode:
             return "/invitation-code/reissue"
+        case .getMemebersList:
+            return "/members"
         }
     }
     
@@ -51,6 +55,8 @@ extension TrainerTargetType: TargetType {
             return .get
         case .getReissuanceInvitationCode:
             return .put
+        case .getMemebersList:
+            return .get
         }
     }
     
@@ -64,6 +70,8 @@ extension TrainerTargetType: TargetType {
             return .requestPlain
         case .getReissuanceInvitationCode:
             return .requestPlain
+        case .getMemebersList:
+            return .requestPlain
         }
     }
     
@@ -76,6 +84,8 @@ extension TrainerTargetType: TargetType {
         case .getDateLessionList:
             return ["Content-Type": "application/json"]
         case .getReissuanceInvitationCode:
+            return ["Content-Type": "application/json"]
+        case .getMemebersList:
             return ["Content-Type": "application/json"]
         }
     }
