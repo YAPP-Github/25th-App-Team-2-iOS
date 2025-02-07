@@ -20,6 +20,8 @@ public struct TraineeBasicInfoInputFeature {
     @ObservableState
     public struct State: Equatable {
         // MARK: Data related state
+        /// 현재 회원가입 정보
+        @Shared var signUpEntity: PostSignUpEntity
         /// 입력된 생년월일
         var birthDate: String
         /// 입력된 키
@@ -41,6 +43,7 @@ public struct TraineeBasicInfoInputFeature {
         
         /// `TraineeBasicInfoInputFeature.State`의 생성자
         /// - Parameters:
+        ///   - signUpEntity: 현재 회원가입 정보 @Shared
         ///   - birthDate: 입력된 생년월일 (기본값: `""`)
         ///   - height: 입력된 키 (기본값: `""`)
         ///   - weight: 입력된 몸무게 (기본값: `""`)
@@ -50,6 +53,7 @@ public struct TraineeBasicInfoInputFeature {
         ///   - view_isDatePickerPresented: DatePicker 표시 여부 (기본값: `false`)
         ///   - view_isNextButtonEnabled: "다음" 버튼 활성화 여부 (기본값: `false`)
         public init(
+            signUpEntity: Shared<PostSignUpEntity>,
             birthDate: String = "",
             height: String = "",
             weight: String = "",
@@ -59,6 +63,7 @@ public struct TraineeBasicInfoInputFeature {
             view_isDatePickerPresented: Bool = false,
             view_isNextButtonEnabled: Bool = false
         ) {
+            self._signUpEntity = signUpEntity
             self.birthDate = birthDate
             self.height = height
             self.weight = weight
@@ -122,6 +127,11 @@ public struct TraineeBasicInfoInputFeature {
                     : .none
                     
                 case .tapNextButton:
+                    if !state.birthDate.isEmpty {
+                        state.$signUpEntity.withLock { $0.birthday = state.birthDate }
+                    }
+                    state.$signUpEntity.withLock { $0.height = Double(state.height) }
+                    state.$signUpEntity.withLock { $0.weight = Double(state.weight) }
                     return .send(.setNavigating)
                 }
 

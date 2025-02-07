@@ -53,7 +53,6 @@ public struct OnboardingFlowFeature {
                     case .userTypeSelection:
                         state.path.append(.userTypeSelection(.init(signUpEntity: state.$signUpEntity)))
                     }
-                    
                     return .none
                 
                     /// 유저 타입 선택 완료 -> 트레이니/트레이너 프로필 입력
@@ -64,20 +63,19 @@ public struct OnboardingFlowFeature {
                     case .createProfileTrainer:
                         state.path.append(.createProfile(.init(signUpEntity: state.$signUpEntity, userType: .trainer)))
                     }
-                    
                     return .none
                     
                     ///  약관 화면 -> 트레이너/트레이니 선택 화면 이동
                 case .element(id: _, action: .createProfile(.setNavigating(let screen))):
                     switch screen {
                     case .traineeBasicInfoInput:
-                        state.path.append(.traineeBasicInfoInput(.init()))
+                        state.path.append(.traineeBasicInfoInput(.init(signUpEntity: state.$signUpEntity)))
                     case .trainerSignUpComplete:
                         state.path.append(.trainerSignUpComplete(.init()))
                     }
-                    
                     return .none
-                    
+                
+                // MARK: Trainer
                 /// 트레이너 프로필 생성 완료 -> 다음 버튼 tapped
                 case .element(id: _, action: .trainerSignUpComplete(.setNavigating)):
                     state.path.append(.trainerMakeInvitationCode(MakeInvitationCodeFeature.State()))
@@ -86,6 +84,12 @@ public struct OnboardingFlowFeature {
                 /// 트레이너의 초대코드 화면 -> 건너뛰기 버튼 tapped
                 case .element(id: _, action: .trainerMakeInvitationCode(.setNavigation)):
                     // 추후에 홈과 연결
+                    return .none
+                    
+                // MARK: Trainee
+                /// 트레이니 기본 정보 입력 -> PT 목적 설정 화면 이동
+                case .element(id: _, action: .traineeBasicInfoInput(.setNavigating)):
+                    state.path.append(.traineeTrainingPurpose(.init()))
                     return .none
                     
                 default:
