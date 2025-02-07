@@ -22,8 +22,8 @@ public struct TraineeProfileCompletionFeature {
         var userType: UserType
         /// 현재 사용자 이름
         var userName: String
-        /// 등록한 프로필 이미지 데이터
-        var profileImage: Data?
+        /// 등록한 프로필 이미지 링크
+        var profileImage: String?
         
         // MARK: UI related state
         /// 상대방 유저 타입 (사용자가 트레이너면 트레이니, 트레이니면 트레이너)
@@ -35,11 +35,11 @@ public struct TraineeProfileCompletionFeature {
         /// - Parameters:
         ///   - userType: 현재 선택된 유저 타입 (기본값: `.trainee`)
         ///   - userName: 입력된 사용자 이름 (기본값: `""`)
-        ///   - profileImage: 등록한 프로필 이미지 데이터 (기본값: `nil`)
+        ///   - profileImage: 등록한 프로필 이미지 링크 (기본값: `nil`)
         public init(
             userType: UserType = .trainee,
             userName: String = "",
-            profileImage: Data? = nil
+            profileImage: String? = nil
         ) {
             self.userType = userType
             self.userName = userName

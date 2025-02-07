@@ -72,4 +72,41 @@ public struct TraineeProfileCompletionView: View {
             .frame(width: 200, height: 200)
             .clipShape(Circle())
     }
+    
+    @ViewBuilder
+    public func ImageSection(imgURL: URL) -> some View {
+        if let urlString = store.profileImage, let url = URL(string: urlString) {
+            AsyncImage(url: url) { phase in
+                switch phase {
+                case .empty:
+                    ProgressView()
+                        .tint(.red500)
+                        .frame(width: 132, height: 132)
+                    
+                case .success(let image):
+                    image
+                        .resizable()
+                        .aspectRatio(contentMode: .fill)
+                        .frame(width: 132, height: 132)
+                        .clipShape(Circle())
+                    
+                case .failure:
+                    Image(store.userType == .trainee ? .imgDefaultTraineeImage : .imgDefaultTrainerImage)
+                        .resizable()
+                        .aspectRatio(contentMode: .fill)
+                        .frame(width: 132, height: 132)
+                        .clipShape(Circle())
+                    
+                @unknown default:
+                    EmptyView()
+                }
+            }
+        } else {
+            Image(store.userType == .trainee ? .imgDefaultTraineeImage : .imgDefaultTrainerImage)
+                .resizable()
+                .scaledToFill()
+                .frame(width: 132, height: 132)
+                .clipShape(Circle())
+        }
+    }
 }

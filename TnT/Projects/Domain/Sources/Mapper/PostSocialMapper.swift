@@ -30,3 +30,37 @@ public extension PostSocialLoginResDTO {
         )
     }
 }
+
+public extension PostSignUpEntity {
+    func toDTO() -> PostSignUpReqDTO? {
+        guard let memberType, let socialType, let socialId, let socialEmail, let name, let goalContents else { return nil }
+        return .init(
+            // TODO: FCM 서버 로직 나오면 수정
+            fcmToken: self.fcmToken ?? "temp",
+            memberType: memberType.englishName,
+            socialType: socialType.rawValue,
+            socialId: socialId,
+            socialEmail: socialEmail,
+            serviceAgreement: self.serviceAgreement,
+            collectionAgreement: self.collectionAgreement,
+            advertisementAgreement: self.advertisementAgreement,
+            name: name,
+            birthday: self.birthday,
+            height: self.height,
+            weight: self.weight,
+            cautionNote: self.cautionNote,
+            goalContents: goalContents
+        )
+    }
+}
+
+public extension PostSignUpResDTO {
+    func toEntity() -> PostSignUpResEntity {
+        return .init(
+            memberType: self.memberType,
+            sessionId: self.sessionId,
+            name: self.name,
+            profileImageUrl: self.profileImageUrl
+        )
+    }
+}

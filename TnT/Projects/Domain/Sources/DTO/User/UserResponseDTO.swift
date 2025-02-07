@@ -47,5 +47,5 @@ public struct PostSignUpResDTO: Decodable {
     /// 회원 이름
     let name: String
     /// 프로필 이미지 URL
-    let profileImageUrl: String
+    let profileImageUrl: String?
 }

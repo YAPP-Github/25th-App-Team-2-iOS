@@ -98,8 +98,9 @@ public struct OnboardingFlowFeature {
                     return .none
                     
                 /// 트레이니 주의사항 입력 -> 트레이니 회원 가입 완료 화면 이동
-                case .element(id: _, action: .traineePrecautionInput(.setNavigating)):
-                    state.path.append(.traineeProfileCompletion(.init()))
+                case .element(id: _, action: .traineePrecautionInput(.setNavigating(let info))):
+                    state.path.append(.traineeProfileCompletion(.init(userName: info.name, profileImage: info.profileImageUrl)))
+                        
                     return .none
                     
                 default:

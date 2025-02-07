@@ -61,12 +61,15 @@ public struct TraineePrecautionInputFeature {
     }
     
     @Dependency(\.userUseCase) private var userUseCase: UserUseCase
+    @Dependency(\.userUseRepoCase) private var userUseRepoCase: UserRepository
     
     public enum Action: Sendable, ViewAction {
         /// 뷰에서 발생한 액션을 처리합니다.
         case view(View)
         /// 네비게이션 여부 설정
-        case setNavigating
+        case setNavigating(PostSignUpResEntity)
+        /// 회원가입 POST
+        case postSignUp
         
         @CasePathable
         public enum View: Sendable, BindableAction {
@@ -100,9 +103,21 @@ public struct TraineePrecautionInputFeature {
                     
                 case .tapNextButton:
                     state.$signUpEntity.withLock { $0.cautionNote = state.precaution }
-                    return .send(.setNavigating)
+                    return .send(.postSignUp)
                 }
 
+            case .postSignUp:
+                guard let reqDTO = state.signUpEntity.toDTO() else {
+                    return .none
+                }
+                let imgData = state.signUpEntity.imageData
+                
+                return .run { send in
+                    let result = try await userUseRepoCase.postSignUp(reqDTO, profileImage: imgData).toEntity()
+                    // TODO: 세션, 유저타입 정보 키체인 저장
+                    await send(.setNavigating(result))
+                }
+                
             case .setNavigating:
                 return .none
             }
