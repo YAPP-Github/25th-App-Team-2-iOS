@@ -127,7 +127,6 @@ public struct TTimePicker: View {
     
     private func updateDate() {
         var calendar: Calendar = Calendar.current
-        calendar.timeZone = TimeZone(secondsFromGMT: 0) ?? .current  // UTC로 설정
         var components: DateComponents = calendar.dateComponents([.year, .month, .day, .hour, .minute], from: date)
         
         // 24시간대로 시간 포맷 설정
