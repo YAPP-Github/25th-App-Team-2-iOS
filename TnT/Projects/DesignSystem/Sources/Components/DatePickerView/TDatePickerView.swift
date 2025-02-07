@@ -15,8 +15,14 @@ public struct TDatePickerView: View {
     private let title: String
     /// 버튼 실행 action
     private let buttonAction: (Date) -> Void
+    /// 헤더 formatter
+    private let monthFormatter: (Date) -> String
     /// 선택 날짜
     @State private var selectedDate: Date = .now
+    /// 표시 날짜
+    @State private var currentDate: Date = .now
+    
+    @Environment(\.dismiss) var dismiss
     
     /// `TDatePickerView` 생성자
     /// - Parameters:
@@ -26,33 +32,55 @@ public struct TDatePickerView: View {
     public init(
         selectedDate: Date = .now,
         title: String,
+        monthFormatter: @escaping (Date) -> String,
         buttonAction: @escaping (Date) -> Void
     ) {
         self.selectedDate = selectedDate
         self.title = title
+        self.monthFormatter = monthFormatter
         self.buttonAction = buttonAction
     }
     
     public var body: some View {
-        VStack {
-            DatePicker(
-                title,
-                selection: $selectedDate,
-                displayedComponents: [.date]
-            )
-            .tint(Color.red500)
-            .datePickerStyle(.graphical)
-            .labelsHidden()
-            .padding()
+        VStack(spacing: 12) {
+            HStack {
+                Text(title)
+                    .typographyStyle(.heading3, with: .neutral900)
+                Spacer()
+                Button(action: {
+                    dismiss()
+                }, label: {
+                    Image(.icnDelete)
+                        .renderingMode(.template)
+                        .resizable()
+                        .tint(.neutral400)
+                        .frame(width: 32, height: 32)
+                })
+            }
+            .padding(20)
             
-            TBottomButton(
-                title: "완료",
-                isEnable: true,
+            TCalendarHeader<EmptyView>(
+                currentPage: $currentDate,
+                formatter: monthFormatter
+            )
+            .padding(.top, 20)
+            
+            TCalendarView(
+                selectedDate: $selectedDate,
+                currentPage: $currentDate,
+                mode: .compactMonth
+            )
+            .padding(.horizontal, 16)
+            
+            TButton(
+                title: "확인",
+                config: .large,
+                state: .default(.primary(isEnabled: true)),
                 action: {
                     buttonAction(selectedDate)
                 }
             )
-            .ignoresSafeArea(.all, edges: .bottom)
+            .padding(20)
         }
     }
 }

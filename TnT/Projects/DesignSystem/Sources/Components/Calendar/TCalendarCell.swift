@@ -12,7 +12,6 @@ import FSCalendar
 final class TCalendarCell: FSCalendarCell {
     // MARK: Properties
     static let identifier: String = "TCalendarCell"
-    static let cellSize: CGSize = CGSize(width: 51, height: 54)
     
     /// Cell에 표시되는 날짜
     private var customDate: Date?
@@ -22,8 +21,8 @@ final class TCalendarCell: FSCalendarCell {
     private var style: Style = .default
     /// Cell에 표시되는 일정 카운트
     private var eventCount: Int = 0
-    /// 주간/월간 모드인지 표시
-    private var isWeekMode: Bool = false
+    /// 주간/월간/컴팩트 모드인지 표시
+    private var mode: TCalendarType = .month
 
     // MARK: UI Elements
     private let dayLabel: UILabel = UILabel()
@@ -100,10 +99,14 @@ final class TCalendarCell: FSCalendarCell {
     
     /// 일정 카운트 표시 업데이트
     private func updateEventDisplay() {
+        guard mode != .compactMonth else {
+            eventStackView.isHidden = true
+            return
+        }
         eventCountLabel.text = "\(eventCount)"
         let eventExists: Bool = eventCount > 0
         eventStackView.isHidden = !eventExists
-        let presentCount: Bool = !isWeekMode && eventExists
+        let presentCount: Bool = mode == .month && eventExists
         eventCountLabel.isHidden = !presentCount
     }
     
@@ -112,7 +115,7 @@ final class TCalendarCell: FSCalendarCell {
         // 날짜 및 선택 상태 초기화
         customDate = nil
         isCellSelected = false
-        isWeekMode = false
+        mode = .month
         
         // 일정 관련 초기화
         eventCount = 0
@@ -132,12 +135,12 @@ extension TCalendarCell {
         with date: Date,
         isCellSelected: Bool,
         eventCount: Int = 0,
-        isWeekMode: Bool = false
+        mode: TCalendarType = .month
     ) {
         self.customDate = date
         self.isCellSelected = isCellSelected
         self.eventCount = eventCount
-        self.isWeekMode = isWeekMode
+        self.mode = mode
         
         // 현재 날짜 및 선택 상태를 반영, Style 설정
         if isCellSelected {

@@ -16,8 +16,8 @@ public struct TCalendarRepresentable: UIViewRepresentable {
     @Binding private var currentPage: Date
     /// 캘린더 높이
     @Binding var calendarHeight: CGFloat
-    /// 주간/월간 표시 여부
-    private var isWeekMode: Bool
+    /// 주간/월간/컴팩트 모드인지 표시
+    private var mode: TCalendarType = .month
     /// 캘린더 표시 이벤트 딕셔너리
     private var events: [Date: Int]
     
@@ -25,13 +25,13 @@ public struct TCalendarRepresentable: UIViewRepresentable {
         selectedDate: Binding<Date>,
         currentPage: Binding<Date>,
         calendarHeight: Binding<CGFloat>,
-        isWeekMode: Bool = false,
+        mode: TCalendarType = .month,
         events: [Date: Int] = [:]
     ) {
         self._selectedDate = selectedDate
         self._currentPage = currentPage
         self._calendarHeight = calendarHeight
-        self.isWeekMode = isWeekMode
+        self.mode = mode
         self.events = events
     }
     
@@ -44,7 +44,7 @@ public struct TCalendarRepresentable: UIViewRepresentable {
         
         // Cell 설정
         calendar.register(TCalendarCell.self, forCellReuseIdentifier: TCalendarCell.identifier)
-        calendar.collectionView.contentSize = TCalendarCell.cellSize
+        calendar.collectionView.contentSize = mode.cellSize
         
         // 기본 설정
         calendar.delegate = context.coordinator
@@ -55,7 +55,7 @@ public struct TCalendarRepresentable: UIViewRepresentable {
         calendar.placeholderType = .none
         calendar.headerHeight = 0
         calendar.weekdayHeight = 18
-        calendar.rowHeight = TCalendarCell.cellSize.height
+        calendar.rowHeight = mode.cellSize.height
         calendar.appearance.weekdayTextColor = UIColor(.neutral400)
         calendar.appearance.weekdayFont = Typography.FontStyle.label2Medium.uiFont
         calendar.appearance.selectionColor = .clear
@@ -77,7 +77,7 @@ public struct TCalendarRepresentable: UIViewRepresentable {
         }
         
         // `isWeekMode` 반영
-        let targetScope: FSCalendarScope = isWeekMode ? .week : .month
+        let targetScope: FSCalendarScope = mode.scope
         if uiView.scope != targetScope {
             uiView.scope = targetScope
         }
@@ -137,7 +137,7 @@ public extension TCalendarRepresentable {
                 with: date,
                 isCellSelected: isSelected,
                 eventCount: eventCount,
-                isWeekMode: parent.isWeekMode
+                mode: parent.mode
             )
             
             return cell
