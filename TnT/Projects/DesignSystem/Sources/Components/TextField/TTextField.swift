@@ -74,6 +74,7 @@ public extension TTextField.RightView {
     enum Style {
         case unit(text: String, status: TTextField.Status)
         case button(title: String, state: TButton.ButtonState, tapAction: () -> Void)
+        case dropDown(tintColor: Color, tapAction: () -> Void)
     }
 }
 
@@ -97,7 +98,6 @@ public extension TTextField {
                     .padding(.vertical, 3)
                 
             case let .button(title, state, tapAction):
-                // TODO: 추후 버튼 컴포넌트 나오면 대체
                 TButton(
                     title: title,
                     config: .small,
@@ -105,6 +105,15 @@ public extension TTextField {
                     action: tapAction
                 )
                 .frame(width: 66)
+                
+            case let .dropDown(tintColor, tapAction):
+                Button(action: tapAction) {
+                    Image(.icnArrowDown)
+                        .renderingMode(.template)
+                        .resizable()
+                        .tint(tintColor)
+                        .frame(width: 32, height: 32)
+                }
             }
         }
     }

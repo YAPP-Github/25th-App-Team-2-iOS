@@ -113,6 +113,8 @@ public extension TTextEditor {
         private let textLimit: Int
         /// 입력된 텍스트 카운트
         private var textCount: Int
+        /// 경고 텍스트
+        private var warningText: String
         /// 텍스트 필드 상태
         @Binding private var status: Status
         
@@ -124,17 +126,19 @@ public extension TTextEditor {
         public init(
             textLimit: Int,
             status: Binding<Status>,
-            textCount: Int
+            textCount: Int,
+            warningText: String = "글자 수를 초과했어요"
         ) {
             self.textLimit = textLimit
             self.textCount = textCount
             self._status = status
+            self.warningText = warningText
         }
         
         public var body: some View {
             HStack {
                 if status == .invalid {
-                    Text("글자 수를 초과했어요")
+                    Text(warningText)
                         .typographyStyle(.label2Medium, with: status.footerColor)
                 }
                 Spacer()
