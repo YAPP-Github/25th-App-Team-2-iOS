@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import Dependencies
 
 /// 네트워크 요청에 인증 정보를 추가하는 인터셉터
 struct AuthTokenInterceptor: Interceptor {
@@ -14,10 +15,10 @@ struct AuthTokenInterceptor: Interceptor {
 
     func adapt(request: URLRequest) async throws -> URLRequest {
         var request: URLRequest = request
-        guard let token: String = try KeyChainManager.read(for: .token) else {
+        guard let sessionId: String = try keyChainManager.read(for: .sessionId) else {
             return request
         }
-        request.setValue(token, forHTTPHeaderField: "Authorization")
+        request.setValue("SESSION-ID \(sessionId)", forHTTPHeaderField: "Authorization")
         return request
     }
 }

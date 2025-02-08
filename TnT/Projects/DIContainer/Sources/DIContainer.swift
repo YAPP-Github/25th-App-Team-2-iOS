@@ -30,8 +30,17 @@ private enum SocialUseCaseKey: DependencyKey {
     static let liveValue: SocialLoginUseCase = SocialLoginUseCase(socialLoginRepository: SocialLogInRepositoryImpl(loginManager: SNSLoginManager()))
 }
 
+private enum KeyChainManagerKey: DependencyKey {
+    static let liveValue: KeyChainManager = keyChainManager
+}
+
 // MARK: - DependencyValues
 public extension DependencyValues {
+    var keyChainManager: KeyChainManager {
+        get { self[KeyChainManagerKey.self] }
+        set { self[KeyChainManagerKey.self] = newValue }
+    }
+    
     var userUseCase: UserUseCase {
         get { self[UserUseCaseKey.self] }
         set { self[UserUseCaseKey.self] = newValue }
