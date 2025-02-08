@@ -17,7 +17,7 @@ public struct GetMembersListDTO: Decodable {
     /// 프로필 사진
     public let profileImageUrl: String
     /// 생년월일
-    public let birthday: String
+    public let birthday: String?
     /// 유저 타입 (트레이너/트레이니)
     public let memberType: String
     /// 소셜 로그인 타입
@@ -29,11 +29,31 @@ public struct GetMembersListDTO: Decodable {
     /// 트레이너 ID
     public let trainerId: String
     /// 트레이니 키
-    public let height: Double
+    public let height: Double?
     /// 트레이니 무게
-    public let weight: Double
+    public let weight: Double?
     /// 주의사항
-    public let cautionNote: String
+    public let cautionNote: String?
     /// PT 목표
     public let goalContents: [String]
+}
+
+public extension GetMembersListDTO {
+    public static func toEntity(resEntity: GetMembersListDTO) -> GetMembersListEntity {
+        return GetMembersListEntity(
+            name: resEntity.name,
+            email: resEntity.email,
+            profileImageUrl: resEntity.profileImageUrl,
+            birthday: resEntity.birthday ?? "",
+            memberType: resEntity.memberType,
+            socialType: resEntity.socialType,
+            managementMember: resEntity.managementMember,
+            fellowMember: resEntity.fellowMember,
+            trainerId: resEntity.trainerId,
+            height: resEntity.height ?? 0.0,
+            weight: resEntity.weight ?? 0.0,
+            cautionNote: resEntity.cautionNote ?? "",
+            goalContents: resEntity.goalContents
+        )
+    }
 }
