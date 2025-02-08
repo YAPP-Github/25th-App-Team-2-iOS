@@ -95,10 +95,13 @@ extension AppFlowCoordinatorFeature {
         
         switch flow {
         case .onboardingFlow:
+            state.userType = nil
             state.onboardingState = .init()
         case .traineeMainFlow:
+            state.userType = .trainee
             state.traineeMainState = .init()
         case .trainerMainFlow:
+            state.userType = .trainer
             state.trainerMainState = .init()
         }
         

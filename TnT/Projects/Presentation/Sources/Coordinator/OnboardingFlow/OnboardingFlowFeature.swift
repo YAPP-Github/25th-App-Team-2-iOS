@@ -80,11 +80,10 @@ public struct OnboardingFlowFeature {
                 case .element(id: _, action: .trainerSignUpComplete(.setNavigating)):
                     state.path.append(.trainerMakeInvitationCode(MakeInvitationCodeFeature.State()))
                     return .none
-                
-                /// 트레이너의 초대코드 화면 -> 건너뛰기 버튼 tapped
+                    
+                /// 트레이너 초대 코드 생성 화면 -> 트레이너 홈 이동
                 case .element(id: _, action: .trainerMakeInvitationCode(.setNavigation)):
-                    // 추후에 홈과 연결
-                    return .none
+                    return .send(.switchFlow(.trainerMainFlow))
                     
                 // MARK: Trainee
                 /// 트레이니 기본 정보 입력 -> PT 목적 설정 화면 이동
@@ -100,8 +99,31 @@ public struct OnboardingFlowFeature {
                 /// 트레이니 주의사항 입력 -> 트레이니 회원 가입 완료 화면 이동
                 case .element(id: _, action: .traineePrecautionInput(.setNavigating(let info))):
                     state.path.append(.traineeProfileCompletion(.init(userName: info.name, profileImage: info.profileImageUrl)))
-                        
                     return .none
+                    
+                /// 트레이니 회원가입 완료 화면 -> 트레이너 초대코드 입력 화면 이동
+                case .element(id: _, action: .traineeProfileCompletion(.setNavigating)):
+                    state.path.append(.traineeInvitationCodeInput(.init(view_popUp: .invitePopUp, view_isPopupPresented: true)))
+                    return .none
+                    
+                /// 트레이니 초대코드 입력 화면 -> 트레이니 홈화면/PT 정보 입력 화면
+                case .element(id: _, action: .traineeInvitationCodeInput(.setNavigating(let screen))):
+                    switch screen {
+                    case .traineeHome:
+                        return .send(.switchFlow(.traineeMainFlow))
+                    case .trainingInfoInput:
+                        state.path.append(.traineeTrainingInfoInput(.init()))
+                        return .none
+                    }
+                   
+                /// 트레이니 PT 정보 입력 화면 -> 연결 완료 화면
+                case .element(id: _, action: .traineeTrainingInfoInput(.setNavigating)):
+                    state.path.append(.traineeConnectionComplete(.init(userType: .trainee, traineeName: "1", trainerName: "2")))
+                    return .none
+                
+                /// 트레이니 트레이너 연결완료 -> 트레이니 홈화면
+                case .element(id: _, action: .traineeConnectionComplete(.setNavigating)):
+                    return .send(.switchFlow(.traineeMainFlow))
                     
                 default:
                     return .none

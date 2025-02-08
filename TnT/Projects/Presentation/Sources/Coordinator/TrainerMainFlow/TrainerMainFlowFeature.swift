@@ -17,7 +17,7 @@ public struct TrainerMainFlowFeature {
     public struct State: Equatable {
         public var path: StackState<Path.State>
         
-        public init(path: StackState<Path.State> = .init([])) {
+        public init(path: StackState<Path.State> = .init([.mainTab(.home(.init()))])) {
             self.path = path
         }
     }
