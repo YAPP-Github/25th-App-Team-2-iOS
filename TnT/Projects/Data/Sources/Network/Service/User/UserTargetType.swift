@@ -12,6 +12,8 @@ import Domain
 
 /// 사용자 관련 API 요청 타입 정의
 public enum UserTargetType {
+    /// 로그인 세션 유효 확인
+    case getSessionCheck
     /// 소셜 로그인 요청
     case postSocialLogin(reqDTO: PostSocialLoginReqDTO)
     /// 회원가입 요청
@@ -25,6 +27,9 @@ extension UserTargetType: TargetType {
     
     var path: String {
         switch self {
+        case .getSessionCheck:
+            return "/check-session"
+            
         case .postSocialLogin:
             return "/login"
             
@@ -35,6 +40,9 @@ extension UserTargetType: TargetType {
     
     var method: HTTPMethod {
         switch self {
+        case .getSessionCheck:
+            return .get
+            
         case .postSocialLogin, .postSignUp:
             return .post
         }
@@ -42,6 +50,9 @@ extension UserTargetType: TargetType {
     
     var task: RequestTask {
         switch self {
+        case .getSessionCheck:
+            return .requestPlain
+        
         case .postSocialLogin(let reqDto):
             return .requestJSONEncodable(encodable: reqDto)
             
@@ -59,6 +70,9 @@ extension UserTargetType: TargetType {
     
     var headers: [String: String]? {
         switch self {
+        case .getSessionCheck:
+            return nil
+            
         case .postSocialLogin:
             return ["Content-Type": "application/json"]
             
@@ -71,10 +85,20 @@ extension UserTargetType: TargetType {
     }
     
     var interceptors: [any Interceptor] {
-        return [
-            LoggingInterceptor(),
-            ResponseValidatorInterceptor(),
-            RetryInterceptor(maxRetryCount: 2)
-        ]
+        switch self {
+        case .getSessionCheck:
+            return [
+                LoggingInterceptor(),
+                AuthTokenInterceptor(),
+                ResponseValidatorInterceptor(),
+                RetryInterceptor(maxRetryCount: 2)
+            ]
+        default:
+            return [
+                LoggingInterceptor(),
+                ResponseValidatorInterceptor(),
+                RetryInterceptor(maxRetryCount: 2)
+            ]
+        }
     }
 }

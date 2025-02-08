@@ -68,6 +68,10 @@ public struct DefaultUserUseCase: UserRepository, UserUseCase {
 
 // MARK: - Repository
 extension DefaultUserUseCase {
+    public func getSessionCheck() async throws -> GetSessionCheckResDTO {
+        return try await userRepostiory.getSessionCheck()
+    }
+    
     public func postSocialLogin(_ reqDTO: PostSocialLoginReqDTO) async throws -> PostSocialLoginResDTO {
         return try await userRepostiory.postSocialLogin(reqDTO)
     }
@@ -76,4 +80,3 @@ extension DefaultUserUseCase {
         return try await userRepostiory.postSignUp(reqDTO, profileImage: profileImage)
     }
 }
-

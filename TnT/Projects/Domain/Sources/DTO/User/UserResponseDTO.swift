@@ -8,6 +8,11 @@
 
 import Foundation
 
+/// 로그인 세션 유효 확인 응답 DTO
+public struct GetSessionCheckResDTO: Decodable {
+    public let memberType: MemberTypeResDTO
+}
+
 /// 소셜 로그인 응답 DTO
 public struct PostSocialLoginResDTO: Decodable {
     /// 세션 ID
