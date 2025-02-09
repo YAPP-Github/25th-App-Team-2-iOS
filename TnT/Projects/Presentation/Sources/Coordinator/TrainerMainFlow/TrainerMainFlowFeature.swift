@@ -66,6 +66,11 @@ public struct TrainerMainFlowFeature {
                         }
                     }
                     
+                    /// 트레이너 초대코드 발급 페이지 건너 뛰기 -> 홈으로
+                case .element(id: _, action: .trainerMakeInvitationCodePage(.setNavigation)):
+                    state.path.removeLast()
+                    return .none
+                    
                 default:
                     return .none
                 }

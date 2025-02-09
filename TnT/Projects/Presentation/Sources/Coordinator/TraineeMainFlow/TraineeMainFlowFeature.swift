@@ -81,9 +81,14 @@ public struct TraineeMainFlowFeature {
                     // 특정 화면 append
                     return .none
 
-                    /// 마이페이지 초대코드 입력화면 다음 버튼 탭 - > PT 정보 입력 화면 이동
-                case .element(_, action: .traineeInvitationCodeInput(.setNavigating)):
-                    state.path.append(.traineeTrainingInfoInput(.init()))
+                    /// 마이페이지 초대코드 입력화면 다음 버튼 탭 - > PT 정보 입력 화면 or 홈 이동
+                case .element(_, action: .traineeInvitationCodeInput(.setNavigating(let screen))):
+                    switch screen {
+                    case .traineeHome:
+                        state.path.removeLast()
+                    case .trainingInfoInput:
+                        state.path.append(.traineeTrainingInfoInput(.init()))
+                    }
                     return .none
                     
                     /// PT 정보 입력 화면 다음 버튼 탭 -> 연결 완료 화면 이동
