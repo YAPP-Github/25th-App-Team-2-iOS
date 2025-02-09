@@ -48,7 +48,7 @@ public struct TToastView: View {
 
 public extension TToastView {
     /// 좌측 뷰로 표시될 내용
-    enum LeftViewType: Equatable {
+    enum LeftViewType {
         case text(String)
         case image(ImageResource)
         case processing

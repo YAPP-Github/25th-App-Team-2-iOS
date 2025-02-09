@@ -8,6 +8,8 @@
 
 import SwiftUI
 
+import Domain
+
 public final class OverlayManager: ObservableObject {
     public static let shared = OverlayManager()
     
