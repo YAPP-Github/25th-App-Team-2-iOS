@@ -35,6 +35,7 @@ public struct AppFlowCoordinatorView: View {
                 }
             }
         }
+        .animation(.easeInOut, value: store.userType)
         .onAppear {
             store.send(.onAppear)
         }

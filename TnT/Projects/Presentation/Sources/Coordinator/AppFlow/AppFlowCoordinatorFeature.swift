@@ -81,13 +81,10 @@ public struct AppFlowCoordinatorFeature {
             switch action {
             case .subFeature(let internalAction):
                 switch internalAction {
-                case .onboardingFlow(.switchFlow(let flow)):
+                case .onboardingFlow(.switchFlow(let flow)), .traineeMainFlow(.switchFlow(let flow)):
                     return self.setFlow(flow, state: &state)
                     
                 case .trainerMainFlow:
-                    return .none
-                    
-                case .traineeMainFlow:
                     return .none
                     
                 default:
@@ -98,13 +95,14 @@ public struct AppFlowCoordinatorFeature {
                 switch action {
                 case .checkSession:
                     return .run { send in
-                        let result = try await userUseCaseRepo.getSessionCheck()
-                        switch result.memberType {
+                        let result = try? await userUseCaseRepo.getSessionCheck()
+                        switch result?.memberType {
                         case .trainer:
                             await send(.updateUserInfo(.trainer))
                         case .trainee:
                             await send(.updateUserInfo(.trainee))
-                        case .unregistered, .unknown:
+                        default:
+                            try keyChainManager.delete(.sessionId)
                             await send(.updateUserInfo(nil))
                         }
                     }

@@ -153,7 +153,6 @@ extension OnboardingFlowFeature {
         
         // MARK: Trainer
         /// 트레이너 회원 가입 완료 뷰
-        /// TODO: 트레이너/트레이니 회원 가입 완료 화면으로 통합 필요
         case trainerSignUpComplete(ProfileCompletionFeature)
         /// 트레이너의 초대코드 발급 뷰
         case trainerMakeInvitationCode(MakeInvitationCodeFeature)
@@ -168,14 +167,12 @@ extension OnboardingFlowFeature {
         /// 트레이니 주의사항 입력
         case traineePrecautionInput(TraineePrecautionInputFeature)
         /// 트레이니 프로필 생성 완료
-        /// TODO: 트레이너/트레이니 회원 가입 완료 화면으로 통합 필요
         case traineeProfileCompletion(ProfileCompletionFeature)
         /// 트레이니 초대 코드입력
         case traineeInvitationCodeInput(TraineeInvitationCodeInputFeature)
         /// 트레이니 수업 정보 입력
         case traineeTrainingInfoInput(TraineeTrainingInfoInputFeature)
         /// 트레이니 연결 완료
-        /// TODO: 트레이너/트레이니 연결 완료 화면으로 통합 필요
         case traineeConnectionComplete(TraineeConnectionCompleteFeature)
     }
 }
