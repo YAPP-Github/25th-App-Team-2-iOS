@@ -150,15 +150,21 @@ public struct TraineeMyPageFeature {
                     return .none
                     
                 case .tapTOSButton:
-                    print("tapTOSButton")
+                    if let url = URL(string: AppLinks.termsOfService) {
+                        UIApplication.shared.open(url)
+                    }
                     return .none
                     
                 case .tapPrivacyPolicyButton:
-                    print("tapPrivacyPolicyButton")
+                    if let url = URL(string: AppLinks.privacyPolicy) {
+                        UIApplication.shared.open(url)
+                    }
                     return .none
                     
                 case .tapOpenSourceLicenseButton:
-                    print("tapOpenSourceLicenseButton")
+                    if let url = URL(string: AppLinks.openSourceLicense) {
+                        UIApplication.shared.open(url)
+                    }
                     return .none
                     
                 case .tapDisconnectTrainerButton:
