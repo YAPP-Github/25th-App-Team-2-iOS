@@ -61,5 +61,4 @@ public struct PostLogoutResDTO: Decodable {
 }
 
 /// 회원탈퇴 응답 DTO
-public struct PostWithdrawalResDTO: Decodable {
-}
+public typealias PostWithdrawalResDTO = EmptyResponse

@@ -8,6 +8,8 @@
 
 import Foundation
 
+import Domain
+
 /// 네트워크 요청을 처리하는 서비스 클래스
 public final class NetworkService {
     
@@ -85,6 +87,9 @@ private extension NetworkService {
     
     /// JSON 데이터 디코딩
     func decodeData<T: Decodable>(_ data: Data, as type: T.Type) throws -> T {
+        // 빈 데이터인 경우 EmptyResponse 타입으로 처리
+        if data.isEmpty, let emptyValue = EmptyResponse() as? T { return emptyValue }
+        
         do {
             return try JSONDecoder(setting: .defaultSetting).decode(T.self, from: data)
         } catch let decodingError as DecodingError {
