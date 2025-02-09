@@ -54,9 +54,9 @@ extension TraineeTargetType: TargetType {
         return [
             LoggingInterceptor(),
             AuthTokenInterceptor(),
+            ProgressIndicatorInterceptor(),
             ResponseValidatorInterceptor(),
             RetryInterceptor(maxRetryCount: 0)
         ]
     }
 }
-
