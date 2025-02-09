@@ -26,6 +26,8 @@ public struct TrainerMainFlowView: View {
                 // MARK: MainTab
             case .mainTab(let store):
                 TrainerMainTabView(store: store)
+            case .addPTSession(let store):
+                TrainerAddPTSessionView(store: store)
                 
                 // MARK: Home
             case .alarmCheck(let store):

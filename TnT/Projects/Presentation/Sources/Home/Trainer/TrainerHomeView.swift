@@ -31,6 +31,12 @@ public struct TrainerHomeView: View {
             }
             .background(Color.neutral100)
         }
+        .background(
+            VStack {
+                Color.common0
+                Color.neutral100
+            }
+        )
         .overlay(alignment: .bottomTrailing) {
             SessionAddButton()
         }

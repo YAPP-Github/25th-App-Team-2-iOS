@@ -47,6 +47,7 @@ public struct TrainerMainFlowFeature {
                             state.path.append(.alarmCheck(.init(userType: .trainer)))
                             return .none
                         case .addPTSessionPage:
+                            state.path.append(.addPTSession(.init()))
                             return .none
                         }
                         
@@ -88,6 +89,8 @@ extension TrainerMainFlowFeature {
         // MARK: Home
         /// 알림 목록
         case alarmCheck(AlarmCheckFeature)
+        /// PT 일정 추가
+        case addPTSession(TrainerAddPTSessionFeature)
         
         // MARK: MyPage
     }

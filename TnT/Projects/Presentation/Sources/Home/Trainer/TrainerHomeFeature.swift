@@ -111,9 +111,7 @@ public struct TrainerHomeFeature {
                     print("tapSessionCompleted otLessionID \(id)")
                     return .none
                 case .tapAddSessionButton:
-                    // TODO: 네비게이션 연결 시 추가
-                    print("tapAddSessionButton")
-                    return .none
+                    return .send(.setNavigating(.addPTSessionPage))
                 }
             case .setNavigating:
                 return .none
