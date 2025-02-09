@@ -22,7 +22,10 @@ public enum AppFlow: Sendable {
 public struct AppFlowCoordinatorFeature {
     @ObservableState
     public struct State: Equatable {
+        // MARK: Data related state
         var userType: UserType?
+        // MARK: UI related state
+        var view_isSplashActive: Bool
         
         // MARK: SubFeature state
         var trainerMainState: TrainerMainFlowFeature.State?
@@ -31,11 +34,13 @@ public struct AppFlowCoordinatorFeature {
         
         public init(
             userType: UserType? = nil,
+            view_isSplashActive: Bool = true,y
             onboardingState: OnboardingFlowFeature.State? = nil,
             trainerMainState: TrainerMainFlowFeature.State? = nil,
             traineeMainState: TraineeMainFlowFeature.State? = nil
         ) {
             self.userType = userType
+            self.view_isSplashActive = view_isSplashActive
             self.onboardingState = onboardingState
             self.trainerMainState = trainerMainState
             self.traineeMainState = traineeMainState
@@ -51,6 +56,8 @@ public struct AppFlowCoordinatorFeature {
         case checkSessionInfo
         /// 현재 유저 정보 업데이트
         case updateUserInfo(UserType?)
+        /// 스플래시 표시 종료 시
+        case splashFinished
         /// 첫 진입 시
         case onAppear
         
@@ -122,8 +129,18 @@ public struct AppFlowCoordinatorFeature {
                     return self.setFlow(.onboardingFlow, state: &state)
                 }
                 
+            case .splashFinished:
+                state.view_isSplashActive = false
+                return .none
+                
             case .onAppear:
-                return .send(.checkSessionInfo)
+                return .merge(
+                    .run { send in
+                        try await Task.sleep(for: .seconds(1))
+                        await send(.splashFinished)
+                    },
+                    .send(.checkSessionInfo)
+                )
             }
         }
         .ifLet(\.onboardingState, action: \.subFeature.onboardingFlow) { OnboardingFlowFeature() }

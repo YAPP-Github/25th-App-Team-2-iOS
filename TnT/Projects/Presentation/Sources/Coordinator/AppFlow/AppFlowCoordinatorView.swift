@@ -18,29 +18,35 @@ public struct AppFlowCoordinatorView: View {
 
     public var body: some View {
         ZStack {
-            Group {
-                if let userType = store.userType {
-                    switch userType {
-                    case .trainee:
-                        if let store = store.scope(state: \.traineeMainState, action: \.subFeature.traineeMainFlow) {
-                            TraineeMainFlowView(store: store)
+            if store.view_isSplashActive {
+                SplashView()
+                    .transition(.opacity)
+            } else {
+                Group {
+                    if let userType = store.userType {
+                        switch userType {
+                        case .trainee:
+                            if let store = store.scope(state: \.traineeMainState, action: \.subFeature.traineeMainFlow) {
+                                TraineeMainFlowView(store: store)
+                            }
+                        case .trainer:
+                            if let store = store.scope(state: \.trainerMainState, action: \.subFeature.trainerMainFlow) {
+                                TrainerMainFlowView(store: store)
+                            }
                         }
-                    case .trainer:
-                        if let store = store.scope(state: \.trainerMainState, action: \.subFeature.trainerMainFlow) {
-                            TrainerMainFlowView(store: store)
+                    } else {
+                        if let store = store.scope(state: \.onboardingState, action: \.subFeature.onboardingFlow) {
+                            OnboardingFlowView(store: store)
                         }
-                    }
-                } else {
-                    if let store = store.scope(state: \.onboardingState, action: \.subFeature.onboardingFlow) {
-                        OnboardingFlowView(store: store)
                     }
                 }
+                .animation(.easeInOut, value: store.userType)
+                
+                OverlayContainer()
+                    .environmentObject(OverlayManager.shared)
             }
-            .animation(.easeInOut, value: store.userType)
-            
-            OverlayContainer()
-                .environmentObject(OverlayManager.shared)
         }
+        .animation(.easeInOut, value: store.view_isSplashActive)
         .onAppear {
             store.send(.onAppear)
         }
