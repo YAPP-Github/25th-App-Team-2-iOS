@@ -55,6 +55,9 @@ public struct TraineeMainFlowFeature {
                             return .none
                         case .addMealRecordPage:
                             return .none
+                        case .traineeInvitationCodeInput:
+                            state.path.append(.traineeInvitationCodeInput(.init(view_navigationType: .existingUser)))
+                            return .none
                         }
                         /// 트레이니 마이페이지
                     case .traineeMyPage(let screen):
@@ -64,7 +67,7 @@ public struct TraineeMainFlowFeature {
                             
                             /// 마이페이지 초대코드 입력하기 버튼 탭-> 초대코드 입력 화면 이동
                         case .traineeInvitationCodeInput:
-                            state.path.append(.traineeInvitationCodeInput(.init()))
+                            state.path.append(.traineeInvitationCodeInput(.init(view_navigationType: .existingUser)))
                             return .none
                             
                             /// 마이페이지 로그아웃/회원탈퇴 -> 온보딩 로그인 화면 이동
