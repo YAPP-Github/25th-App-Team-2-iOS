@@ -82,6 +82,7 @@ extension SNSLoginManager: ASAuthorizationControllerDelegate, ASWebAuthenticatio
         
         guard let appleIDCredential = authorization.credential as? ASAuthorizationAppleIDCredential else {
             self.appleLoginCompletion?(nil)
+            self.appleLoginCompletion = nil
             return
         }
         
@@ -92,6 +93,7 @@ extension SNSLoginManager: ASAuthorizationControllerDelegate, ASWebAuthenticatio
             let authorizationCodeString = String(data: authorizationCode, encoding: .utf8)
         else {
             self.appleLoginCompletion?(nil)
+            self.appleLoginCompletion = nil
             return
         }
         
@@ -101,12 +103,14 @@ extension SNSLoginManager: ASAuthorizationControllerDelegate, ASWebAuthenticatio
                 authorizationCode: authorizationCodeString
             )
         )
+        self.appleLoginCompletion = nil
     }
     
     // 애플 로그인 실패 시 nil 리턴
     public func authorizationController(controller: ASAuthorizationController, didCompleteWithError error: Error) {
         print("Apple login failed: \(error.localizedDescription)")
         self.appleLoginCompletion?(nil)
+        self.appleLoginCompletion = nil
     }
     
     public func presentationAnchor(for controller: ASAuthorizationController) -> ASPresentationAnchor {
