@@ -48,7 +48,6 @@ public final class OverlayManager: ObservableObject {
         dismissWorkItem?.cancel()
         dismissWorkItem = nil
         
-        // 애니메이션이 끝날(약 0.3초 후) 때 다음 토스트 표시
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) { [weak self] in
             self?.showNextToast()
         }
@@ -77,13 +76,13 @@ extension OverlayManager {
             currentToast = toast
         }
         
-        // 이전 자동 해제 작업 취소
+        // 이전 작업 취소 + 신규 작업 생성, 등록
         dismissWorkItem?.cancel()
-        // 자동 해제를 위한 작업 생성
         let workItem = DispatchWorkItem { [weak self] in
             self?.dismissCurrentToast()
         }
         dismissWorkItem = workItem
+        
         DispatchQueue.main.asyncAfter(deadline: .now() + toast.duration, execute: workItem)
     }
     
@@ -108,12 +107,12 @@ extension OverlayManager {
             object: nil
         )
         // 토스트 삭제 노티 옵저버
-            nc.addObserver(
-                self,
-                selector: #selector(handleDeleteToastNotification(_:)),
-                name: .deleteToastNotification,
-                object: nil
-            )
+        nc.addObserver(
+            self,
+            selector: #selector(handleDeleteToastNotification(_:)),
+            name: .deleteToastNotification,
+            object: nil
+        )
         // ProgressView 표시 노티 옵저버
         nc.addObserver(
             self,
