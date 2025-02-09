@@ -9,8 +9,11 @@
 import SwiftUI
 import ComposableArchitecture
 
+import DesignSystem
+
+@ViewAction(for: AppFlowCoordinatorFeature.self)
 public struct AppFlowCoordinatorView: View {
-    let store: StoreOf<AppFlowCoordinatorFeature>
+    @Bindable public var store: StoreOf<AppFlowCoordinatorFeature>
 
     public init(store: StoreOf<AppFlowCoordinatorFeature>) {
         self.store = store
@@ -47,8 +50,24 @@ public struct AppFlowCoordinatorView: View {
             }
         }
         .animation(.easeInOut, value: store.view_isSplashActive)
-        .onAppear {
-            store.send(.onAppear)
+        .onAppear { send(.onAppear) }
+        .tPopUp(isPresented: $store.view_isPopUpPresented) {
+            .init(
+                alertState: .init(
+                    title: "세션이 만료되었어요",
+                    message: "장시간 미사용으로 로그인 화면으로 이동해요",
+                    showAlertIcon: true,
+                    buttons: [
+                        TPopupAlertState.ButtonState(
+                            title: "확인",
+                            style: .secondary,
+                            action: .init(action: {
+                                send(.tapSessionExpiredPopupConfirmButton)
+                            })
+                        )
+                    ]
+                )
+            )
         }
     }
 }

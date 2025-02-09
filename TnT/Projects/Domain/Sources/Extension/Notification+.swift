@@ -17,6 +17,8 @@ public extension Notification.Name {
     static let showProgressNotification = Notification.Name("ShowProgressNotification")
     /// ProgressView를 숨기기 위한 노티피케이션 이름
     static let hideProgressNotification = Notification.Name("HideProgressNotification")
+    /// 세션 만료 팝업을 표시하기 위한 노티피케이션 이름
+    static let showSessionExpiredPopupNotification = Notification.Name("ShowSessionExpiredPopupNotification")
 }
 
 public extension NotificationCenter {
@@ -42,5 +44,10 @@ public extension NotificationCenter {
     func postProgress(visible: Bool) {
         let name: Notification.Name = visible ? .showProgressNotification : .hideProgressNotification
         self.post(name: name, object: nil)
+    }
+    
+    /// 세션 만료 팝업 표시를 요청하는 편의 메서드
+    func postSessionExpired() {
+        NotificationCenter.default.post(name: .showSessionExpiredPopupNotification, object: nil)
     }
 }
