@@ -19,7 +19,7 @@ public struct OverlayContainer: View {
         ZStack {
             // ProgressView 표시 (화면 중앙)
             if overlayManager.isProgressVisible {
-                Color.black.opacity(0.3)
+                Color.black.opacity(0.5)
                     .ignoresSafeArea()
                 ProgressView()
                     .progressViewStyle(CircularProgressViewStyle(tint: .red500))

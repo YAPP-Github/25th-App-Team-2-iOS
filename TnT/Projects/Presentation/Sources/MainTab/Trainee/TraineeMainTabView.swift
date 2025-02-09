@@ -18,7 +18,7 @@ public struct TraineeMainTabView: View {
     public init(store: StoreOf<TraineeMainTabFeature>) {
         self.store = store
     }
-
+    
     public var body: some View {
         VStack(spacing: 0) {
             switch store.state {
@@ -57,5 +57,14 @@ public struct TraineeMainTabView: View {
         .frame(height: 54 + .safeAreaBottom)
         .padding(.horizontal, 24)
         .background(Color.white.shadow(radius: 5).opacity(0.5))
+        .overlay(
+            Group {
+                if store.isPopupActive {
+                    Color.black.opacity(0.5)
+                        .transition(.opacity)
+                }
+            }
+        )
+        .animation(.easeInOut, value: store.isPopupActive)
     }
 }

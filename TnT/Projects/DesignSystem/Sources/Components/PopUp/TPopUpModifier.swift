@@ -15,7 +15,7 @@ public struct TPopUpModifier<InnerContent: View>: ViewModifier {
     private let defaultInnerPadding: CGFloat = 20
     /// 팝업 배경의 기본 불투명도
     /// 0.0 = 완전 투명, 1.0 = 완전 불투명
-    private let defaultBackgroundOpacity: Double = 0.8
+    private let defaultBackgroundOpacity: Double = 0.5
     /// 팝업의 기본 배경 색상
     private let defaultPopUpBackgroundColor: Color = .white
     /// 팝업 모서리의 기본 곡률 (Corner Radius)
