@@ -34,6 +34,7 @@ public struct TrainerHomeView: View {
         .overlay(alignment: .bottomTrailing) {
             SessionAddButton()
         }
+        .navigationBarBackButtonHidden()
     }
     
     // MARK: - Sections
@@ -126,7 +127,7 @@ public struct TrainerHomeView: View {
                 }
             }
             .onTapGesture {
-                send(.tapAddSessionRecordButton)
+                send(.tapAddSessionButton)
             }
             .padding(.trailing, 22)
             .padding(.bottom, 28)
