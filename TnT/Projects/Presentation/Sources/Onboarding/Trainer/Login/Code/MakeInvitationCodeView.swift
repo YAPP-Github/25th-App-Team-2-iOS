@@ -24,6 +24,7 @@ public struct MakeInvitationCodeView: View {
             Header()
             InvitationCode()
         }
+        .navigationBarBackButtonHidden()
     }
     
     @ViewBuilder

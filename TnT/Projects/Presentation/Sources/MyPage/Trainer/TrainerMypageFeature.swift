@@ -17,6 +17,8 @@ public struct TrainerMypageFeature {
     
     @ObservableState
     public struct State: Equatable {
+        /// 3일 동안 보지 않기 시작 날짜
+        @Shared(.appStorage(AppStorage.hideHomePopupUntil)) var hidePopupUntil: Date?
         /// 사용자 이름
         var userName: String
         /// 사용자 이미지 URL
@@ -157,6 +159,7 @@ public struct TrainerMypageFeature {
                         return .send(.api(.withdraw))
                         
                     case .logoutCompleted, .withdrawCompleted:
+                        state.$hidePopupUntil.withLock { $0 = nil }
                         return .concatenate(
                             .send(.setPopUpStatus(nil)),
                             .send(.setNavigating(.onboardingLogin))

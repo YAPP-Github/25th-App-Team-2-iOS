@@ -49,6 +49,9 @@ public struct TrainerMainFlowFeature {
                         case .addPTSessionPage:
                             state.path.append(.addPTSession(.init()))
                             return .none
+                        case .trainerMakeInvitationCodePage:
+                            state.path.append(.trainerMakeInvitationCodePage(.init()))
+                            return .none
                         }
                         
                         /// 트레이너 회원목록
@@ -93,5 +96,7 @@ extension TrainerMainFlowFeature {
         case addPTSession(TrainerAddPTSessionFeature)
         
         // MARK: MyPage
+        /// 초대코드 발급
+        case trainerMakeInvitationCodePage(MakeInvitationCodeFeature)
     }
 }

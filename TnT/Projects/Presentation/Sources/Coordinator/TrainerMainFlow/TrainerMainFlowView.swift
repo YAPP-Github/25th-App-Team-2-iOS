@@ -34,6 +34,8 @@ public struct TrainerMainFlowView: View {
                 AlarmCheckView(store: store)
                 
                 // MARK: MyPage
+            case .trainerMakeInvitationCodePage(let store):
+                MakeInvitationCodeView(store: store)
             }
         }
     }
