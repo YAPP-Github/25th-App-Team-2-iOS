@@ -83,13 +83,13 @@ public extension View {
     func tToast<LeftView: View>(
         isPresented: Binding<Bool>,
         message: String,
-        leftView: @escaping () -> LeftView
+        leftViewType: TToastView.LeftViewType
     ) -> some View {
         self.modifier(
             TToastViewModifier(
                 isPresented: isPresented,
                 newContent: {
-                    TToastView(message: message, leftView: leftView)
+                    TToastView(message: message, leftViewType: leftViewType)
                 }
             )
         )
