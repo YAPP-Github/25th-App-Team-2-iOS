@@ -32,15 +32,21 @@ public final class NetworkService {
         decodingType: T.Type
     ) async throws -> T {
         let pipeline: InterceptorPipeline = InterceptorPipeline(interceptors: target.interceptors)
-        // URL Request 생성
-        var request: URLRequest = try buildRequest(from: target)
-        request = try await pipeline.adapt(request)
-        
-        // Request 수행
-        let data: Data = try await executeRequest(request, pipeline: pipeline)
-        
-        // Data 디코딩
-        return try decodeData(data, as: decodingType)
+        do {
+            // URL Request 생성
+            var request: URLRequest = try buildRequest(from: target)
+            request = try await pipeline.adapt(request)
+            
+            // Request 수행
+            let data: Data = try await executeRequest(request, pipeline: pipeline)
+            
+            // Data 디코딩
+            return try decodeData(data, as: decodingType)
+        } catch {
+            // TODO: 추후 인터셉터 리팩토링 시 error middleWare로 분리
+            NotificationCenter.default.post(toast: .init(presentType: .text("⚠"), message: "서버 요청에 실패했어요"))
+            throw error
+        }
     }
 }
 

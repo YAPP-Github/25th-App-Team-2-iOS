@@ -38,7 +38,6 @@ public struct AppFlowCoordinatorView: View {
             }
             .animation(.easeInOut, value: store.userType)
             
-            // Overlay
             OverlayContainer()
                 .environmentObject(OverlayManager.shared)
         }
