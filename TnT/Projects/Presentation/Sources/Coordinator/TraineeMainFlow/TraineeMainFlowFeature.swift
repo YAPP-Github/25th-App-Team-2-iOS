@@ -25,6 +25,8 @@ public struct TraineeMainFlowFeature {
     public enum Action: Sendable {
         /// 현재 표시되고 있는 path 화면 내부에서 일어나는 액션을 처리합니다.
         case path(StackActionOf<Path>)
+        /// Flow 변경을 AppCoordinator로 전달합니다
+        case switchFlow(AppFlow)
         case onAppear
     }
     
@@ -64,6 +66,10 @@ public struct TraineeMainFlowFeature {
                         case .traineeInvitationCodeInput:
                             state.path.append(.traineeInvitationCodeInput(.init()))
                             return .none
+                            
+                            /// 마이페이지 로그아웃/회원탈퇴 -> 온보딩 로그인 화면 이동
+                        case .onboardingLogin:
+                            return .send(.switchFlow(.onboardingFlow))
                         }
                     }
                     
@@ -85,6 +91,9 @@ public struct TraineeMainFlowFeature {
                 default:
                     return .none
                 }
+                
+            case .switchFlow:
+                return .none
                 
             case .onAppear:
                 return .none
@@ -112,7 +121,6 @@ extension TraineeMainFlowFeature {
         /// 트레이니 수업 정보 입력
         case traineeTrainingInfoInput(TraineeTrainingInfoInputFeature)
         /// 트레이니-트레이너 연결 완료
-        /// TODO: 트레이너/트레이니 연결 완료 화면으로 통합 필요
         case traineeConnectionComplete(TraineeConnectionCompleteFeature)
     }
 }

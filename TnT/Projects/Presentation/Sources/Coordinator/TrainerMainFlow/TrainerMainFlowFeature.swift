@@ -64,6 +64,9 @@ public struct TrainerMainFlowFeature {
                         case .traineeInvitationCodeInput:
                             state.path.append(.traineeInvitationCodeInput(.init()))
                             return .none
+                            
+                        case .onboardingLogin:
+                            return .none
                         }
                     }
                     

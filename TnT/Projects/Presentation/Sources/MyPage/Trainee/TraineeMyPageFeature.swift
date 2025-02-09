@@ -70,10 +70,16 @@ public struct TraineeMyPageFeature {
     }
     
     @Dependency(\.userUseCase) private var userUseCase: UserUseCase
+    @Dependency(\.userUseRepoCase) private var userUseRepoCase: UserRepository
+    @Dependency(\.keyChainManager) private var keyChainManager
     
     public enum Action: Sendable, ViewAction {
         /// 뷰에서 발생한 액션을 처리합니다.
         case view(View)
+        /// API 콜 액션 처리
+        case api(APIAction)
+        /// 팝업 세팅 처리
+        case setPopUpStatus(PopUp?)
         /// 네비게이션 여부 설정
         case setNavigating(RoutingScreen)
         
@@ -101,6 +107,14 @@ public struct TraineeMyPageFeature {
             case tapPopUpSecondaryButton(popUp: PopUp?)
             /// 팝업 우측 primary 버튼 탭
             case tapPopUpPrimaryButton(popUp: PopUp?)
+        }
+        
+        @CasePathable
+        public enum APIAction: Sendable {
+            /// 로그아웃 API
+            case logout
+            /// 회원 탈퇴 API
+            case withdraw
         }
     }
     
@@ -140,44 +154,66 @@ public struct TraineeMyPageFeature {
                     return .none
                     
                 case .tapDisconnectTrainerButton:
-                    return setPopUpStatus(&state, status: .disconnectTrainer(trainerName: state.trainerName))
+                    return .send(.setPopUpStatus(.disconnectTrainer(trainerName: state.trainerName)))
                     
                 case .tapLogoutButton:
-                    return setPopUpStatus(&state, status: .logout)
+                    return .send(.setPopUpStatus(.logout))
                     
                 case .tapWithdrawButton:
-                    return setPopUpStatus(&state, status: .withdraw)
+                    return .send(.setPopUpStatus(.withdraw))
                     
                 case .tapPopUpSecondaryButton(let popUp):
                     guard popUp != nil else { return .none }
-                    return setPopUpStatus(&state, status: nil)
+                    return .send(.setPopUpStatus(nil))
                     
                 case .tapPopUpPrimaryButton(let popUp):
                     guard let popUp else { return .none }
                     switch popUp {
-                    case .disconnectTrainer, .logout, .withdraw:
-                        return setPopUpStatus(&state, status: popUp.nextPopUp)
+                    case .disconnectTrainer:
+                        return .send(.setPopUpStatus(popUp.nextPopUp))
                         
-                    case .disconnectCompleted, .logoutCompleted, .withdrawCompleted:
-                        return setPopUpStatus(&state, status: nil)
+                    case .logout:
+                        return .send(.api(.logout))
+                        
+                    case .withdraw:
+                        return .send(.api(.withdraw))
+                        
+                    case .disconnectCompleted:
+                        return .send(.setPopUpStatus(nil))
+                        
+                    case .logoutCompleted, .withdrawCompleted:
+                        return .concatenate(
+                            .send(.setPopUpStatus(nil)),
+                            .send(.setNavigating(.onboardingLogin))
+                        )
                     }
                 }
 
+            case .api(let action):
+                switch action {
+                case .logout:
+                    return .run { send in
+                        let result = try await userUseRepoCase.postLogout()
+                        try keyChainManager.delete(.sessionId)
+                        await send(.setPopUpStatus(.logoutCompleted))
+                    }
+                case .withdraw:
+                    return .run { send in
+                        let result = try await userUseRepoCase.postWithdrawal()
+                        try keyChainManager.delete(.sessionId)
+                        await send(.setPopUpStatus(.withdrawCompleted))
+                    }
+                }
+                
+            case .setPopUpStatus(let popUp):
+                state.view_popUp = popUp
+                state.view_isPopUpPresented = popUp != nil
+                return .none
+                
             case .setNavigating:
                 return .none
             }
         }
-    }
-}
-
-// MARK: Internal Logic
-private extension TraineeMyPageFeature {
-    /// 팝업 상태, 표시 상태를 업데이트
-    /// status nil 입력인 경우 팝업 표시 해제
-    func setPopUpStatus(_ state: inout State, status: PopUp?) -> Effect<Action> {
-        state.view_popUp = status
-        state.view_isPopUpPresented = status != nil
-        return .none
     }
 }
 
@@ -188,6 +224,8 @@ extension TraineeMyPageFeature {
         case traineeInfoEdit
         /// 초대코드 입력 페이지
         case traineeInvitationCodeInput
+        /// 초기 로그인 페이지
+        case onboardingLogin
     }
 }
 
@@ -239,9 +277,9 @@ public extension TraineeMyPageFeature {
         
         var message: String {
             switch self {
-            case .disconnectTrainer(let name):
+            case .disconnectTrainer:
                 return "힘께 나눴던 기록들이 사라져요"
-            case .disconnectCompleted(let name):
+            case .disconnectCompleted:
                 return "더 폭발적인 케미로 다시 만나요!"
             case .logout, .logoutCompleted:
                 return "언제든지 다시 로그인 할 수 있어요!"
