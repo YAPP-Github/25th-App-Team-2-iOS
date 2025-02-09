@@ -40,4 +40,14 @@ public struct UserRepositoryImpl: UserRepository {
             decodingType: PostSignUpResDTO.self
         )
     }
+    
+    /// 로그아웃 요청을 수행
+    public func postLogout() async throws -> PostLogoutResDTO {
+        return try await networkService.request(UserTargetType.postLogout, decodingType: PostLogoutResDTO.self)
+    }
+    
+    /// 회원탈퇴 요청을 수행
+    public func postWithdrawal() async throws -> PostWithdrawalResDTO {
+        return try await networkService.request(UserTargetType.postWithdrawal, decodingType: PostWithdrawalResDTO.self)
+    }
 }

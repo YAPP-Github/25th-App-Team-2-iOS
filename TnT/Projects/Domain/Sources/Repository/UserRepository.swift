@@ -29,4 +29,14 @@ public protocol UserRepository {
     /// - Returns: 회원가입 성공 시, 사용자 정보를 포함한 응답 DTO (`PostSignUpResDTO`)
     /// - Throws: 네트워크 오류 또는 서버에서 반환한 오류를 발생시킬 수 있음
     func postSignUp(_ reqDTO: PostSignUpReqDTO, profileImage: Data?) async throws -> PostSignUpResDTO
+    
+    /// 로그아웃 요청
+    /// - Returns: 로그아웃 완료시 SessionID 포함한 응답 DTO (`PostLogoutResDTO`)
+    /// - Throws: 네트워크 오류 또는 서버에서 반환한 오류를 발생시킬 수 있음
+    func postLogout() async throws -> PostLogoutResDTO
+    
+    /// 회원탈퇴 요청
+    /// - Returns: 회원 탈퇴 완료 시 응답 DTO (`PostWithdrawalResDTO`)
+    /// - Throws: 네트워크 오류 또는 서버에서 반환한 오류를 발생시킬 수 있음
+    func postWithdrawal() async throws -> PostWithdrawalResDTO
 }

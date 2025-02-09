@@ -54,3 +54,12 @@ public struct PostSignUpResDTO: Decodable {
     /// 프로필 이미지 URL
     let profileImageUrl: String?
 }
+
+/// 로그아웃 응답 DTO
+public struct PostLogoutResDTO: Decodable {
+    let sessionId: String
+}
+
+/// 회원탈퇴 응답 DTO
+public struct PostWithdrawalResDTO: Decodable {
+}
