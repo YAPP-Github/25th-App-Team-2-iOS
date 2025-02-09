@@ -44,6 +44,7 @@ public final class NetworkService {
             return try decodeData(data, as: decodingType)
         } catch {
             // TODO: 추후 인터셉터 리팩토링 시 error middleWare로 분리
+            NotificationCenter.default.postProgress(visible: false)
             NotificationCenter.default.post(toast: .init(presentType: .text("⚠"), message: "서버 요청에 실패했어요"))
             throw error
         }
