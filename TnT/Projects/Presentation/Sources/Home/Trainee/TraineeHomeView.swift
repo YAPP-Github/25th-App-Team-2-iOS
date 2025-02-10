@@ -63,7 +63,15 @@ public struct TraineeHomeView: View {
                 ("🏋🏻‍♀️", "개인 운동", { send(.tapAddWorkoutRecordButton) }),
                 ("🥗", "식단", { send(.tapAddMealRecordButton) })
             ])
+            .padding(.top, 10)
+            .padding(.bottom, 20)
             .autoSizingBottomSheet()
+        }
+        .tPopUp(isPresented: $store.view_isPopUpPresented) {
+            PopUpView()
+        }
+        .onAppear {
+            send(.onAppear)
         }
     }
     
@@ -154,6 +162,53 @@ public struct TraineeHomeView: View {
             .padding(.horizontal, 16)
             
             Spacer()
+        }
+    }
+    
+    @ViewBuilder
+    private func PopUpView() -> some View {
+        VStack(spacing: 20) {
+            VStack(spacing: 8) {
+                Text("트레이너를 연결해 주세요")
+                    .typographyStyle(.heading3, with: .neutral900)
+                    .multilineTextAlignment(.center)
+                    .padding(.top, 20)
+                
+                Text("연결하지 않을 경우 일부 기능이 제한돼요\n초대 코드를 입력해 연결해주시겠어요?")
+                    .typographyStyle(.body2Medium, with: .neutral500)
+                    .multilineTextAlignment(.center)
+            }
+            
+            Button(action: {
+                send(.tapPopUpDontShowUntilThreeDaysButton(!store.isHideUntilSelected))
+            }) {
+                HStack(spacing: 4) {
+                    Image(store.isHideUntilSelected ? .icnCheckMarkFilled : .icnCheckMarkEmpty)
+                        .resizable()
+                        .frame(width: 24, height: 24)
+                    Text("3일 동안 보지 않기")
+                        .typographyStyle(.body2Medium, with: .neutral500)
+                    Spacer()
+                }
+            }
+            
+            HStack(spacing: 8) {
+                TPopUpAlertView.AlertButton(
+                    title: "다음에",
+                    style: .secondary,
+                    action: {
+                        send(.tapPopUpNextButton)
+                    }
+                )
+                
+                TPopUpAlertView.AlertButton(
+                    title: "연결하기",
+                    style: .primary,
+                    action: {
+                        send(.tapPopUpConnectButton)
+                    }
+                )
+            }
         }
     }
 }

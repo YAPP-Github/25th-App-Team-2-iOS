@@ -21,10 +21,12 @@ struct ToyProjectApp: App {
 
     var body: some Scene {
         WindowGroup {
-            OnboardingView(store: Store(initialState: OnboardingFeature.State(), reducer: {
-                OnboardingFeature()
-            }))
-//            ContentView()
+            AppFlowCoordinatorView(
+                store: .init(
+                    initialState: AppFlowCoordinatorFeature.State(),
+                    reducer: { AppFlowCoordinatorFeature()
+                    })
+            )
         }
     }
 }

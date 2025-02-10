@@ -24,4 +24,13 @@ public extension UserType {
             return "트레이니"
         }
     }
+    
+    var englishName: String {
+        switch self {
+        case .trainer:
+            return "trainer"
+        case .trainee:
+            return "trainee"
+        }
+    }
 }

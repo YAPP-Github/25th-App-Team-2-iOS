@@ -16,8 +16,6 @@ public struct PostSocialLoginReqDTO: Encodable {
     let fcmToken: String
     /// 소셜 액세스 토큰
     let socialAccessToken: String?
-    /// 애플 인가 코드 (Apple 로그인 시 필요)
-    let authorizationCode: String?
     /// 애플 ID 토큰 (Apple 로그인 시 필요)
     let idToken: String?
     
@@ -25,13 +23,11 @@ public struct PostSocialLoginReqDTO: Encodable {
         socialType: String,
         fcmToken: String,
         socialAccessToken: String?,
-        authorizationCode: String?,
         idToken: String?
     ) {
         self.socialType = socialType
         self.fcmToken = fcmToken
         self.socialAccessToken = socialAccessToken
-        self.authorizationCode = authorizationCode
         self.idToken = idToken
     }
 }
@@ -54,8 +50,6 @@ public struct PostSignUpReqDTO: Encodable {
     let collectionAgreement: Bool
     /// 광고성 알림 수신 동의 여부
     let advertisementAgreement: Bool
-    /// 푸시 알림 수신 동의 여부
-    let pushAgreement: Bool
     /// 회원 이름
     let name: String
     /// 생년월일 (yyyy-MM-dd)
@@ -78,7 +72,6 @@ public struct PostSignUpReqDTO: Encodable {
         serviceAgreement: Bool,
         collectionAgreement: Bool,
         advertisementAgreement: Bool,
-        pushAgreement: Bool,
         name: String,
         birthday: String?,
         height: Double?,
@@ -94,7 +87,6 @@ public struct PostSignUpReqDTO: Encodable {
         self.serviceAgreement = serviceAgreement
         self.collectionAgreement = collectionAgreement
         self.advertisementAgreement = advertisementAgreement
-        self.pushAgreement = pushAgreement
         self.name = name
         self.birthday = birthday
         self.height = height

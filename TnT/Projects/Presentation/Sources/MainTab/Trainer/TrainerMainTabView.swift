@@ -26,11 +26,11 @@ public struct TrainerMainTabView: View {
                 if let store = store.scope(state: \.home, action: \.subFeature.homeAction) {
                     TrainerHomeView(store: store)
                 }
-            case .feedback:
-                if let store = store.scope(state: \.feedback, action: \.subFeature.feedbackAction) {
-                    Color.clear
-                        .frame(maxWidth: .infinity, maxHeight: .infinity)
-                }
+//            case .feedback:
+//                if let store = store.scope(state: \.feedback, action: \.subFeature.feedbackAction) {
+//                    Color.clear
+//                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+//                }
             case .traineeList:
                 if let store = store.scope(state: \.traineeList, action: \.subFeature.traineeListAction) {
                     Color.clear
@@ -67,5 +67,14 @@ public struct TrainerMainTabView: View {
         .frame(height: 54 + .safeAreaBottom)
         .padding(.horizontal, 24)
         .background(Color.white.shadow(radius: 5).opacity(0.5))
+        .overlay(
+            Group {
+                if store.isPopupActive {
+                    Color.black.opacity(0.5)
+                        .transition(.opacity)
+                }
+            }
+        )
+        .animation(.easeInOut, value: store.isPopupActive)
     }
 }

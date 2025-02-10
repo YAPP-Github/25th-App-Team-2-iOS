@@ -29,12 +29,16 @@ public struct TermView: View {
             .padding(.horizontal, 20)
             
             Spacer()
-            
-            TBottomButton(title: "다음", isEnable: store.view_isAllAgreed) {
+        }
+        .navigationBarBackButtonHidden()
+        .safeAreaInset(edge: .bottom) {
+            TBottomButton(
+                title: "다음",
+                isEnable: store.view_isAllAgreed
+            ) {
                 send(.nextButtonTapped)
             }
         }
-        .navigationBarBackButtonHidden()
     }
     
     @ViewBuilder

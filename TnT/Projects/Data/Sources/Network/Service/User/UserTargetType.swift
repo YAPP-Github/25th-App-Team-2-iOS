@@ -12,10 +12,16 @@ import Domain
 
 /// 사용자 관련 API 요청 타입 정의
 public enum UserTargetType {
+    /// 로그인 세션 유효 확인
+    case getSessionCheck
     /// 소셜 로그인 요청
     case postSocialLogin(reqDTO: PostSocialLoginReqDTO)
     /// 회원가입 요청
     case postSignUp(reqDTO: PostSignUpReqDTO, imgData: Data?)
+    /// 로그아웃 요청
+    case postLogout
+    /// 회원 탈퇴 요청
+    case postWithdrawal
 }
 
 extension UserTargetType: TargetType {
@@ -25,23 +31,38 @@ extension UserTargetType: TargetType {
     
     var path: String {
         switch self {
+        case .getSessionCheck:
+            return "/check-session"
+            
         case .postSocialLogin:
             return "/login"
             
         case .postSignUp:
             return "/members/sign-up"
+            
+        case .postLogout:
+            return "/logout"
+            
+        case .postWithdrawal:
+            return "/members/withdraw"
         }
     }
     
     var method: HTTPMethod {
         switch self {
-        case .postSocialLogin, .postSignUp:
+        case .getSessionCheck:
+            return .get
+            
+        case .postSocialLogin, .postSignUp, .postLogout, .postWithdrawal:
             return .post
         }
     }
     
     var task: RequestTask {
         switch self {
+        case .getSessionCheck, .postLogout, .postWithdrawal:
+            return .requestPlain
+        
         case .postSocialLogin(let reqDto):
             return .requestJSONEncodable(encodable: reqDto)
             
@@ -59,6 +80,9 @@ extension UserTargetType: TargetType {
     
     var headers: [String: String]? {
         switch self {
+        case .getSessionCheck, .postLogout, .postWithdrawal:
+            return nil
+            
         case .postSocialLogin:
             return ["Content-Type": "application/json"]
             
@@ -71,10 +95,22 @@ extension UserTargetType: TargetType {
     }
     
     var interceptors: [any Interceptor] {
-        return [
-            LoggingInterceptor(),
-            ResponseValidatorInterceptor(),
-            RetryInterceptor(maxRetryCount: 2)
-        ]
+        switch self {
+        case .getSessionCheck, .postLogout, .postWithdrawal:
+            return [
+                LoggingInterceptor(),
+                AuthTokenInterceptor(),
+                ProgressIndicatorInterceptor(),
+                ResponseValidatorInterceptor(),
+                RetryInterceptor(maxRetryCount: 2)
+            ]
+        default:
+            return [
+                LoggingInterceptor(),
+                ResponseValidatorInterceptor(),
+                ProgressIndicatorInterceptor(),
+                RetryInterceptor(maxRetryCount: 2)
+            ]
+        }
     }
 }

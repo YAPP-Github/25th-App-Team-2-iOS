@@ -8,6 +8,8 @@
 
 import Foundation
 
+public let keyChainManager = KeyChainManager()
+
 /// KeyChainManager
 /// - 키체인을 통해 데이터를 CRUD 하기 위한 유틸리티입니다.
 public struct KeyChainManager {
@@ -18,7 +20,7 @@ public struct KeyChainManager {
     ///   - value: 저장할 데이터 (Generic 타입)
     ///   - key: Key 열거형으로 정의된 키
     /// - Throws: 타입 불일치, 데이터 변환 실패, 키체인 저장 실패 에러
-    public static func save<T>(_ value: T, for key: Key) throws {
+    public func save<T>(_ value: T, for key: Key) throws {
         
         guard type(of: value) == key.converter.type else {
             throw KeyChainError.typeMismatch(
@@ -50,7 +52,7 @@ public struct KeyChainManager {
     /// - Parameter key: Key 열거형으로 정의된 키
     /// - Returns: Generic 타입으로 변환된 값 (데이터가 없으면 nil)
     /// - Throws: 데이터 변환 실패, 읽기 실패, 타입 불일치 에러
-    public static func read<T>(for key: Key) throws -> T? {
+    public func read<T>(for key: Key) throws -> T? {
         let keyString: String = key.keyString
         
         let query: [String: Any] = [
@@ -89,7 +91,7 @@ public struct KeyChainManager {
     /// 키체인에서 데이터를 삭제합니다.
     /// - Parameter key: Key 열거형으로 정의된 키
     /// - Throws: 삭제 실패 에러
-    public static func delete(_ key: Key) throws {
+    public func delete(_ key: Key) throws {
         let keyString: String = key.keyString
         
         let query: [String: Any] = [
@@ -107,13 +109,13 @@ public struct KeyChainManager {
 public extension KeyChainManager {
     /// Key 열거형: 키체인에 저장할 데이터를 정의
     enum Key {
-        case token
+        case sessionId
         case userId
         
         /// 키 고유 문자열
         var keyString: String {
             switch self {
-            case .token: return "com.TnT.token"
+            case .sessionId: return "com.TnT.sessionId"
             case .userId: return "com.TnT.userId"
             }
         }
@@ -121,7 +123,7 @@ public extension KeyChainManager {
         /// 각 데이터 별 타입 & 변환 로직 정의
         var converter: KeyConverter {
             switch self {
-            case .token: return KeyConverter(type: String.self, convert: { $0 })
+            case .sessionId: return KeyConverter(type: String.self, convert: { $0 })
             case .userId: return KeyConverter(type: Int.self, convert: { Int($0) })
             }
         }

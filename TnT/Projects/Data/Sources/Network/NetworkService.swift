@@ -8,6 +8,8 @@
 
 import Foundation
 
+import Domain
+
 /// 네트워크 요청을 처리하는 서비스 클래스
 public final class NetworkService {
     
@@ -30,15 +32,27 @@ public final class NetworkService {
         decodingType: T.Type
     ) async throws -> T {
         let pipeline: InterceptorPipeline = InterceptorPipeline(interceptors: target.interceptors)
-        // URL Request 생성
-        var request: URLRequest = try buildRequest(from: target)
-        request = try await pipeline.adapt(request)
-        
-        // Request 수행
-        let data: Data = try await executeRequest(request, pipeline: pipeline)
-        
-        // Data 디코딩
-        return try decodeData(data, as: decodingType)
+        do {
+            // URL Request 생성
+            var request: URLRequest = try buildRequest(from: target)
+            request = try await pipeline.adapt(request)
+            
+            // Request 수행
+            let data: Data = try await executeRequest(request, pipeline: pipeline)
+            
+            // Data 디코딩
+            return try decodeData(data, as: decodingType)
+        } catch let error as NetworkError {
+            // TODO: 추후 인터셉터 리팩토링 시 error middleWare로 분리
+            NotificationCenter.default.postProgress(visible: false)
+            switch error {
+            case .unauthorized:
+                NotificationCenter.default.postSessionExpired()
+            default:
+                NotificationCenter.default.post(toast: .init(presentType: .text("⚠"), message: "서버 요청에 실패했어요"))
+            }
+            throw error
+        }
     }
 }
 
@@ -85,6 +99,9 @@ private extension NetworkService {
     
     /// JSON 데이터 디코딩
     func decodeData<T: Decodable>(_ data: Data, as type: T.Type) throws -> T {
+        // 빈 데이터인 경우 EmptyResponse 타입으로 처리
+        if data.isEmpty, let emptyValue = EmptyResponse() as? T { return emptyValue }
+        
         do {
             return try JSONDecoder(setting: .defaultSetting).decode(T.self, from: data)
         } catch let decodingError as DecodingError {
