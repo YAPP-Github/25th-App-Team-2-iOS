@@ -54,6 +54,11 @@ public struct TraineeInvitationCodeInputView: View {
                 send(.setFocus(newValue))
             }
         }
+        .onChange(of: store.view_isFieldFocused) { oldValue, newValue in
+            if oldValue != newValue {
+                focusedField = newValue
+            }
+        }
         .tPopUp(isPresented: $store.view_isPopupPresented) {
             PopUpView()
         }

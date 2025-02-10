@@ -111,14 +111,24 @@ public struct OnboardingFlowFeature {
                     switch screen {
                     case .traineeHome:
                         return .send(.switchFlow(.traineeMainFlow))
-                    case .trainingInfoInput:
-                        state.path.append(.traineeTrainingInfoInput(.init()))
+                    case let .trainingInfoInput(trainerName, invitationCode):
+                        state.path.append(.traineeTrainingInfoInput(.init(trainerName: trainerName, invitationCode: invitationCode)))
                         return .none
                     }
                    
                 /// 트레이니 PT 정보 입력 화면 -> 연결 완료 화면
-                case .element(id: _, action: .traineeTrainingInfoInput(.setNavigating)):
-                    state.path.append(.traineeConnectionComplete(.init(userType: .trainee, traineeName: "1", trainerName: "2")))
+                case let .element(id: _, action: .traineeTrainingInfoInput(.setNavigating(.connectionComplete(trainerName, traineeName, trainerImageUrl, traineeImageUrl)))):
+                    state.path.append(
+                        .traineeConnectionComplete(
+                            .init(
+                                userType: .trainee,
+                                traineeName: traineeName,
+                                traineeImageURL: traineeImageUrl,
+                                trainerName: trainerName,
+                                trainerImageURL: trainerImageUrl
+                            )
+                        )
+                    )
                     return .none
                 
                 /// 트레이니 트레이너 연결완료 -> 트레이니 홈화면

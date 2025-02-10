@@ -32,6 +32,10 @@ public struct TrainerMainFlowView: View {
                 // MARK: Home
             case .alarmCheck(let store):
                 AlarmCheckView(store: store)
+            case .connectionComplete(let store):
+                ConnectionCompleteView(store: store)
+            case .connectedTraineeProfile(let store):
+                ConnectedTraineeProfileView(store: store)
                 
                 // MARK: MyPage
             case .trainerMakeInvitationCodePage(let store):

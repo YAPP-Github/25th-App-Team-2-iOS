@@ -17,16 +17,9 @@ public struct TraineeRepositoryImpl: TraineeRepository {
     
     public init() {}
     
-    public func postConnectTrainer(_ info: TraineeConnectInfoEntity) async throws -> PostConnectTrainerResDTO {
-        let requestDTO = PostConnectTrainerReqDTO(
-            invitationCode: info.invitationCode,
-            startDate: info.startDate,
-            totalPtCount: info.totalPtCount,
-            finishedPtCount: info.finishedPtCount
-        )
-        
+    public func postConnectTrainer(_ reqDTO: PostConnectTrainerReqDTO) async throws -> PostConnectTrainerResDTO {
         return try await networkService.request(
-            TraineeTargetType.postConnectTrainer(reqDto: requestDTO),
+            TraineeTargetType.postConnectTrainer(reqDto: reqDTO),
             decodingType: PostConnectTrainerResDTO.self
         )
     }

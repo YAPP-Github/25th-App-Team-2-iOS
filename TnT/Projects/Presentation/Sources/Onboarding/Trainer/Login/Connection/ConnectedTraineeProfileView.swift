@@ -32,11 +32,11 @@ public struct ConnectedTraineeProfileView: View {
                     .ignoresSafeArea()
                     .scaledToFill()
                 
-                VStack {
+                VStack(spacing: 0) {
                     Spacer()
                     
                     traineeView()
-                    
+                       
                     Spacer()
                    
                     TBottomButton(title: "시작하기", isEnable: true) {
@@ -62,13 +62,10 @@ public struct ConnectedTraineeProfileView: View {
                 .overlay {
                     VStack {
                         VStack(spacing: 10) {
-                            Image(.imgOnboardingTrainee)
-                                .resizable()
-                                .frame(width: 128, height: 128)
-                                .clipShape(Circle())
+                            UserProfileView(imageURL: store.traineeProfile.imageUrl)
                             
                             HStack(spacing: 4) {
-                                Text("김회원")
+                                Text(store.traineeProfile.traineeName)
                                     .typographyStyle(.heading2, with: .neutral950)
                                 Text("트레이니")
                                     .typographyStyle(.heading4, with: .neutral950)
@@ -79,13 +76,15 @@ public struct ConnectedTraineeProfileView: View {
                         
                         VStack(spacing: 24) {
                             HStack(spacing: 21) {
-                                traineeProfileView(title: "나이", content: "24세")
-                                traineeProfileView(title: "키", content: "165")
-                                traineeProfileView(title: "체중", content: "52kg")
+                                if let age = store.traineeProfile.age {
+                                    traineeProfileView(title: "나이", content: "\(age)세")
+                                }
+                                traineeProfileView(title: "키", content: "\(store.traineeProfile.height)")
+                                traineeProfileView(title: "체중", content: "\(store.traineeProfile.weight)")
                             }
                             
-                            traineeInfoView(content: "contentententne", type: .goal)
-                            traineeInfoView(content: "catoutoingldsjl", type: .caution)
+                            traineeInfoView(content: store.traineeProfile.ptGoal, type: .goal)
+                            traineeInfoView(content: store.traineeProfile.cautionNote ?? "", type: .caution)
                         }
                     }
                     .padding(.init(top: 32, leading: 20, bottom: 32, trailing: 20))
@@ -119,6 +118,52 @@ public struct ConnectedTraineeProfileView: View {
                 .padding(.init(top: 10, leading: 16, bottom: 10, trailing: 16))
                 .background(Color.neutral100)
                 .clipShape(RoundedRectangle(cornerRadius: 8))
+        }
+    }
+}
+
+private extension ConnectedTraineeProfileView {
+    struct UserProfileView: View {
+        let imageURL: String?
+        let defaultImage: ImageResource = .imgDefaultTraineeImage
+        
+        var body: some View {
+            Group {
+                if let urlString = imageURL, let url = URL(string: urlString) {
+                    AsyncImage(url: url) { phase in
+                        switch phase {
+                        case .empty:
+                            ProgressView()
+                                .tint(.red500)
+                                .frame(width: 128, height: 128)
+                            
+                        case .success(let image):
+                            image
+                                .resizable()
+                                .frame(width: 128, height: 128)
+                                .scaledToFill()
+                                .clipShape(Circle())
+                            
+                        case .failure:
+                            Image(defaultImage)
+                                .resizable()
+                                .frame(width: 128, height: 128)
+                                .scaledToFill()
+                                .clipShape(Circle())
+                            
+                        @unknown default:
+                            EmptyView()
+                        }
+                    }
+                } else {
+                    Image(defaultImage)
+                        .resizable()
+                        .frame(width: 128, height: 128)
+                        .scaledToFill()
+                        .clipShape(Circle())
+                }
+            }
+            .frame(width: 128, height: 128)
         }
     }
 }

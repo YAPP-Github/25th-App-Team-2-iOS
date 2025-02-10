@@ -33,7 +33,9 @@ public struct TraineeMainFlowFeature {
     public init() {}
     
     public var body: some ReducerOf<Self> {
-        Reduce { state, action in
+        Reduce {
+            state,
+            action in
             switch action {
             case let .path(action):
                 switch action {
@@ -80,20 +82,30 @@ public struct TraineeMainFlowFeature {
                 case .element(_, action: .alarmCheck(.setNavigating)):
                     // 특정 화면 append
                     return .none
-
+                    
                     /// 마이페이지 초대코드 입력화면 다음 버튼 탭 - > PT 정보 입력 화면 or 홈 이동
                 case .element(_, action: .traineeInvitationCodeInput(.setNavigating(let screen))):
                     switch screen {
                     case .traineeHome:
                         state.path.removeLast()
-                    case .trainingInfoInput:
-                        state.path.append(.traineeTrainingInfoInput(.init()))
+                    case let .trainingInfoInput(trainerName, invitationCode):
+                        state.path.append(.traineeTrainingInfoInput(.init(trainerName: trainerName, invitationCode: invitationCode)))
                     }
                     return .none
                     
                     /// PT 정보 입력 화면 다음 버튼 탭 -> 연결 완료 화면 이동
-                case .element(_, action: .traineeTrainingInfoInput(.setNavigating)):
-                    state.path.append(.traineeConnectionComplete(.init(userType: .trainee, traineeName: "여기에", trainerName: "데이터 연결")))
+                case let .element(id: _, action: .traineeTrainingInfoInput(.setNavigating(.connectionComplete(trainerName, traineeName, trainerImageUrl, traineeImageUrl)))):
+                    state.path.append(
+                        .traineeConnectionComplete(
+                            .init(
+                                userType: .trainee,
+                                traineeName: traineeName,
+                                traineeImageURL: traineeImageUrl,
+                                trainerName: trainerName,
+                                trainerImageURL: trainerImageUrl
+                            )
+                        )
+                    )
                     return .none
                     
                 default:

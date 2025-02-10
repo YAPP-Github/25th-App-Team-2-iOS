@@ -36,4 +36,8 @@ public struct DefaultTrainerUseCase: TrainerRepository {
     public func getMembersList() async throws -> GetMembersListDTO {
         return try await trainerRepository.getMembersList()
     }
+    
+    public func getConnectedTraineeInfo(trainerId: Int, traineeId: Int) async throws -> GetConnectedTraineeInfoResponseDTO {
+        return try await trainerRepository.getConnectedTraineeInfo(trainerId: trainerId, traineeId: traineeId)
+    }
 }
