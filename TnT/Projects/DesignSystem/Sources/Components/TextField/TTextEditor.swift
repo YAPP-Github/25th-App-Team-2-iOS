@@ -16,7 +16,7 @@ public struct TTextEditor: View {
     /// TextEditor 수직 패딩 값
     private static let verticalPadding: CGFloat = 12
     /// TextEditor 기본 높이값
-    public static let defaultHeight: CGFloat = 130
+    public static let defaultHeight: CGFloat = 40
     
     /// 하단에 표시되는 푸터 뷰
     private let footer: Footer?
