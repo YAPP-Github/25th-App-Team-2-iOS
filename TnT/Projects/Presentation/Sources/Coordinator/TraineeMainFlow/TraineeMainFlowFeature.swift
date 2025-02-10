@@ -86,8 +86,8 @@ public struct TraineeMainFlowFeature {
                     switch screen {
                     case .traineeHome:
                         state.path.removeLast()
-                    case .trainingInfoInput:
-                        state.path.append(.traineeTrainingInfoInput(.init()))
+                    case .trainingInfoInput(let trainerName):
+                        state.path.append(.traineeTrainingInfoInput(.init(trainerName: trainerName)))
                     }
                     return .none
                     

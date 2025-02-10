@@ -74,6 +74,7 @@ public struct MakeInvitationCodeView: View {
                     ) {
                         send(.tappedReissuanceButton)
                     }
+                    .frame(width: 82)
                 }
             }
             

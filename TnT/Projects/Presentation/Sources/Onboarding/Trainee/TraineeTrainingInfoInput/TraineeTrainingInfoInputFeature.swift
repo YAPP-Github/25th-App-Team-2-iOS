@@ -43,6 +43,7 @@ public struct TraineeTrainingInfoInputFeature {
         
         /// `TraineeBasicInfoInputFeature.State`의 생성자
         /// - Parameters:
+        ///   - trainerName: 트레이너 이름 (기본값: `""`)
         ///   - birthDate: 입력된 생년월일 (기본값: `""`)
         ///   - height: 입력된 키 (기본값: `""`)
         ///   - weight: 입력된 몸무게 (기본값: `""`)

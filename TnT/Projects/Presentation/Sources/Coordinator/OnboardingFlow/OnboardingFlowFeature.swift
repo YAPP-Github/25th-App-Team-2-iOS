@@ -111,8 +111,8 @@ public struct OnboardingFlowFeature {
                     switch screen {
                     case .traineeHome:
                         return .send(.switchFlow(.traineeMainFlow))
-                    case .trainingInfoInput:
-                        state.path.append(.traineeTrainingInfoInput(.init()))
+                    case .trainingInfoInput(let name):
+                        state.path.append(.traineeTrainingInfoInput(.init(trainerName: name)))
                         return .none
                     }
                    
