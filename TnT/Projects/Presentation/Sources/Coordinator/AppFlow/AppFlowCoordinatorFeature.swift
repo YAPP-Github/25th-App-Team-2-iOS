@@ -81,12 +81,10 @@ public struct AppFlowCoordinatorFeature {
             switch action {
             case .subFeature(let internalAction):
                 switch internalAction {
-                case .onboardingFlow(.switchFlow(let flow)), .traineeMainFlow(.switchFlow(let flow)):
+                case .onboardingFlow(.switchFlow(let flow)),
+                        .traineeMainFlow(.switchFlow(let flow)),
+                        .trainerMainFlow(.switchFlow(let flow)):
                     return self.setFlow(flow, state: &state)
-                    
-                case .trainerMainFlow:
-                    return .none
-                    
                 default:
                     return .none
                 }
@@ -128,7 +126,7 @@ public struct AppFlowCoordinatorFeature {
                 return .send(.checkSessionInfo)
             }
         }
-        .ifLet(\.onboardingState, action: \.subFeature.onboardingFlow) { OnboardingFlowFeature()._printChanges() }
+        .ifLet(\.onboardingState, action: \.subFeature.onboardingFlow) { OnboardingFlowFeature() }
         .ifLet(\.trainerMainState, action: \.subFeature.trainerMainFlow) { TrainerMainFlowFeature() }
         .ifLet(\.traineeMainState, action: \.subFeature.traineeMainFlow) { TraineeMainFlowFeature() }
     }

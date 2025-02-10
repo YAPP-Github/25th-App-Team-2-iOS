@@ -31,9 +31,16 @@ public struct TrainerHomeView: View {
             }
             .background(Color.neutral100)
         }
+        .background(
+            VStack {
+                Color.common0
+                Color.neutral100
+            }
+        )
         .overlay(alignment: .bottomTrailing) {
             SessionAddButton()
         }
+        .navigationBarBackButtonHidden()
     }
     
     // MARK: - Sections
@@ -126,7 +133,7 @@ public struct TrainerHomeView: View {
                 }
             }
             .onTapGesture {
-                send(.tapAddSessionRecordButton)
+                send(.tapAddSessionButton)
             }
             .padding(.trailing, 22)
             .padding(.bottom, 28)

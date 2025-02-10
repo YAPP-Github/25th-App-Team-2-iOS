@@ -43,8 +43,9 @@ public struct TrainerHomeFeature {
         var view_recordTitleString: String {
             return TDateFormatUtility.formatter(for: .M월_d일_EEEE).string(from: selectedDate)
         }
-        /// 선택 바텀 시트 표시
-        var view_isBottomSheetPresented: Bool
+        /// 팝업 표시
+        // TODO: 3일 동안 보지 않기 로직 작성 때 추가
+        var view_isPopUpPresented: Bool
         
         public init(
             selectedDate: Date = .now,
@@ -53,8 +54,8 @@ public struct TrainerHomeFeature {
             sessionInfo: WorkoutListItemEntity? = nil,
             records: [RecordListItemEntity] = [],
             view_currentPage: Date = .now,
-            view_isBottomSheetPresented: Bool = false,
-            tappedsessionInfo: GetDateSessionListEntity? = nil
+            tappedsessionInfo: GetDateSessionListEntity? = nil,
+            view_isPopUpPresented: Bool = false
         ) {
             self.selectedDate = selectedDate
             self.events = events
@@ -62,8 +63,8 @@ public struct TrainerHomeFeature {
             self.sessionInfo = sessionInfo
             self.records = records
             self.view_currentPage = view_currentPage
-            self.view_isBottomSheetPresented = view_isBottomSheetPresented
             self.tappedsessionInfo = tappedsessionInfo
+            self.view_isPopUpPresented = view_isPopUpPresented
         }
     }
     
@@ -73,7 +74,7 @@ public struct TrainerHomeFeature {
         /// 뷰에서 발생한 액션을 처리합니다.
         case view(View)
         /// 네비게이션 여부 설정
-        case setNavigating
+        case setNavigating(RoutingScreen)
         
         @CasePathable
         public enum View: Sendable, BindableAction {
@@ -83,8 +84,8 @@ public struct TrainerHomeFeature {
             case tapAlarmPageButton
             /// 수업 완료 버튼 탭
             case tapSessionCompleted(id: String)
-            /// 식단 기록 추가 버튼 탭
-            case tapAddSessionRecordButton
+            /// 수업 추가 버튼 탭
+            case tapAddSessionButton
         }
     }
     
@@ -104,21 +105,26 @@ public struct TrainerHomeFeature {
                 case .binding:
                     return .none
                 case .tapAlarmPageButton:
-                    // TODO: 네비게이션 연결 시 추가
-                    print("tapAlarmPageButton")
-                    return .none
+                    return .send(.setNavigating(.alarmPage))
                 case .tapSessionCompleted(let id):
                     // TODO: 네비게이션 연결 시 추가
                     print("tapSessionCompleted otLessionID \(id)")
                     return .none
-                case .tapAddSessionRecordButton:
-                    // TODO: 네비게이션 연결 시 추가
-                    print("tapAddSessionRecordButton")
-                    return .none
+                case .tapAddSessionButton:
+                    return .send(.setNavigating(.addPTSessionPage))
                 }
             case .setNavigating:
                 return .none
             }
         }
+    }
+}
+
+extension TrainerHomeFeature {
+    public enum RoutingScreen: Sendable {
+        /// 알림 페이지
+        case alarmPage
+        /// PT 일정 추가페이지
+        case addPTSessionPage
     }
 }

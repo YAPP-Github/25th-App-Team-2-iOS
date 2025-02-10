@@ -16,6 +16,7 @@ import DesignSystem
 public struct TraineeMyPageView: View {
     
     @Bindable public var store: StoreOf<TraineeMyPageFeature>
+    @Environment(\.scenePhase) private var scenePhase
     
     public init(store: StoreOf<TraineeMyPageFeature>) {
         self.store = store
@@ -34,6 +35,8 @@ public struct TraineeMyPageView: View {
                 .padding(20) 
             }
         }
+        .onAppear { send(.onAppear) }
+        .onChange(of: scenePhase) { send(.onAppear) }
         .background(Color.neutral50)
         .navigationBarBackButtonHidden()
         .tPopUp(isPresented: $store.view_isPopUpPresented) {
