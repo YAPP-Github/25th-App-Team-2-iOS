@@ -40,6 +40,9 @@ public struct TraineeHomeFeature {
         }
         /// 선택 바텀 시트 표시
         var view_isBottomSheetPresented: Bool
+        /// 팝업 표시
+        // TODO: 3일 동안 보지 않기 로직 작성 때 추가
+        var view_isPopUpPresented: Bool
         
         public init(
             selectedDate: Date = .now,
@@ -47,7 +50,8 @@ public struct TraineeHomeFeature {
             sessionInfo: WorkoutListItemEntity? = nil,
             records: [RecordListItemEntity] = [],
             view_currentPage: Date = .now,
-            view_isBottomSheetPresented: Bool = false
+            view_isBottomSheetPresented: Bool = false,
+            view_isPopUpPresented: Bool = false
         ) {
             self.selectedDate = selectedDate
             self.events = events
@@ -55,6 +59,7 @@ public struct TraineeHomeFeature {
             self.records = records
             self.view_currentPage = view_currentPage
             self.view_isBottomSheetPresented = view_isBottomSheetPresented
+            self.view_isPopUpPresented = view_isPopUpPresented
         }
     }
     

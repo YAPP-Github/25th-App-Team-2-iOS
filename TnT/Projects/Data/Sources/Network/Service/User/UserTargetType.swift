@@ -100,6 +100,7 @@ extension UserTargetType: TargetType {
             return [
                 LoggingInterceptor(),
                 AuthTokenInterceptor(),
+                ProgressIndicatorInterceptor(),
                 ResponseValidatorInterceptor(),
                 RetryInterceptor(maxRetryCount: 2)
             ]
@@ -107,6 +108,7 @@ extension UserTargetType: TargetType {
             return [
                 LoggingInterceptor(),
                 ResponseValidatorInterceptor(),
+                ProgressIndicatorInterceptor(),
                 RetryInterceptor(maxRetryCount: 2)
             ]
         }

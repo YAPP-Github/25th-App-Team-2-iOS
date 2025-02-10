@@ -26,6 +26,16 @@ public struct TraineeMainTabFeature {
             }
         }
         
+        /// 하위 Feature에서 팝업이 활성화되었는지 여부를 전달
+        var isPopupActive: Bool {
+            switch self {
+            case .home(let homeState):
+                return homeState.view_isPopUpPresented
+            case .myPage(let myPageState):
+                return myPageState.view_isPopUpPresented
+            }
+        }
+        
         public init() {
             self = .home(TraineeHomeFeature.State())
         }
