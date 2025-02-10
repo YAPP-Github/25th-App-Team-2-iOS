@@ -45,4 +45,11 @@ public struct TrainerRepositoryImpl: TrainerRepository {
             decodingType: GetDateSessionListDTO.self
         )
     }
+    
+    public func getMembersList() async throws -> GetMembersListDTO {
+        return try await networkService.request(
+            TrainerTargetType.getMemebersList,
+            decodingType: GetMembersListDTO.self
+        )
+    }
 }

@@ -30,6 +30,10 @@ private enum SocialUseCaseKey: DependencyKey {
     static let liveValue: SocialLoginUseCase = SocialLoginUseCase(socialLoginRepository: SocialLogInRepositoryImpl(loginManager: SNSLoginManager()))
 }
 
+private enum TrainerUseCaseRepoKey: DependencyKey {
+    static let liveValue: TrainerRepository = DefaultTrainerUseCase(trainerRepository: TrainerRepositoryImpl())
+}
+
 private enum KeyChainManagerKey: DependencyKey {
     static let liveValue: KeyChainManager = keyChainManager
 }
@@ -59,5 +63,10 @@ public extension DependencyValues {
     var socialLogInUseCase: SocialLoginUseCase {
         get { self[SocialUseCaseKey.self] }
         set { self[SocialUseCaseKey.self] = newValue }
+    }
+    
+    var trainerRepoUseCase: TrainerRepository {
+        get { self[TrainerUseCaseRepoKey.self] }
+        set { self[TrainerUseCaseRepoKey.self] = newValue }
     }
 }
