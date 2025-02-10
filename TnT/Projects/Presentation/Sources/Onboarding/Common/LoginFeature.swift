@@ -22,6 +22,7 @@ public struct LoginFeature {
         public var termAgree: Bool
         public var socialEmail: String?
         public var postUserEntity: PostSocailEntity?
+        public var termState: Bool = false
         
         public init(
             userType: UserType? = nil,
@@ -44,7 +45,9 @@ public struct LoginFeature {
     @Dependency(\.userUseRepoCase) private var userUseCaseRepo: UserRepository
     @Dependency(\.socialLogInUseCase) private var socialLoginUseCase: SocialLoginUseCase
     
-    public enum Action: ViewAction {
+    public enum Action: ViewAction,  BindableAction {
+        /// 바인딩할 액션을 처리
+        case binding(BindingAction<State>)
         /// 뷰에서 일어나는 액션을 처리합니다.(카카오,애플로그인 실행)
         case view(View)
         /// 네비게이션 여부 설정
@@ -56,6 +59,7 @@ public struct LoginFeature {
         public enum View: Equatable {
             case tappedAppleLogin
             case tappedKakaoLogin
+            case goTerm
         }
     }
     
@@ -97,6 +101,10 @@ public struct LoginFeature {
                         
                         await send(.postSocialLogin(entity: entity))
                     }
+                    
+                case .goTerm:
+                    state.termState = true
+                    return .send(.setNavigating(.term))
                 }
                 
             case .postSocialLogin(let entity):
@@ -112,14 +120,17 @@ public struct LoginFeature {
                         case .trainee:
                             await send(.setNavigating(.traineeHome))
                         case .unregistered:
-                            await send(.setNavigating(.term))
+                            await send(.view(.goTerm))
                         }
                     } catch {
-                        await send(.setNavigating(.term))
+                        await send(.view(.goTerm))
                     }
                 }
                 
             case .setNavigating:
+                return .none
+                
+            case .binding:
                 return .none
             }
         }

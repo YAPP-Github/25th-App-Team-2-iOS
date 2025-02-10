@@ -37,6 +37,14 @@ public struct LoginView: View {
         }
         .padding(.horizontal, 28)
         .navigationBarBackButtonHidden()
+//        .sheet(isPresented: .init(
+//             get: { store.state.termState },
+//             set: { _ in store.send(.view(.goTerm)) }
+//         )) {
+//             TermView(store: Store(initialState: TermFeature.State(), reducer: {
+//                 TermFeature()
+//             }))
+//         }
     }
     
     @ViewBuilder
