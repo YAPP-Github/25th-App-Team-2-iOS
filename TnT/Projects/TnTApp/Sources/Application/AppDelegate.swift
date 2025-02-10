@@ -14,7 +14,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                        didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
         return true
     }
-
+    
     // MARK: UISceneSession Lifecycle
     func application(
         _ application: UIApplication,

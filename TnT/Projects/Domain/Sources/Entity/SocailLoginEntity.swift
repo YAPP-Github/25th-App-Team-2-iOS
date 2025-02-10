@@ -48,6 +48,8 @@ public struct PostSocialLoginResEntity: Equatable {
     public let socialType: String
     /// 가입 여부 (`true`: 이미 가입됨, `false`: 미가입)
     public let isSignUp: Bool
+    /// 멤버타입
+    public let membertype: MemberType
 }
 
 /// 회원가입 요청 DTO

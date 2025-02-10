@@ -7,6 +7,7 @@
 //
 
 import SwiftUI
+import KakaoSDKAuth
 
 import Presentation
 import ComposableArchitecture
@@ -21,10 +22,14 @@ struct ToyProjectApp: App {
 
     var body: some Scene {
         WindowGroup {
-            OnboardingView(store: Store(initialState: OnboardingFeature.State(), reducer: {
-                OnboardingFeature()
+            LoginView(store: Store(initialState: LoginFeature.State(), reducer: {
+                LoginFeature()
             }))
-//            ContentView()
+            .onOpenURL(perform: { url in
+                if AuthApi.isKakaoTalkLoginUrl(url) {
+                    debugPrint(AuthController.handleOpenUrl(url: url))
+                }
+            })
         }
     }
 }

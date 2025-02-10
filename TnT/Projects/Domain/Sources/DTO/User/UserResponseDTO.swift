@@ -20,6 +20,18 @@ public struct PostSocialLoginResDTO: Decodable {
     public let socialType: String
     /// 가입 여부 (`true`: 이미 가입됨, `false`: 미가입)
     public let isSignUp: Bool
+    /// 회웝 타입(Trainer, Trainee)
+    public let memberType: MemberType
+    
+    /// Coding Keys를 활용해 Decodable 처리
+    enum CodingKeys: String, CodingKey {
+        case sessionId
+        case socialId
+        case socialEmail
+        case socialType
+        case isSignUp
+        case memberType
+    }
 }
 
 /// 회원 정보 응답 DTO
@@ -32,4 +44,23 @@ public struct PostSignUpResDTO: Decodable {
     let name: String
     /// 프로필 이미지 URL
     let profileImageUrl: String
+}
+
+public enum MemberType: String, Decodable {
+    case trainer = "TRAINER"
+    case trainee = "TRAINEE"
+    case unregistered = "UNREGISTERED"
+    
+    public init?(rawValue: String) {
+        switch rawValue.lowercased() {
+        case "TRAINER":
+            self = .trainer
+        case "TRAINEE":
+            self = .trainee
+        case "UNREGISTERED":
+            self = .unregistered
+        default:
+            return nil
+        }
+    }
 }

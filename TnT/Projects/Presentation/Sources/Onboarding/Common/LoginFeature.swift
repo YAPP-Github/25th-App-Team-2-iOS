@@ -51,8 +51,6 @@ public struct LoginFeature {
         case setNavigating(RoutingScreen)
         /// 소셜 로그인 post 요청
         case postSocialLogin(entity: PostSocailEntity)
-        /// 소셜 로그인 실패
-        case socialLoginFail
         
         @CasePathable
         public enum View: Equatable {
@@ -70,9 +68,10 @@ public struct LoginFeature {
                 switch view {
                 case .tappedAppleLogin:
                     return .run { @Sendable send in
-                        let result = await socialLoginUseCase.appleLogin()
-                        guard let result else { return }
-                        let entity = PostSocailEntity(
+                        guard let result = await socialLoginUseCase.appleLogin() else { return }
+                        
+                        /// 서버 <-> 소셜 로그인을 위한 객체 생성
+                        let entity: PostSocailEntity = PostSocailEntity(
                             socialType: "APPLE",
                             fcmToken: "",
                             socialAccessToken: "",
@@ -85,10 +84,10 @@ public struct LoginFeature {
                     
                 case .tappedKakaoLogin:
                     return .run { @Sendable send in
-                        let result = await socialLoginUseCase.kakaoLogin()
-                        guard let result else { return }
+                        guard let result = await socialLoginUseCase.kakaoLogin() else { return }
                         
-                        let entity = PostSocailEntity(
+                        /// 서버 <-> 소셜 로그인을 위한 객체 생성
+                        let entity: PostSocailEntity = PostSocailEntity(
                             socialType: "KAKAO",
                             fcmToken: "",
                             socialAccessToken: result.accessToken,
@@ -101,29 +100,24 @@ public struct LoginFeature {
                 }
                 
             case .postSocialLogin(let entity):
-                let post = PostSocialMapper.toDTO(from: entity)
+                let post: PostSocialLoginReqDTO = PostSocialMapper.toDTO(from: entity)
+                
                 return .run { send in
                     do {
-                        let result = try await userUseCaseRepo.postSocialLogin(post)
-                        // TODO: res에 MemberType 추가해주세요!
-//                            switch result.memberType {
-//                            case .trainer:
-//                                await send(.setNavigating(.trainerHome))
-//                            case .trainee:
-//                                await send(.setNavigating(.traineeHome))
-//                            case .unregistered:
-//                                await send(.setNavigating(.term))
-//                            }
-                        // For test
-                        await send(.setNavigating(.term))
+                        let result: PostSocialLoginResDTO = try await userUseCaseRepo.postSocialLogin(post)
+                        
+                        switch result.memberType {
+                        case .trainer:
+                            await send(.setNavigating(.trainerHome))
+                        case .trainee:
+                            await send(.setNavigating(.traineeHome))
+                        case .unregistered:
+                            await send(.setNavigating(.term))
+                        }
                     } catch {
-                        await send(.socialLoginFail)
+                        await send(.setNavigating(.term))
                     }
                 }
-                
-            case .socialLoginFail:
-                print("네트워크 에러 발생")
-                return .none
                 
             case .setNavigating:
                 return .none

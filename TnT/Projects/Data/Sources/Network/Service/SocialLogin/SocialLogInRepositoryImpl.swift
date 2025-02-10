@@ -28,13 +28,10 @@ public struct SocialLogInRepositoryImpl: SocialLoginRepository {
     }
 
     public func appleLogin() async -> AppleLoginInfo? {
-        let result = await loginManager.appleLogin()
-        
-        return result
+        return await loginManager.appleLogin()
     }
     
     public func kakaoLogin() async -> KakaoLoginInfo? {
-        let result = await loginManager.kakaoLogin()
-        return result
+        return await loginManager.kakaoLogin()
     }
 }

@@ -36,7 +36,8 @@ public struct PostSocialMapper {
             socialId: dto.socialId,
             socialEmail: dto.socialEmail,
             socialType: dto.socialType,
-            isSignUp: dto.isSignUp
+            isSignUp: dto.isSignUp,
+            membertype: dto.memberType
         )
     }
     
@@ -47,7 +48,8 @@ public struct PostSocialMapper {
                 socialId: entity.socialId,
                 socialEmail: entity.socialEmail,
                 socialType: entity.socialType,
-                isSignUp: entity.isSignUp
+                isSignUp: entity.isSignUp,
+                memberType: entity.membertype
             )
         }
 }
