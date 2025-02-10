@@ -49,6 +49,9 @@ public struct TrainerMainFlowFeature {
                         case .addPTSessionPage:
                             state.path.append(.addPTSession(.init()))
                             return .none
+                        case .trainerMakeInvitationCodePage:
+                            state.path.append(.trainerMakeInvitationCodePage(.init()))
+                            return .none
                         }
                         
                         /// 트레이너 회원목록
@@ -62,6 +65,11 @@ public struct TrainerMainFlowFeature {
                             return .send(.switchFlow(.onboardingFlow))
                         }
                     }
+                    
+                    /// 트레이너 초대코드 발급 페이지 건너 뛰기 -> 홈으로
+                case .element(id: _, action: .trainerMakeInvitationCodePage(.setNavigation)):
+                    state.path.removeLast()
+                    return .none
                     
                 default:
                     return .none
@@ -93,5 +101,7 @@ extension TrainerMainFlowFeature {
         case addPTSession(TrainerAddPTSessionFeature)
         
         // MARK: MyPage
+        /// 초대코드 발급
+        case trainerMakeInvitationCodePage(MakeInvitationCodeFeature)
     }
 }

@@ -22,6 +22,8 @@ public struct TraineeMyPageFeature {
     @ObservableState
     public struct State: Equatable {
         // MARK: Data related state
+        /// 3일 동안 보지 않기 시작 날짜
+        @Shared(.appStorage(AppStorage.hideHomePopupUntil)) var hidePopupUntil: Date?
         /// 사용자 이름
         var userName: String
         /// 사용자 이미지 URL
@@ -150,15 +152,21 @@ public struct TraineeMyPageFeature {
                     return .none
                     
                 case .tapTOSButton:
-                    print("tapTOSButton")
+                    if let url = URL(string: AppLinks.termsOfService) {
+                        UIApplication.shared.open(url)
+                    }
                     return .none
                     
                 case .tapPrivacyPolicyButton:
-                    print("tapPrivacyPolicyButton")
+                    if let url = URL(string: AppLinks.privacyPolicy) {
+                        UIApplication.shared.open(url)
+                    }
                     return .none
                     
                 case .tapOpenSourceLicenseButton:
-                    print("tapOpenSourceLicenseButton")
+                    if let url = URL(string: AppLinks.openSourceLicense) {
+                        UIApplication.shared.open(url)
+                    }
                     return .none
                     
                 case .tapDisconnectTrainerButton:
@@ -190,6 +198,7 @@ public struct TraineeMyPageFeature {
                         return .send(.setPopUpStatus(nil))
                         
                     case .logoutCompleted, .withdrawCompleted:
+                        state.$hidePopupUntil.withLock { $0 = nil }
                         return .concatenate(
                             .send(.setPopUpStatus(nil)),
                             .send(.setNavigating(.onboardingLogin))

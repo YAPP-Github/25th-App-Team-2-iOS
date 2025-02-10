@@ -22,7 +22,11 @@ public enum AppFlow: Sendable {
 public struct AppFlowCoordinatorFeature {
     @ObservableState
     public struct State: Equatable {
+        // MARK: Data related state
         var userType: UserType?
+        // MARK: UI related state
+        var view_isSplashActive: Bool
+        var view_isPopUpPresented: Bool
         
         // MARK: SubFeature state
         var trainerMainState: TrainerMainFlowFeature.State?
@@ -31,18 +35,23 @@ public struct AppFlowCoordinatorFeature {
         
         public init(
             userType: UserType? = nil,
+            view_isSplashActive: Bool = true,
+            view_isPopUpPresented: Bool = false,
             onboardingState: OnboardingFlowFeature.State? = nil,
             trainerMainState: TrainerMainFlowFeature.State? = nil,
             traineeMainState: TraineeMainFlowFeature.State? = nil
         ) {
             self.userType = userType
+            self.view_isSplashActive = view_isSplashActive
+            self.view_isPopUpPresented = view_isPopUpPresented
             self.onboardingState = onboardingState
             self.trainerMainState = trainerMainState
             self.traineeMainState = traineeMainState
         }
     }
 
-    public enum Action {
+    public enum Action: ViewAction {
+        case view(View)
         /// 하위 코디네이터에서 일어나는 액션을 처리합니다
         case subFeature(SubFeatureAction)
         /// api 콜 액션을 처리합니다
@@ -51,8 +60,20 @@ public struct AppFlowCoordinatorFeature {
         case checkSessionInfo
         /// 현재 유저 정보 업데이트
         case updateUserInfo(UserType?)
-        /// 첫 진입 시
-        case onAppear
+        /// 스플래시 표시 종료 시
+        case splashFinished
+        /// 세션 만료 팝업 표시
+        case showSessionExpiredPopup
+        
+        @CasePathable
+        public enum View: Sendable, BindableAction {
+            /// 바인딩할 액션을 처리
+            case binding(BindingAction<State>)
+            /// 첫 진입 시
+            case onAppear
+            /// 세션 만료 팝업 확인 버튼 탭
+            case tapSessionExpiredPopupConfirmButton
+        }
         
         @CasePathable
         public enum SubFeatureAction: Sendable {
@@ -77,8 +98,33 @@ public struct AppFlowCoordinatorFeature {
     public init() {}
 
     public var body: some Reducer<State, Action> {
+        BindingReducer(action: \.view)
+        
         Reduce { state, action in
             switch action {
+            case .view(let action):
+                switch action {
+                case .binding:
+                    return .none
+                    
+                case .onAppear:
+                    return .merge(
+                        .run { send in
+                            try await Task.sleep(for: .seconds(1))
+                            await send(.splashFinished)
+                        },
+                        .send(.checkSessionInfo),
+                        .run { send in
+                            for await _ in NotificationCenter.default.notifications(named: .showSessionExpiredPopupNotification) {
+                                await send(.showSessionExpiredPopup)
+                            }
+                        }
+                    )
+                case .tapSessionExpiredPopupConfirmButton:
+                    state.view_isPopUpPresented = false
+                    return self.setFlow(.onboardingFlow, state: &state)
+                }
+                
             case .subFeature(let internalAction):
                 switch internalAction {
                 case .onboardingFlow(.switchFlow(let flow)),
@@ -88,7 +134,7 @@ public struct AppFlowCoordinatorFeature {
                 default:
                     return .none
                 }
-            
+                
             case .api(let action):
                 switch action {
                 case .checkSession:
@@ -105,7 +151,7 @@ public struct AppFlowCoordinatorFeature {
                         }
                     }
                 }
-            
+                
             case .checkSessionInfo:
                 let session: String? = try? keyChainManager.read(for: .sessionId)
                 return session != nil
@@ -122,8 +168,13 @@ public struct AppFlowCoordinatorFeature {
                     return self.setFlow(.onboardingFlow, state: &state)
                 }
                 
-            case .onAppear:
-                return .send(.checkSessionInfo)
+            case .splashFinished:
+                state.view_isSplashActive = false
+                return .none
+                
+            case .showSessionExpiredPopup:
+                state.view_isPopUpPresented = true
+                return .none
             }
         }
         .ifLet(\.onboardingState, action: \.subFeature.onboardingFlow) { OnboardingFlowFeature() }

@@ -41,6 +41,12 @@ public struct TrainerHomeView: View {
             SessionAddButton()
         }
         .navigationBarBackButtonHidden()
+        .tPopUp(isPresented: $store.view_isPopUpPresented) {
+            PopUpView()
+        }
+        .onAppear {
+            send(.onAppear)
+        }
     }
     
     // MARK: - Sections
@@ -137,6 +143,53 @@ public struct TrainerHomeView: View {
             }
             .padding(.trailing, 22)
             .padding(.bottom, 28)
+    }
+    
+    @ViewBuilder
+    private func PopUpView() -> some View {
+        VStack(spacing: 20) {
+            VStack(spacing: 8) {
+                Text("회원을 연결해 주세요")
+                    .typographyStyle(.heading3, with: .neutral900)
+                    .multilineTextAlignment(.center)
+                    .padding(.top, 20)
+                
+                Text("연결하지 않을 경우 수업을 추가할 수 없어요\n초대 코드를 복사해 연결해주시겠어요?")
+                    .typographyStyle(.body2Medium, with: .neutral500)
+                    .multilineTextAlignment(.center)
+            }
+            
+            Button(action: {
+                send(.tapPopUpDontShowUntilThreeDaysButton(!store.isHideUntilSelected))
+            }) {
+                HStack(spacing: 4) {
+                    Image(store.isHideUntilSelected ? .icnCheckMarkFilled : .icnCheckMarkEmpty)
+                        .resizable()
+                        .frame(width: 24, height: 24)
+                    Text("3일 동안 보지 않기")
+                        .typographyStyle(.body2Medium, with: .neutral500)
+                    Spacer()
+                }
+            }
+            
+            HStack(spacing: 8) {
+                TPopUpAlertView.AlertButton(
+                    title: "다음에",
+                    style: .secondary,
+                    action: {
+                        send(.tapPopUpNextButton)
+                    }
+                )
+                
+                TPopUpAlertView.AlertButton(
+                    title: "연결하기",
+                    style: .primary,
+                    action: {
+                        send(.tapPopUpConnectButton)
+                    }
+                )
+            }
+        }
     }
 }
 

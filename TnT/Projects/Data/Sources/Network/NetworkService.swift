@@ -42,9 +42,15 @@ public final class NetworkService {
             
             // Data 디코딩
             return try decodeData(data, as: decodingType)
-        } catch {
+        } catch let error as NetworkError {
             // TODO: 추후 인터셉터 리팩토링 시 error middleWare로 분리
-            NotificationCenter.default.post(toast: .init(presentType: .text("⚠"), message: "서버 요청에 실패했어요"))
+            NotificationCenter.default.postProgress(visible: false)
+            switch error {
+            case .unauthorized:
+                NotificationCenter.default.postSessionExpired()
+            default:
+                NotificationCenter.default.post(toast: .init(presentType: .text("⚠"), message: "서버 요청에 실패했어요"))
+            }
             throw error
         }
     }
