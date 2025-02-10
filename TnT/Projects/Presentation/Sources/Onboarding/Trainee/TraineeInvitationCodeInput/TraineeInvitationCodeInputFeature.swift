@@ -139,12 +139,14 @@ public struct TraineeInvitationCodeInputFeature {
                     return .none
                     
                 case .tapVerifyButton:
-                    return .send(.api(.verifyInvitationCode(code: state.invitationCode)))
+                    return .concatenate(
+                        .send(.view(.setFocus(false))),
+                        .send(.api(.verifyInvitationCode(code: state.invitationCode)))
+                    )
                     
                 case .tapNextButton:
                     guard let trainerName = state.trainerName else { return .none }
-                    print("trainerName: \(trainerName)")
-                    return .send(.setNavigating(.trainingInfoInput(trainerName: trainerName)))
+                    return .send(.setNavigating(.trainingInfoInput(trainerName: trainerName, invitationCode: state.invitationCode)))
                     
                 case .setFocus(let isFocused):
                     state.view_isFieldFocused = isFocused
@@ -229,7 +231,7 @@ public extension TraineeInvitationCodeInputFeature {
     /// 본 화면에서 라우팅(파생)되는 화면
     enum RoutingScreen: Sendable {
         case traineeHome
-        case trainingInfoInput(trainerName: String)
+        case trainingInfoInput(trainerName: String, invitationCode: String)
     }
     
     /// 본 화면의 네비게이션 타입

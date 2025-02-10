@@ -28,6 +28,8 @@ public struct TraineeTrainingInfoInputFeature {
         var currentCount: String
         /// 입력된 몸무게
         var totalCount: String
+        /// 트레이너 초대코드
+        var invitationCode: String
         
         // MARK: UI related state
         /// 텍스트 필드 상태 (빈 값 / 입력됨 / 유효하지 않음)
@@ -57,6 +59,7 @@ public struct TraineeTrainingInfoInputFeature {
             startDate: String = "",
             currentCount: String = "",
             totalCount: String = "",
+            invitationCode: String = "",
             view_startDateStatus: TTextField.Status = .empty,
             view_currentCountStatus: TTextField.Status = .empty,
             view_totalCountStatus: TTextField.Status = .empty,
@@ -67,6 +70,7 @@ public struct TraineeTrainingInfoInputFeature {
             self.startDate = startDate
             self.currentCount = currentCount
             self.totalCount = totalCount
+            self.invitationCode = invitationCode
             self.view_startDateStatus = view_startDateStatus
             self.view_currentCountStatus = view_currentCountStatus
             self.view_totalCountStatus = view_totalCountStatus
@@ -76,12 +80,15 @@ public struct TraineeTrainingInfoInputFeature {
     }
     
     @Dependency(\.traineeUseCase) private var traineeUseCase: TraineeUseCase
+    @Dependency(\.traineeRepoUseCase) private var traineeRepoUseCase
     
     public enum Action: Sendable, ViewAction {
         /// 뷰에서 발생한 액션을 처리합니다.
         case view(View)
+        /// api 콜 액션 처리
+        case api(APIAction)
         /// 네비게이션 여부 설정
-        case setNavigating
+        case setNavigating(RoutingScreen)
         
         @CasePathable
         public enum View: Sendable, BindableAction {
@@ -96,6 +103,12 @@ public struct TraineeTrainingInfoInputFeature {
             /// 포커스 상태 변경
             case setFocus(FocusField?, FocusField?)
         }
+        
+        @CasePathable
+        public enum APIAction: Sendable {
+            /// 초대 코드 인증하기 API
+            case verifyInvitationCode(code: String)
+        }
     }
     
     public init() {}
@@ -109,11 +122,11 @@ public struct TraineeTrainingInfoInputFeature {
                 switch action {
                 case .binding:
                     return .none
-                
+                    
                 case .tapStartDateTextField:
                     state.view_isDatePickerPresented = true
                     return .send(.view(.setFocus(state.view_focusField, .startDate)))
-                
+                    
                 case .tapStartDatePickerDoneButton(let date):
                     state.view_isDatePickerPresented = false
                     state.startDate = date.toString(format: .yyyyMMddSlash)
@@ -127,7 +140,33 @@ public struct TraineeTrainingInfoInputFeature {
                     : .none
                     
                 case .tapNextButton:
-                    return .send(.setNavigating)
+                    return .send(.api(.verifyInvitationCode(code: state.invitationCode)))
+                }
+                
+            case .api(let action):
+                switch action {
+                case .verifyInvitationCode(let code):
+                    guard let currentCount = Int(state.currentCount), let totalCount = Int(state.totalCount) else { return .none }
+                    return .run { [state] send in
+                        let result = try await traineeRepoUseCase.postConnectTrainer(
+                            .init(
+                                invitationCode: state.invitationCode,
+                                startDate: state.startDate.replacingOccurrences(of: "/", with: "-"),
+                                totalPtCount: totalCount,
+                                finishedPtCount: currentCount
+                            )
+                        )
+                        await send(
+                            .setNavigating(
+                                .connectionComplete(
+                                    trainerName: result.trainerName,
+                                    traineeName: result.traineeName,
+                                    trainerImageUrl: result.trainerProfileImageUrl,
+                                    traineeImageUrl: result.traineeProfileImageUrl
+                                )
+                            )
+                        )
+                    }
                 }
 
             case .setNavigating:
@@ -180,5 +219,11 @@ private extension TraineeTrainingInfoInputFeature {
 
         state.view_isNextButtonEnabled = dateValid && currentCountValid && totalCountValid
         return .none
+    }
+}
+
+extension TraineeTrainingInfoInputFeature {
+    public enum RoutingScreen {
+        case connectionComplete(trainerName: String, traineeName: String, trainerImageUrl: String, traineeImageUrl: String)
     }
 }
