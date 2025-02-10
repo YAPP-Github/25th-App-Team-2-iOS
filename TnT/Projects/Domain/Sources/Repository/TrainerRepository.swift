@@ -28,4 +28,7 @@ public protocol TrainerRepository {
     
     /// 회원 조희
     func getMembersList() async throws -> GetMembersListDTO
+    
+    /// 연결 완료된 트레이니 정보 불러오기
+    func getConnectedTraineeInfo(trainerId: Int, traineeId: Int) async throws -> GetConnectedTraineeInfoResponseDTO
 }
