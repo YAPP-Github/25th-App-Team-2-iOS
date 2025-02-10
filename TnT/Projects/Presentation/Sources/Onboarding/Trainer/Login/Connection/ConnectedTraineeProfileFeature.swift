@@ -9,13 +9,17 @@
 import SwiftUI
 import ComposableArchitecture
 
+import Domain
+
 @Reducer
 public struct ConnectedTraineeProfileFeature {
     @ObservableState
     public struct State: Equatable {
-        var view_trainer: Data?
+        var traineeProfile: ConnectedTraineeProfileEntity
         
-        public init() { }
+        public init(traineeProfile: ConnectedTraineeProfileEntity) {
+            self.traineeProfile = traineeProfile
+        }
     }
     
     public enum Action: Equatable, ViewAction {

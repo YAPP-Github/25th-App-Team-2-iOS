@@ -71,6 +71,10 @@ public struct TrainerMainFlowFeature {
                     state.path.removeLast()
                     return .none
                     
+                case .element(id: _, action: .connectionComplete(.setNavigating(let profile))):
+                    state.path.append(.connectedTraineeProfile(.init(traineeProfile: profile)))
+                    return .none
+                    
                 default:
                     return .none
                 }
@@ -99,6 +103,10 @@ extension TrainerMainFlowFeature {
         case alarmCheck(AlarmCheckFeature)
         /// PT 일정 추가
         case addPTSession(TrainerAddPTSessionFeature)
+        /// 연결 완료
+        case connectionComplete(ConnectionCompleteFeature)
+        /// 연결된 트레이니 프로필
+        case connectedTraineeProfile(ConnectedTraineeProfileFeature)
         
         // MARK: MyPage
         /// 초대코드 발급
