@@ -1,5 +1,5 @@
 //
-//  MealType.swift
+//  DietType.swift
 //  Domain
 //
 //  Created by 박민서 on 1/29/25.
@@ -9,7 +9,7 @@
 import Foundation
 
 /// 앱에서 존재하는 식단 유형을 정의한 열거형
-public enum MealType: Sendable {
+public enum DietType: Sendable {
     case morning
     case lunch
     case dinner

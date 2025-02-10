@@ -15,7 +15,7 @@ extension RecordType {
         switch self {
         case .session, .workout:
             return .blue
-        case .meal:
+        case .diet:
             return .pink
         }
     }
@@ -27,7 +27,7 @@ extension RecordType {
             return "💪"
         case .workout:
             return nil
-        case .meal(let type):
+        case .diet(let type):
             return type.emoji
         }
     }
