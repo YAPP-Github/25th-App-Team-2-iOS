@@ -9,14 +9,14 @@
 import Foundation
 
 /// 앱에서 존재하는 식단 유형을 정의한 열거형
-public enum DietType: Sendable {
+public enum DietType: Sendable, CaseIterable {
     case morning
     case lunch
     case dinner
     case snack
     
     /// 식사 유형을 한글로 변환하여 반환
-    var koreanName: String {
+    public var koreanName: String {
         switch self {
         case .morning: return "아침"
         case .lunch: return "점심"
