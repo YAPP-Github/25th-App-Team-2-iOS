@@ -17,6 +17,8 @@ public struct UserTypeSelectionFeature {
     @ObservableState
     public struct State: Equatable {
         // MARK: Data related state
+        /// 현재 회원가입 정보
+        @Shared var signUpEntity: PostSignUpEntity
         /// 현재 선택된 유저 타입 (트레이너/트레이니)
         var userType: UserType
         
@@ -28,15 +30,23 @@ public struct UserTypeSelectionFeature {
         /// - Parameters:
         ///   - userType: 현재 선택된 유저 타입 (기본값: `.trainer`)
         ///   - isNavigating: 네비게이션 여부 (기본값: `false`)
-        public init(userType: UserType = .trainer, view_isNavigating: Bool = false) {
+        ///   - signUpEntity: 현재 회원가입 정보 @Shared
+        public init(
+            userType: UserType = .trainer,
+            view_isNavigating: Bool = false,
+            signUpEntity: Shared<PostSignUpEntity>
+        ) {
             self.userType = userType
             self.view_isNavigating = view_isNavigating
+            self._signUpEntity = signUpEntity
         }
     }
     
     public enum Action: Sendable, ViewAction {
         /// 뷰에서 발생한 액션을 처리합니다.
         case view(ViewAction)
+        /// 네비게이션 설정
+        case setNavigating(RoutingScreen)
         
         public enum ViewAction: Sendable, BindableAction {
             /// 바인딩할 액션을 처리합니다
@@ -65,10 +75,28 @@ public struct UserTypeSelectionFeature {
                     return .none
                     
                 case .tapNextButton:
-                    state.view_isNavigating = true
-                    return .none
+                    state.$signUpEntity.withLock { $0.memberType = state.userType }
+                    switch state.userType {
+                    case .trainer:
+                        return .send(.setNavigating(.createProfileTrainer))
+                    case .trainee:
+                        return .send(.setNavigating(.createProfileTrainee))
+                    }
                 }
+                
+            case .setNavigating:
+                return .none
             }
         }
+    }
+}
+
+extension UserTypeSelectionFeature {
+    /// 본 화면에서 라우팅(파생)되는 화면
+    public enum RoutingScreen: Sendable {
+        /// 트레이니 회원가입
+        case createProfileTrainee
+        /// 트레이너 회원가입
+        case createProfileTrainer
     }
 }

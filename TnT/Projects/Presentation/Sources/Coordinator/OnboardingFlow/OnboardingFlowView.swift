@@ -26,8 +26,6 @@ public struct OnboardingFlowView: View {
                 // MARK: Common
             case .snsLogin(let store):
                 LoginView(store: store)
-            case .term(let store):
-                TermView(store: store)
             case .userTypeSelection(let store):
                 UserTypeSelectionView(store: store)
             case .createProfile(let store):
@@ -35,7 +33,7 @@ public struct OnboardingFlowView: View {
                 
                 // MARK: Trainer
             case .trainerSignUpComplete(let store):
-                TrainerSignUpCompleteView(store: store)
+                ProfileCompletionView(store: store)
             case .trainerMakeInvitationCode(let store):
                 MakeInvitationCodeView(store: store)
             case .trainerConnectedTraineeProfile(let store):
@@ -49,7 +47,7 @@ public struct OnboardingFlowView: View {
             case .traineePrecautionInput(let store):
                 TraineePrecautionInputView(store: store)
             case .traineeProfileCompletion(let store):
-                TraineeProfileCompletionView(store: store)
+                ProfileCompletionView(store: store)
             case .traineeInvitationCodeInput(let store):
                 TraineeInvitationCodeInputView(store: store)
             case .traineeTrainingInfoInput(let store):

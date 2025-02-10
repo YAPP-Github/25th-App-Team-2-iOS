@@ -16,14 +16,14 @@ import DesignSystem
 /// - 사용자 타입 및 이름을 표시
 /// - 상대 유저 타입을 안내하는 메시지 제공
 /// - "시작하기" 버튼을 통해 다음 화면으로 이동
-@ViewAction(for: TraineeProfileCompletionFeature.self)
-public struct TraineeProfileCompletionView: View {
+@ViewAction(for: ProfileCompletionFeature.self)
+public struct ProfileCompletionView: View {
     
-    @Bindable public var store: StoreOf<TraineeProfileCompletionFeature>
+    @Bindable public var store: StoreOf<ProfileCompletionFeature>
     
     /// `ProfileCompletion` 생성자
     /// - Parameter store: `TraineeProfileCompletionFeature`와 연결된 Store
-    public init(store: StoreOf<TraineeProfileCompletionFeature>) {
+    public init(store: StoreOf<ProfileCompletionFeature>) {
         self.store = store
     }
     
@@ -71,5 +71,42 @@ public struct TraineeProfileCompletionView: View {
             .resizable()
             .frame(width: 200, height: 200)
             .clipShape(Circle())
+    }
+    
+    @ViewBuilder
+    public func ImageSection(imgURL: URL) -> some View {
+        if let urlString = store.profileImage, let url = URL(string: urlString) {
+            AsyncImage(url: url) { phase in
+                switch phase {
+                case .empty:
+                    ProgressView()
+                        .tint(.red500)
+                        .frame(width: 132, height: 132)
+                    
+                case .success(let image):
+                    image
+                        .resizable()
+                        .aspectRatio(contentMode: .fill)
+                        .frame(width: 132, height: 132)
+                        .clipShape(Circle())
+                    
+                case .failure:
+                    Image(store.userType == .trainee ? .imgDefaultTraineeImage : .imgDefaultTrainerImage)
+                        .resizable()
+                        .aspectRatio(contentMode: .fill)
+                        .frame(width: 132, height: 132)
+                        .clipShape(Circle())
+                    
+                @unknown default:
+                    EmptyView()
+                }
+            }
+        } else {
+            Image(store.userType == .trainee ? .imgDefaultTraineeImage : .imgDefaultTrainerImage)
+                .resizable()
+                .scaledToFill()
+                .frame(width: 132, height: 132)
+                .clipShape(Circle())
+        }
     }
 }
