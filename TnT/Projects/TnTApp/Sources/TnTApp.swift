@@ -16,6 +16,8 @@ import DesignSystem
 @main
 struct ToyProjectApp: App {
     
+    @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
+    
     init() {
         DesignSystemFontFamily.registerAllCustomFonts()
     }
