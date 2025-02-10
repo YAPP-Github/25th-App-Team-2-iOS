@@ -62,6 +62,7 @@ public struct TraineePrecautionInputFeature {
     
     @Dependency(\.userUseCase) private var userUseCase: UserUseCase
     @Dependency(\.userUseRepoCase) private var userUseRepoCase: UserRepository
+    @Dependency(\.keyChainManager) var keyChainManager
     
     public enum Action: Sendable, ViewAction {
         /// 뷰에서 발생한 액션을 처리합니다.
@@ -114,7 +115,7 @@ public struct TraineePrecautionInputFeature {
                 
                 return .run { send in
                     let result = try await userUseRepoCase.postSignUp(reqDTO, profileImage: imgData).toEntity()
-                    // TODO: 세션, 유저타입 정보 키체인 저장
+                    saveSessionId(result.sessionId)
                     await send(.setNavigating(result))
                 }
                 
@@ -137,5 +138,15 @@ private extension TraineePrecautionInputFeature {
         state.view_editorStatus = .filled
         state.view_isNextButtonEnabled = true
         return .none
+    }
+    
+    /// 세션 값 저장
+    private func saveSessionId(_ sessionId: String?) {
+        guard let sessionId else { return }
+        do {
+            try keyChainManager.save(sessionId, for: .sessionId)
+        } catch {
+            print("로그인 정보 저장 싪패")
+        }
     }
 }

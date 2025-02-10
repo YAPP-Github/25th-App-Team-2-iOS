@@ -17,7 +17,7 @@ public struct TrainerMainFlowFeature {
     public struct State: Equatable {
         public var path: StackState<Path.State>
         
-        public init(path: StackState<Path.State> = .init([])) {
+        public init(path: StackState<Path.State> = .init([.mainTab(.home(.init()))])) {
             self.path = path
         }
     }
@@ -63,6 +63,9 @@ public struct TrainerMainFlowFeature {
                             /// 마이페이지 초대코드 입력하기 버튼 탭-> 초대코드 입력 화면 이동
                         case .traineeInvitationCodeInput:
                             state.path.append(.traineeInvitationCodeInput(.init()))
+                            return .none
+                            
+                        case .onboardingLogin:
                             return .none
                         }
                     }

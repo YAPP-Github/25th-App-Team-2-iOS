@@ -64,37 +64,29 @@ public struct ProfileCompletionView: View {
                 .multilineTextAlignment(.center)
         }
     }
-
-    @ViewBuilder
-    private func ImageSection() -> some View {
-        Image(.imgDefaultTraineeImage)
-            .resizable()
-            .frame(width: 200, height: 200)
-            .clipShape(Circle())
-    }
     
     @ViewBuilder
-    public func ImageSection(imgURL: URL) -> some View {
+    public func ImageSection() -> some View {
         if let urlString = store.profileImage, let url = URL(string: urlString) {
             AsyncImage(url: url) { phase in
                 switch phase {
                 case .empty:
                     ProgressView()
                         .tint(.red500)
-                        .frame(width: 132, height: 132)
+                        .frame(width: 200, height: 200)
                     
                 case .success(let image):
                     image
                         .resizable()
                         .aspectRatio(contentMode: .fill)
-                        .frame(width: 132, height: 132)
+                        .frame(width: 200, height: 200)
                         .clipShape(Circle())
                     
                 case .failure:
                     Image(store.userType == .trainee ? .imgDefaultTraineeImage : .imgDefaultTrainerImage)
                         .resizable()
                         .aspectRatio(contentMode: .fill)
-                        .frame(width: 132, height: 132)
+                        .frame(width: 200, height: 200)
                         .clipShape(Circle())
                     
                 @unknown default:
@@ -105,7 +97,7 @@ public struct ProfileCompletionView: View {
             Image(store.userType == .trainee ? .imgDefaultTraineeImage : .imgDefaultTrainerImage)
                 .resizable()
                 .scaledToFill()
-                .frame(width: 132, height: 132)
+                .frame(width: 200, height: 200)
                 .clipShape(Circle())
         }
     }

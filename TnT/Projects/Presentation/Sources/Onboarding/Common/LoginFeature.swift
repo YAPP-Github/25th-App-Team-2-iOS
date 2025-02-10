@@ -32,6 +32,7 @@ public struct LoginFeature {
     @Dependency(\.userUseCase) private var userUseCase: UserUseCase
     @Dependency(\.userUseRepoCase) private var userUseCaseRepo: UserRepository
     @Dependency(\.socialLogInUseCase) private var socialLoginUseCase: SocialLoginUseCase
+    @Dependency(\.keyChainManager) var keyChainManager
     
     public enum Action: ViewAction {
         /// 뷰에서 일어나는 액션을 처리합니다.(카카오,애플로그인 실행)
@@ -117,6 +118,7 @@ public struct LoginFeature {
                 return .run { send in
                     do {
                         let result = try await userUseCaseRepo.postSocialLogin(post)
+                        saveSessionId(result.sessionId)
                         
                         switch result.memberType {
                         case .trainer:
@@ -154,6 +156,17 @@ public struct LoginFeature {
         }
         .ifLet(\.termFeature, action: \.subFeature.termAction.presented) {
             TermFeature()
+        }
+    }
+}
+
+extension LoginFeature {
+    private func saveSessionId(_ sessionId: String?) {
+        guard let sessionId else { return }
+        do {
+            try keyChainManager.save(sessionId, for: .sessionId)
+        } catch {
+            print("로그인 정보 저장 싪패")
         }
     }
 }

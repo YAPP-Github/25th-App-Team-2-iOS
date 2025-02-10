@@ -92,6 +92,7 @@ public struct CreateProfileFeature {
     
     @Dependency(\.userUseCase) private var userUseCase: UserUseCase
     @Dependency(\.userUseRepoCase) private var userUseRepoCase: UserRepository
+    @Dependency(\.keyChainManager) var keyChainManager
     
     public enum Action: Sendable, ViewAction {
         /// 네비게이션 여부 설정
@@ -160,7 +161,7 @@ public struct CreateProfileFeature {
                 
                 return .run { send in
                     let result = try await userUseRepoCase.postSignUp(reqDTO, profileImage: imgData).toEntity()
-                    // TODO: 세션, 유저타입 정보 키체인 저장
+                    saveSessionId(result.sessionId)
                     await send(.setNavigating(.trainerSignUpComplete(result)))
                 }
                 
@@ -188,6 +189,16 @@ private extension CreateProfileFeature {
         state.view_textFieldStatus = .filled
         state.view_isNextButtonEnabled = true
         return .none
+    }
+    
+    /// 세션 값 저장
+    private func saveSessionId(_ sessionId: String?) {
+        guard let sessionId else { return }
+        do {
+            try keyChainManager.save(sessionId, for: .sessionId)
+        } catch {
+            print("로그인 정보 저장 싪패")
+        }
     }
 }
 

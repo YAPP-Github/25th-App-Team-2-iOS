@@ -17,6 +17,11 @@ public struct UserRepositoryImpl: UserRepository {
     
     public init() {}
     
+    /// 로그인 세션 유효 체크 요청을 수행
+    public func getSessionCheck() async throws -> GetSessionCheckResDTO {
+        return try await networkService.request(UserTargetType.getSessionCheck, decodingType: GetSessionCheckResDTO.self)
+    }
+    
     /// 소셜 로그인 요청을 수행
     public func postSocialLogin(_ reqDTO: PostSocialLoginReqDTO) async throws -> PostSocialLoginResDTO {
         return try await networkService.request(
@@ -34,5 +39,15 @@ public struct UserRepositoryImpl: UserRepository {
             ),
             decodingType: PostSignUpResDTO.self
         )
+    }
+    
+    /// 로그아웃 요청을 수행
+    public func postLogout() async throws -> PostLogoutResDTO {
+        return try await networkService.request(UserTargetType.postLogout, decodingType: PostLogoutResDTO.self)
+    }
+    
+    /// 회원탈퇴 요청을 수행
+    public func postWithdrawal() async throws -> PostWithdrawalResDTO {
+        return try await networkService.request(UserTargetType.postWithdrawal, decodingType: PostWithdrawalResDTO.self)
     }
 }
