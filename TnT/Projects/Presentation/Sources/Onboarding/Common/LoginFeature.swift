@@ -11,6 +11,7 @@ import SwiftUI
 
 import Domain
 import DIContainer
+import Data
 
 @Reducer
 public struct LoginFeature {
@@ -23,6 +24,7 @@ public struct LoginFeature {
         public var socialEmail: String?
         public var postUserEntity: PostSocailEntity?
         public var termState: Bool = false
+        public var fcmToken: String?
         
         public init(
             userType: UserType? = nil,
@@ -73,11 +75,12 @@ public struct LoginFeature {
                 case .tappedAppleLogin:
                     return .run { @Sendable send in
                         guard let result = await socialLoginUseCase.appleLogin() else { return }
+                        let fcmToken: String? = try? KeyChainManager.read(for: .apns)
                         
                         /// 서버 <-> 소셜 로그인을 위한 객체 생성
                         let entity: PostSocailEntity = PostSocailEntity(
                             socialType: "APPLE",
-                            fcmToken: "",
+                            fcmToken: fcmToken ?? "",
                             socialAccessToken: "",
                             authorizationCode: result.authorizationCode,
                             idToken: result.identityToken
@@ -89,11 +92,12 @@ public struct LoginFeature {
                 case .tappedKakaoLogin:
                     return .run { @Sendable send in
                         guard let result = await socialLoginUseCase.kakaoLogin() else { return }
+                        let fcmToken: String? = try? KeyChainManager.read(for: .apns)
                         
                         /// 서버 <-> 소셜 로그인을 위한 객체 생성
                         let entity: PostSocailEntity = PostSocailEntity(
                             socialType: "KAKAO",
-                            fcmToken: "",
+                            fcmToken: fcmToken ?? "",
                             socialAccessToken: result.accessToken,
                             authorizationCode: "",
                             idToken: ""
