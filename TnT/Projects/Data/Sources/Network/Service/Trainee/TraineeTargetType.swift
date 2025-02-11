@@ -14,6 +14,8 @@ import Domain
 public enum TraineeTargetType {
     /// 트레이너 연결 요청
     case postConnectTrainer(reqDto: PostConnectTrainerReqDTO)
+    /// 트레이니 식단 기록 작성
+    case postTraineeDietRecord(reqDto: PostTraineeDietRecordReqDTO, imgData: Data?)
 }
 
 extension TraineeTargetType: TargetType {
@@ -26,12 +28,14 @@ extension TraineeTargetType: TargetType {
         switch self {
         case .postConnectTrainer:
             return "/connect-trainer"
+        case .postTraineeDietRecord:
+            return "/diets"
         }
     }
     
     var method: HTTPMethod {
         switch self {
-        case .postConnectTrainer:
+        case .postConnectTrainer, .postTraineeDietRecord:
             return .post
         }
     }
@@ -40,6 +44,16 @@ extension TraineeTargetType: TargetType {
         switch self {
         case .postConnectTrainer(let reqDto):
             return .requestJSONEncodable(encodable: reqDto)
+        case let .postTraineeDietRecord(reqDto, imgData):
+            let files: [MultipartFile] = imgData.map {
+                [.init(fieldName: "dietImage", fileName: "dietImage.png", mimeType: "image/png", data: $0)]
+            } ?? []
+            
+            return .uploadMultipart(
+                jsons: [.init(jsonName: "request", json: reqDto)],
+                files: files,
+                additionalFields: [:]
+            )
         }
     }
     
@@ -47,6 +61,8 @@ extension TraineeTargetType: TargetType {
         switch self {
         case .postConnectTrainer:
             return ["Content-Type": "application/json"]
+        case .postTraineeDietRecord:
+            return ["Content-Type": "multipart/form-data"]
         }
     }
     
@@ -56,7 +72,7 @@ extension TraineeTargetType: TargetType {
             AuthTokenInterceptor(),
             ProgressIndicatorInterceptor(),
             ResponseValidatorInterceptor(),
-            RetryInterceptor(maxRetryCount: 0)
+            RetryInterceptor(maxRetryCount: 2)
         ]
     }
 }

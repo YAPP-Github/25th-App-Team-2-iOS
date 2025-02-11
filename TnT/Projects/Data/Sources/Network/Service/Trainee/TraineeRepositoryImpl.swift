@@ -23,4 +23,8 @@ public struct TraineeRepositoryImpl: TraineeRepository {
             decodingType: PostConnectTrainerResDTO.self
         )
     }
+    
+    public func postTraineeDietRecord(_ reqDTO: PostTraineeDietRecordReqDTO, imgData: Data?) async throws -> PostTraineeDietRecordResDTO {
+        return try await networkService.request(TraineeTargetType.postTraineeDietRecord(reqDto: reqDTO, imgData: imgData), decodingType: PostTraineeDietRecordResDTO.self)
+    }
 }
