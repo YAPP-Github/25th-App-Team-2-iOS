@@ -11,7 +11,7 @@
 	</dict>
 	<key>FirebaseAppDelegateProxyEnabled
 출처: https://nsios.tistory.com/191 [NamS의 iOS일기:티스토리]</key>
-	<string>NO</string>
+	<false/>
 	<key>API_BASE_URL_DEV</key>
 	<string>$(API_BASE_URL_DEV)</string>
 	<key>LSApplicationQueriesSchemes</key>
