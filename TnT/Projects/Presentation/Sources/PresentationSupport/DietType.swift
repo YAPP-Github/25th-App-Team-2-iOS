@@ -23,4 +23,8 @@ extension DietType {
             "🍰"
         }
     }
+    
+    var chipInfo: TChip.UIInfo {
+        return RecordType.diet(type: self).chipInfo
+    }
 }
