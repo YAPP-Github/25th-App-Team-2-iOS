@@ -99,6 +99,8 @@ public struct TraineeAddDietRecordFeature {
             case binding(BindingAction<State>)
             /// 네비바 백버튼 탭되었을 때
             case tapNavBackButton
+            /// 이미지 피커 삭제 버튼 탭되었을 때
+            case tapPhotoPickerDeleteButton
             /// 식단 날짜 드롭다운이 탭되었을 때 (DatePicker 표시)
             case tapDietDateDropDown
             /// 식단 시간 드롭다운이 탭되었을 때 (TimePicker 표시)
@@ -127,6 +129,9 @@ public struct TraineeAddDietRecordFeature {
             switch action {
             case .view(let action):
                 switch action {
+                case .binding(\.dietDate), .binding(\.dietTime), .binding(\.dietType):
+                    return self.validateAllFields(&state)
+                    
                 case .binding(\.dietInfo):
                     state.view_dietInfoStatus = validateDietInfo(state.dietInfo)
                     return self.validateAllFields(&state)
@@ -150,6 +155,11 @@ public struct TraineeAddDietRecordFeature {
                             await self.dismiss()
                         }
                     }
+                    
+                case .tapPhotoPickerDeleteButton:
+                    state.dietImageData = nil
+                    state.view_photoPickerItem = nil
+                    return .none
                     
                 case .tapDietDateDropDown:
                     state.view_bottomSheetItem = .datePicker(.dietDate)
@@ -194,13 +204,14 @@ public struct TraineeAddDietRecordFeature {
                     return setPopUpStatus(&state, status: nil)
                 
                 case let .setFocus(oldFocus, newFocus):
+                    guard oldFocus != newFocus else { return .none }
                     state.view_focusField = newFocus
                     return .none
                 }
                 
             case .imagePicked(let imgData):
                 state.dietImageData = imgData
-                return .none
+                return self.validateAllFields(&state)
 
             case .setNavigating:
                 return .none
@@ -217,48 +228,15 @@ private extension TraineeAddDietRecordFeature {
         return info.count > 100 ? .invalid : .filled
     }
     
-//    /// 시작 시간 종료 시간 필드 상태 검증
-//    func validateTimes(startTime: Date?, endTime: Date?) -> TTextField.Status? {
-//        guard let startTime, let endTime else { return nil }
-//        return startTime < endTime ? .filled : .invalid
-//    }
-//    
-//    /// 시작시간 종료시간 업데이트
-//    func updateTime(
-//      state: inout State,
-//      field: FocusField,
-//      with date: Date
-//    ) {
-//      switch field {
-//      case .startTime:
-//        state.startTime = date
-//        state.view_startTimeStatus = .filled
-//      case .endTime:
-//        state.endTime = date
-//        state.view_endTimeStatus = .filled
-//      default:
-//        return
-//      }
-//      
-//      if let start = state.startTime, let end = state.endTime,
-//         let status = self.validateTimes(startTime: start, endTime: end) {
-//        state.view_startTimeStatus = status
-//        state.view_endTimeStatus = status
-//      }
-//    }
-    
     /// 모든 필드의 상태를 검증하여 "다음" 버튼 활성화 여부를 결정
     func validateAllFields(_ state: inout State) -> Effect<Action> {
-//        state.view_isSubmitButtonEnabled = false
-//        
-//        guard state.trainee != nil && state.ptDate != nil && state.startTime != nil && state.endTime != nil else { return .none }
-//        
-//        guard let status = self.validateTimes(startTime: state.startTime, endTime: state.endTime), status == .filled else { return .none }
-//        
-//        let memoStatus = self.validateMemo(state.memo)
-//        guard memoStatus == .filled || memoStatus == .empty else { return .none }
-//        
-//        state.view_isSubmitButtonEnabled = true
+        
+        guard state.dietImageData != nil else { return .none }
+        guard state.dietDate != nil else { return .none }
+        guard state.dietTime != nil else { return .none }
+        guard state.dietType != nil else { return .none }
+
+        state.view_isSubmitButtonEnabled = true
         return .none
     }
     

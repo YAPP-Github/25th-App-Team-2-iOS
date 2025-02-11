@@ -67,12 +67,12 @@ public struct TraineeAddDietRecordView: View {
                 }
                 .padding(.horizontal, 16)
                 
-//                TBottomButton(
-//                    title: "완료",
-//                    isEnable: store.view_isSubmitButtonEnabled
-//                ) {
-//                    send(.tapSubmitButton)
-//                }
+                //                TBottomButton(
+                //                    title: "완료",
+                //                    isEnable: store.view_isSubmitButtonEnabled
+                //                ) {
+                //                    send(.tapSubmitButton)
+                //                }
             }
         }
         .sheet(item: $store.view_bottomSheetItem) { item in
@@ -114,16 +114,16 @@ public struct TraineeAddDietRecordView: View {
     }
     
     // MARK: - Sections
-//    @ViewBuilder
-//    private func Header() -> some View {
-//        VStack(alignment: .leading, spacing: 8) {
-//            Text("오늘의 식단을 기록해 주세요")
-//                .typographyStyle(.heading2, with: .neutral950)
-//            Text("식단을 기록하면 트레이너가 피드백을 남길 수 있어요")
-//                .typographyStyle(.body2Medium, with: .neutral500)
-//        }
-//        .padding(20)
-//    }
+    //    @ViewBuilder
+    //    private func Header() -> some View {
+    //        VStack(alignment: .leading, spacing: 8) {
+    //            Text("오늘의 식단을 기록해 주세요")
+    //                .typographyStyle(.heading2, with: .neutral950)
+    //            Text("식단을 기록하면 트레이너가 피드백을 남길 수 있어요")
+    //                .typographyStyle(.body2Medium, with: .neutral500)
+    //        }
+    //        .padding(20)
+    //    }
     
     @ViewBuilder
     private func DietPhotoSection() -> some View {
@@ -140,28 +140,30 @@ public struct TraineeAddDietRecordView: View {
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                     .clipShape(.rect(cornerRadius: 20))
                     .overlay(alignment: .topTrailing) {
-                        ZStack {
-                            Circle()
-                                .fill(Color.common100.opacity(0.5))
-                                .frame(width: 24, height: 24)
-                            Image(.icnDelete)
-                                .renderingMode(.template)
-                                .resizable()
-                                .tint(.common0)
-                                .frame(width: 12, height: 12)
+                        Button(action: { send(.tapPhotoPickerDeleteButton)}) {
+                            ZStack {
+                                Circle()
+                                    .fill(Color.common100.opacity(0.5))
+                                    .frame(width: 24, height: 24)
+                                Image(.icnDelete)
+                                    .renderingMode(.template)
+                                    .resizable()
+                                    .tint(.common0)
+                                    .frame(width: 12, height: 12)
+                            }
+                            .padding(8)
                         }
-                        .padding(8)
                     }
             } else {
                 ZStack {
                     RoundedRectangle(cornerRadius: 8)
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
                         .aspectRatio(1, contentMode: .fit)
-                        
+                    
                     VStack(spacing: 8) {
                         Image(.icnImage)
-                        .resizable()
-                        .frame(width: 48, height: 48)
+                            .resizable()
+                            .frame(width: 48, height: 48)
                         
                         Text("오늘 먹은 식단을 추가해보세요")
                             .typographyStyle(.body2Medium, with: .neutral400)
@@ -169,10 +171,10 @@ public struct TraineeAddDietRecordView: View {
                 }
             }
         }
-        .background(Color.clear)
+        .tint(Color.neutral100)
         .padding(20)
     }
-
+    
     @ViewBuilder
     private func DietDateSection() -> some View {
         TTextField(
@@ -272,7 +274,7 @@ public struct TraineeAddDietRecordView: View {
         if let popUp = store.view_popUp {
             let buttons: [TPopupAlertState.ButtonState] = [
                 popUp.secondaryAction.map { action in
-                    .init(title: "종료", style: .secondary, action: .init(action: { send(action) }))
+                        .init(title: "종료", style: .secondary, action: .init(action: { send(action) }))
                 },
                 .init(title: popUp.primaryTitle, style: .primary, action: .init(action: { send(popUp.primaryAction) }))
             ].compactMap { $0 }
