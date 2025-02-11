@@ -9,7 +9,7 @@
 import Foundation
 
 /// 트레이너와 트레이니가 연결된 정보
-public struct ConnectionInfoEntity {
+public struct ConnectionInfoEntity: Equatable, Sendable {
     /// 트레이너 이름
     public let trainerName: String
     /// 트레이니 이름

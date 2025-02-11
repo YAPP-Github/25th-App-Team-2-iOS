@@ -26,12 +26,32 @@ private enum TraineeUseCaseKey: DependencyKey {
     )
 }
 
+private enum TraineeRepoUseCaseKey: DependencyKey {
+    static let liveValue: TraineeRepository = DefaultTraineeUseCase(
+        trainerRepository: TrainerRepositoryImpl(),
+        traineeRepository: TraineeRepositoryImpl()
+    )
+}
+
 private enum SocialUseCaseKey: DependencyKey {
     static let liveValue: SocialLoginUseCase = SocialLoginUseCase(socialLoginRepository: SocialLogInRepositoryImpl(loginManager: SNSLoginManager()))
 }
 
+private enum TrainerUseCaseRepoKey: DependencyKey {
+    static let liveValue: TrainerRepository = DefaultTrainerUseCase(trainerRepository: TrainerRepositoryImpl())
+}
+
+private enum KeyChainManagerKey: DependencyKey {
+    static let liveValue: KeyChainManager = keyChainManager
+}
+
 // MARK: - DependencyValues
 public extension DependencyValues {
+    var keyChainManager: KeyChainManager {
+        get { self[KeyChainManagerKey.self] }
+        set { self[KeyChainManagerKey.self] = newValue }
+    }
+    
     var userUseCase: UserUseCase {
         get { self[UserUseCaseKey.self] }
         set { self[UserUseCaseKey.self] = newValue }
@@ -47,8 +67,18 @@ public extension DependencyValues {
         set { self[TraineeUseCaseKey.self] = newValue }
     }
     
+    var traineeRepoUseCase: TraineeRepository {
+        get { self[TraineeRepoUseCaseKey.self] }
+        set { self[TraineeRepoUseCaseKey.self] = newValue }
+    }
+    
     var socialLogInUseCase: SocialLoginUseCase {
         get { self[SocialUseCaseKey.self] }
         set { self[SocialUseCaseKey.self] = newValue }
+    }
+    
+    var trainerRepoUseCase: TrainerRepository {
+        get { self[TrainerUseCaseRepoKey.self] }
+        set { self[TrainerUseCaseRepoKey.self] = newValue }
     }
 }

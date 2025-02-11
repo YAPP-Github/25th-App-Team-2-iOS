@@ -25,35 +25,25 @@ public struct UserTypeSelectionView: View {
     }
     
     public var body: some View {
-        NavigationStack {
-            VStack(spacing: 0) {
-                VStack(spacing: 48) {
-                    Header()
-                    
-                    ImageSection()
-                    
-                    ButtonSection()
-                }
-                .padding(.top, 60)
+        VStack(spacing: 0) {
+            VStack(spacing: 48) {
+                Header()
                 
-                Spacer()
+                ImageSection()
+                
+                ButtonSection()
             }
-            .safeAreaInset(edge: .bottom) {
-                TBottomButton(
-                    title: "다음",
-                    isEnable: true
-                ) {
-                    send(.tapNextButton)
-                }
-            }
-            .ignoresSafeArea(.container, edges: .bottom)
-            .navigationDestination(
-                isPresented: $store.view_isNavigating
+            .padding(.top, 60)
+            
+            Spacer()
+        }
+        .navigationBarBackButtonHidden()
+        .safeAreaInset(edge: .bottom) {
+            TBottomButton(
+                title: "다음",
+                isEnable: true
             ) {
-                CreateProfileView(
-                    store: .init(initialState: CreateProfileFeature.State(userType: .trainee)) {
-                        CreateProfileFeature()
-                    })
+                send(.tapNextButton)
             }
         }
     }

@@ -17,6 +17,8 @@ public struct TrainerMypageFeature {
     
     @ObservableState
     public struct State: Equatable {
+        /// 3일 동안 보지 않기 시작 날짜
+        @Shared(.appStorage(AppStorage.hideHomePopupUntil)) var hidePopupUntil: Date?
         /// 사용자 이름
         var userName: String
         /// 사용자 이미지 URL
@@ -56,12 +58,22 @@ public struct TrainerMypageFeature {
     }
     
     @Dependency(\.userUseCase) private var userUseCase: UserUseCase
+    @Dependency(\.userUseRepoCase) private var userUseRepoCase: UserRepository
+    @Dependency(\.keyChainManager) private var keyChainManager
     
     public enum Action: Sendable, ViewAction {
         /// 뷰에서 발생한 액션을 처리합니다.
         case view(View)
+        /// API 콜 액션 처리
+        case api(APIAction)
+        /// 푸시 알람 허용 여부 설정
+        case setAppPushNotificationAllowed(Bool)
+        /// 푸시 알람 허용 시스템 화면 이동
+        case sendAppPushNotificationSetting
+        /// 팝업 세팅 처리
+        case setPopUpStatus(PopUp?)
         /// 네비게이션 여부 설정
-        case setNavigating
+        case setNavigating(RoutingScreen)
         
         @CasePathable
         public enum View: Sendable, BindableAction {
@@ -81,6 +93,16 @@ public struct TrainerMypageFeature {
             case tapPupUpSecondaryButton(popUp: PopUp?)
             /// 팝옵 오른쪽 탭
             case tapPopUpPrimaryButton(popUp: PopUp?)
+            /// 표시될 때
+            case onAppear
+        }
+        
+        @CasePathable
+        public enum APIAction: Sendable {
+            /// 로그아웃 API
+            case logout
+            /// 회원 탈퇴 API
+            case withdraw
         }
     }
     
@@ -94,70 +116,117 @@ public struct TrainerMypageFeature {
             case .view(let action):
                 switch action {
                 case .binding(\.appPushNotificationAllowed):
-                    print("푸쉬알림 변경: \(state.appPushNotificationAllowed)")
-                    return .none
+                    return self.getAppPushNotificationAllowed(state: &state, tryToggle: true)
+                    
                 case .binding:
                     return .none
                                         
                 case .tapTOSButton:
-                    print("tapTOSButton")
+                    if let url = URL(string: AppLinks.termsOfService) {
+                        UIApplication.shared.open(url)
+                    }
                     return .none
                     
                 case .tapPrivacyPolicyButton:
-                    print("tapPrivacyPolicyButton")
+                    if let url = URL(string: AppLinks.privacyPolicy) {
+                        UIApplication.shared.open(url)
+                    }
                     return .none
                     
                 case .tapOpenSourceLicenseButton:
-                    print("tapOpenSourceLicenseButton")
+                    if let url = URL(string: AppLinks.openSourceLicense) {
+                        UIApplication.shared.open(url)
+                    }
                     return .none
                     
                 case .tapLogoutButton:
-                    print("tapLogoutButton")
-                    state.view_isPopUpPresented = true
-                    state.view_popUp = .logout
-                    return .none
+                    return .send(.setPopUpStatus(.logout))
                     
                 case .tapWithdrawButton:
-                    state.view_isPopUpPresented = true
-                    state.view_popUp = .withdraw
-                    print("tapWithdrawButton")
-                    return .none
+                    return .send(.setPopUpStatus(.withdraw))
                     
                 case .tapPupUpSecondaryButton(let popUp):
-                    guard let popUp = popUp else { return .none }
-                    switch popUp {
-                    case .logout, .withdraw, .logoutCompleted, .withdrawCompleted:
-                        state.view_popUp = nil
-                        state.view_isPopUpPresented = false
-                    }
-                    return .none
+                    guard popUp != nil else { return .none }
+                    return .send(.setPopUpStatus(nil))
                     
                 case .tapPopUpPrimaryButton(let popUp):
-                    guard let popUp = popUp else { return .none }
+                    guard let popUp else { return .none }
                     switch popUp {
                     case .logout:
-                        state.view_isPopUpPresented = false
-                        state.view_popUp = .logoutCompleted
-                        state.view_isPopUpPresented = true
-                    
-                    case .logoutCompleted:
-                        state.view_isPopUpPresented = false
-                    
-                    case .withdraw:
-                        state.view_isPopUpPresented = false
-                        state.view_popUp = .withdrawCompleted
-                        state.view_isPopUpPresented = true
+                        return .send(.api(.logout))
                         
-                    case .withdrawCompleted:
-                        state.view_isPopUpPresented = false
+                    case .withdraw:
+                        return .send(.api(.withdraw))
+                        
+                    case .logoutCompleted, .withdrawCompleted:
+                        state.$hidePopupUntil.withLock { $0 = nil }
+                        return .concatenate(
+                            .send(.setPopUpStatus(nil)),
+                            .send(.setNavigating(.onboardingLogin))
+                        )
                     }
-                    return .none
+                    
+                case .onAppear:
+                    return self.getAppPushNotificationAllowed(state: &state, tryToggle: false)
                 }
+                
+            case .api(let action):
+                switch action {
+                case .logout:
+                    return .run { send in
+                        let result = try await userUseRepoCase.postLogout()
+                        try keyChainManager.delete(.sessionId)
+                        await send(.setPopUpStatus(.logoutCompleted))
+                    }
+                case .withdraw:
+                    return .run { send in
+                        let result = try await userUseRepoCase.postWithdrawal()
+                        try keyChainManager.delete(.sessionId)
+                        await send(.setPopUpStatus(.withdrawCompleted))
+                    }
+                }
+                
+            case .setPopUpStatus(let popUp):
+                state.view_popUp = popUp
+                state.view_isPopUpPresented = popUp != nil
+                return .none
+                
+            case .setAppPushNotificationAllowed(let isAllowed):
+                state.appPushNotificationAllowed = isAllowed
+                return .none
+                
+            case .sendAppPushNotificationSetting:
+                if let url = URL(string: UIApplication.openSettingsURLString) {
+                    UIApplication.shared.open(url)
+                }
+                return .none
 
             case .setNavigating:
                 return .none
             }
         }
+    }
+}
+
+extension TrainerMypageFeature {
+    func getAppPushNotificationAllowed(state: inout State, tryToggle: Bool) -> Effect<Action> {
+        return .run { send in
+            let settings = await UNUserNotificationCenter.current().notificationSettings()
+            let isAllowed = (settings.authorizationStatus == .authorized)
+            if tryToggle {
+                await send(.sendAppPushNotificationSetting)
+            } else {
+                await send(.setAppPushNotificationAllowed(isAllowed))
+            }
+        }
+    }
+}
+
+extension TrainerMypageFeature {
+    /// 본 화면에서 라우팅(파생)되는 화면
+    public enum RoutingScreen: Sendable {
+        /// 초기 로그인 페이지
+        case onboardingLogin
     }
 }
 

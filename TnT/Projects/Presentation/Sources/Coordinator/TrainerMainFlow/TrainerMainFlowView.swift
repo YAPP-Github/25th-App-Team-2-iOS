@@ -25,19 +25,21 @@ public struct TrainerMainFlowView: View {
             switch store.case {
                 // MARK: MainTab
             case .mainTab(let store):
-                TraineeMainTabView(store: store)
+                TrainerMainTabView(store: store)
+            case .addPTSession(let store):
+                TrainerAddPTSessionView(store: store)
                 
                 // MARK: Home
             case .alarmCheck(let store):
                 AlarmCheckView(store: store)
+            case .connectionComplete(let store):
+                ConnectionCompleteView(store: store)
+            case .connectedTraineeProfile(let store):
+                ConnectedTraineeProfileView(store: store)
                 
                 // MARK: MyPage
-            case .traineeInvitationCodeInput(let store):
-                TraineeInvitationCodeInputView(store: store)
-            case .traineeTrainingInfoInput(let store):
-                TraineeTrainingInfoInputView(store: store)
-            case .traineeConnectionComplete(let store):
-                TraineeConnectionCompleteView(store: store)
+            case .trainerMakeInvitationCodePage(let store):
+                MakeInvitationCodeView(store: store)
             }
         }
     }

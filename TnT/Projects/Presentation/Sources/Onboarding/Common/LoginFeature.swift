@@ -25,20 +25,15 @@ public struct LoginFeature {
         public var postUserEntity: PostSocailEntity?
         public var termState: Bool = false
         public var fcmToken: String?
+        @Shared var signUpEntity: PostSignUpEntity
+        public var postUserEntity: PostSocialEntity?
+        @Presents var termFeature: TermFeature.State?
         
         public init(
-            userType: UserType? = nil,
-            nickname: String? = nil,
-            socialType: LoginType? = nil,
-            termAgree: Bool = false,
-            socialEmail: String? = nil,
-            postUserEntity: PostSocailEntity? = nil
+            signUpEntity: Shared<PostSignUpEntity>,
+            postUserEntity: PostSocialEntity? = nil
         ) {
-            self.userType = userType
-            self.nickname = nickname
-            self.socialType = socialType
-            self.termAgree = termAgree
-            self.socialEmail = socialEmail
+            self._signUpEntity = signUpEntity
             self.postUserEntity = postUserEntity
         }
     }
@@ -46,22 +41,37 @@ public struct LoginFeature {
     @Dependency(\.userUseCase) private var userUseCase: UserUseCase
     @Dependency(\.userUseRepoCase) private var userUseCaseRepo: UserRepository
     @Dependency(\.socialLogInUseCase) private var socialLoginUseCase: SocialLoginUseCase
+    @Dependency(\.keyChainManager) var keyChainManager
     
     public enum Action: ViewAction,  BindableAction {
         /// 바인딩할 액션을 처리
         case binding(BindingAction<State>)
         /// 뷰에서 일어나는 액션을 처리합니다.(카카오,애플로그인 실행)
         case view(View)
+        /// 하위 화면에서 일어나는 액션을 처리합니다
+        case subFeature(SubFeatureAction)
         /// 네비게이션 여부 설정
         case setNavigating(RoutingScreen)
         /// 소셜 로그인 post 요청
-        case postSocialLogin(entity: PostSocailEntity)
+        case postSocialLogin(entity: PostSocialEntity)
+        /// 소셜 로그인 실패
+        case socialLoginFail
+        /// signUpEntity를 소셜로그인 정보로 업데이트
+        case updateSignUpEntityWithSocialInfo(res: PostSocialLoginResDTO)
+        /// 약관 동의 화면 표시
+        case showTermView
         
         @CasePathable
         public enum View: Equatable {
             case tappedAppleLogin
             case tappedKakaoLogin
             case goTerm
+        }
+        
+        @CasePathable
+        public enum SubFeatureAction: Equatable {
+            /// 역관 동의 화면에서 발생하는 액션 처리
+            case termAction(PresentationAction<TermFeature.Action>)
         }
     }
     
@@ -111,12 +121,26 @@ public struct LoginFeature {
                     return .send(.setNavigating(.term))
                 }
                 
-            case .postSocialLogin(let entity):
-                let post: PostSocialLoginReqDTO = PostSocialMapper.toDTO(from: entity)
+            case .subFeature(.termAction(.presented(.setNavigating))):
+                state.termFeature = nil
+                state.$signUpEntity.withLock { $0.collectionAgreement = true }
+                state.$signUpEntity.withLock { $0.serviceAgreement = true }
+                state.$signUpEntity.withLock { $0.advertisementAgreement = true }
+                return .send(.setNavigating(.userTypeSelection))
+            
+            case .subFeature(.termAction(.dismiss)):
+                state.termFeature = nil
+                return .none
                 
+            case .subFeature:
+                return .none
+                
+            case .postSocialLogin(let entity):
+                let post = entity.toDTO()
                 return .run { send in
                     do {
-                        let result: PostSocialLoginResDTO = try await userUseCaseRepo.postSocialLogin(post)
+                        let result = try await userUseCaseRepo.postSocialLogin(post)
+                        saveSessionId(result.sessionId)
                         
                         switch result.memberType {
                         case .trainer:
@@ -124,7 +148,9 @@ public struct LoginFeature {
                         case .trainee:
                             await send(.setNavigating(.traineeHome))
                         case .unregistered:
-                            await send(.view(.goTerm))
+                            await send(.updateSignUpEntityWithSocialInfo(res: result))
+                        case .unknown:
+                            print("unknown 타입이에요 토스트해줏요")
                         }
                     } catch {
                         await send(.view(.goTerm))
@@ -134,9 +160,34 @@ public struct LoginFeature {
             case .setNavigating:
                 return .none
                 
-            case .binding:
+            case .updateSignUpEntityWithSocialInfo(let res):
+                guard let socialType = SocialType(rawValue: res.socialType ?? "") else { return .none }
+                state.$signUpEntity.withLock { $0.socialId = res.socialId }
+                state.$signUpEntity.withLock { $0.socialEmail = res.socialEmail }
+                state.$signUpEntity.withLock { $0.socialType = socialType }
+                return .send(.showTermView)
+                
+            case .showTermView:
+                state.termFeature = .init()
+                return .none
+                
+            case .setNavigating:
                 return .none
             }
+        }
+        .ifLet(\.termFeature, action: \.subFeature.termAction.presented) {
+            TermFeature()
+        }
+    }
+}
+
+extension LoginFeature {
+    private func saveSessionId(_ sessionId: String?) {
+        guard let sessionId else { return }
+        do {
+            try keyChainManager.save(sessionId, for: .sessionId)
+        } catch {
+            print("로그인 정보 저장 싪패")
         }
     }
 }
@@ -146,6 +197,6 @@ extension LoginFeature {
     public enum RoutingScreen {
         case traineeHome
         case trainerHome
-        case term
+        case userTypeSelection
     }
 }

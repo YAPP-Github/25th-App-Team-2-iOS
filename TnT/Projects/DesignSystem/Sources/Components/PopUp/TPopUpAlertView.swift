@@ -61,7 +61,7 @@ public extension TPopUpAlertView {
         let style: TPopupAlertState.ButtonState.Style
         let action: () -> Void
         
-        init(
+        public init(
             title: String,
             style: TPopupAlertState.ButtonState.Style,
             action: @escaping () -> Void

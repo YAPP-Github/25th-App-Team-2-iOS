@@ -25,13 +25,17 @@ public struct TraineeMainFlowFeature {
     public enum Action: Sendable {
         /// 현재 표시되고 있는 path 화면 내부에서 일어나는 액션을 처리합니다.
         case path(StackActionOf<Path>)
+        /// Flow 변경을 AppCoordinator로 전달합니다
+        case switchFlow(AppFlow)
         case onAppear
     }
     
     public init() {}
     
     public var body: some ReducerOf<Self> {
-        Reduce { state, action in
+        Reduce {
+            state,
+            action in
             switch action {
             case let .path(action):
                 switch action {
@@ -53,6 +57,9 @@ public struct TraineeMainFlowFeature {
                             return .none
                         case .addMealRecordPage:
                             return .none
+                        case .traineeInvitationCodeInput:
+                            state.path.append(.traineeInvitationCodeInput(.init(view_navigationType: .existingUser)))
+                            return .none
                         }
                         /// 트레이니 마이페이지
                     case .traineeMyPage(let screen):
@@ -62,8 +69,12 @@ public struct TraineeMainFlowFeature {
                             
                             /// 마이페이지 초대코드 입력하기 버튼 탭-> 초대코드 입력 화면 이동
                         case .traineeInvitationCodeInput:
-                            state.path.append(.traineeInvitationCodeInput(.init()))
+                            state.path.append(.traineeInvitationCodeInput(.init(view_navigationType: .existingUser)))
                             return .none
+                            
+                            /// 마이페이지 로그아웃/회원탈퇴 -> 온보딩 로그인 화면 이동
+                        case .onboardingLogin:
+                            return .send(.switchFlow(.onboardingFlow))
                         }
                     }
                     
@@ -71,20 +82,38 @@ public struct TraineeMainFlowFeature {
                 case .element(_, action: .alarmCheck(.setNavigating)):
                     // 특정 화면 append
                     return .none
-
-                    /// 마이페이지 초대코드 입력화면 다음 버튼 탭 - > PT 정보 입력 화면 이동
-                case .element(_, action: .traineeInvitationCodeInput(.setNavigating)):
-                    state.path.append(.traineeTrainingInfoInput(.init()))
+                    
+                    /// 마이페이지 초대코드 입력화면 다음 버튼 탭 - > PT 정보 입력 화면 or 홈 이동
+                case .element(_, action: .traineeInvitationCodeInput(.setNavigating(let screen))):
+                    switch screen {
+                    case .traineeHome:
+                        state.path.removeLast()
+                    case let .trainingInfoInput(trainerName, invitationCode):
+                        state.path.append(.traineeTrainingInfoInput(.init(trainerName: trainerName, invitationCode: invitationCode)))
+                    }
                     return .none
                     
                     /// PT 정보 입력 화면 다음 버튼 탭 -> 연결 완료 화면 이동
-                case .element(_, action: .traineeTrainingInfoInput(.setNavigating)):
-                    state.path.append(.traineeConnectionComplete(.init(userType: .trainee, traineeName: "여기에", trainerName: "데이터 연결")))
+                case let .element(id: _, action: .traineeTrainingInfoInput(.setNavigating(.connectionComplete(trainerName, traineeName, trainerImageUrl, traineeImageUrl)))):
+                    state.path.append(
+                        .traineeConnectionComplete(
+                            .init(
+                                userType: .trainee,
+                                traineeName: traineeName,
+                                traineeImageURL: traineeImageUrl,
+                                trainerName: trainerName,
+                                trainerImageURL: trainerImageUrl
+                            )
+                        )
+                    )
                     return .none
                     
                 default:
                     return .none
                 }
+                
+            case .switchFlow:
+                return .none
                 
             case .onAppear:
                 return .none
@@ -112,7 +141,6 @@ extension TraineeMainFlowFeature {
         /// 트레이니 수업 정보 입력
         case traineeTrainingInfoInput(TraineeTrainingInfoInputFeature)
         /// 트레이니-트레이너 연결 완료
-        /// TODO: 트레이너/트레이니 연결 완료 화면으로 통합 필요
         case traineeConnectionComplete(TraineeConnectionCompleteFeature)
     }
 }

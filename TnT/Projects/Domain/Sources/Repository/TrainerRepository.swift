@@ -25,4 +25,10 @@ public protocol TrainerRepository {
     
     /// 트레이너 캘린더에 특정 날짜의 수업 정보 가져오기
     func getDateSessionList(date: String) async throws -> GetDateSessionListDTO
+    
+    /// 회원 조희
+    func getMembersList() async throws -> GetMembersListDTO
+    
+    /// 연결 완료된 트레이니 정보 불러오기
+    func getConnectedTraineeInfo(trainerId: Int, traineeId: Int) async throws -> GetConnectedTraineeInfoResponseDTO
 }

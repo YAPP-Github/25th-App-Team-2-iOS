@@ -21,6 +21,8 @@ public struct TraineeInvitationCodeInputFeature {
         // MARK: Data related state
         /// 입력된 초대코드
         var invitationCode: String
+        /// 트레이너 이름
+        var trainerName: String?
         
         // MARK: UI related state
         /// 텍스트 필드 상태 (빈 값 / 입력됨 / 유효하지 않음)
@@ -44,6 +46,7 @@ public struct TraineeInvitationCodeInputFeature {
         /// `TraineeInvitationCodeInputFeature.State`의 생성자
         /// - Parameters:
         ///   - invitationCode: 사용자가 입력한 초대 코드 (기본값: `""`)
+        ///   - trainerName: 초대코드에 연결된 트레이너 이름 (기본값: `nil`)
         ///   - view_invitationCodeStatus: 텍스트 필드 상태 (`.empty`, `.valid`, `.invalid` 등)
         ///   - view_textFieldFooterText: 텍스트 필드 하단에 표시될 메시지 (기본값: `""`)
         ///   - view_isFieldFocused: 현재 텍스트 필드가 포커스를 받고 있는지 여부 (기본값: `false`)
@@ -54,6 +57,7 @@ public struct TraineeInvitationCodeInputFeature {
         ///   - view_navigationType: 현재 화면의 네비게이션 타입 (`.newUser`: "건너뛰기" 버튼 있음, `.existingUser`: "뒤로가기" 버튼 있음)
         public init(
             invitationCode: String = "",
+            trainerName: String? = nil,
             view_invitationCodeStatus: TTextField.Status = .empty,
             view_textFieldFooterText: String = "",
             view_isFieldFocused: Bool = false,
@@ -64,6 +68,7 @@ public struct TraineeInvitationCodeInputFeature {
             view_navigationType: NavigationType = .newUser
         ) {
             self.invitationCode = invitationCode
+            self.trainerName = trainerName
             self.view_popUp = view_popUp
             self.view_invitationCodeStatus = view_invitationCodeStatus
             self.view_textFieldFooterText = view_textFieldFooterText
@@ -76,14 +81,19 @@ public struct TraineeInvitationCodeInputFeature {
     }
     
     @Dependency(\.traineeUseCase) private var traineeUseCase: TraineeUseCase
+    @Dependency(\.trainerRepoUseCase) private var trainerRepoUseCase
     
     public enum Action: Sendable, ViewAction {
         /// 뷰에서 발생한 액션을 처리합니다.
         case view(View)
+        /// api 콜 액션 처리
+        case api(APIAction)
         /// 네비게이션 여부 설정
         case setNavigating(RoutingScreen)
         /// 다음 버튼 활성화 상태 조작
         case updateVerificationStatus(Bool)
+        /// 트레이너 이름 설정
+        case setTrainerName(String)
         
         @CasePathable
         public enum View: Sendable, BindableAction {
@@ -105,6 +115,12 @@ public struct TraineeInvitationCodeInputFeature {
             /// 팝업 우측 primary 버튼 탭
             case tapPopUpPrimaryButton(popUp: PopUp?)
         }
+        
+        @CasePathable
+        public enum APIAction: Sendable {
+            /// 초대 코드 인증하기 API
+            case verifyInvitationCode(code: String)
+        }
     }
     
     public init() {}
@@ -123,13 +139,14 @@ public struct TraineeInvitationCodeInputFeature {
                     return .none
                     
                 case .tapVerifyButton:
-                    return .run { [state] send in
-                        let result: Bool = try await traineeUseCase.verifyTrainerInvitationCode(state.invitationCode)
-                        await send(.updateVerificationStatus(result))
-                    }
+                    return .concatenate(
+                        .send(.view(.setFocus(false))),
+                        .send(.api(.verifyInvitationCode(code: state.invitationCode)))
+                    )
                     
                 case .tapNextButton:
-                    return .send(.setNavigating(.trainingInfoInput))
+                    guard let trainerName = state.trainerName else { return .none }
+                    return .send(.setNavigating(.trainingInfoInput(trainerName: trainerName, invitationCode: state.invitationCode)))
                     
                 case .setFocus(let isFocused):
                     state.view_isFieldFocused = isFocused
@@ -148,10 +165,27 @@ public struct TraineeInvitationCodeInputFeature {
                     return self.setPopUpStatus(&state, status: nil)
                 }
                 
+            case .api(let action):
+                switch action {
+                case .verifyInvitationCode(let code):
+                    return .run { send in
+                        if let result = try? await trainerRepoUseCase.getVerifyInvitationCode(code: code), let trainerName = result.trainerName {
+                            await send(.updateVerificationStatus(result.isVerified))
+                            await send(.setTrainerName(trainerName))
+                        } else {
+                            await send(.updateVerificationStatus(false))
+                        }
+                    }
+                }
+                
             case .updateVerificationStatus(let isVerified):
                 state.view_textFieldFooterText = isVerified ? "인증에 성공했습니다" : "인증에 실패했습니다"
                 state.view_invitationCodeStatus = isVerified ? .valid : .invalid
                 state.view_isNextButtonEnabled = isVerified
+                return .none
+                
+            case .setTrainerName(let name):
+                state.trainerName = name
                 return .none
                 
             case .setNavigating:
@@ -197,7 +231,7 @@ public extension TraineeInvitationCodeInputFeature {
     /// 본 화면에서 라우팅(파생)되는 화면
     enum RoutingScreen: Sendable {
         case traineeHome
-        case trainingInfoInput
+        case trainingInfoInput(trainerName: String, invitationCode: String)
     }
     
     /// 본 화면의 네비게이션 타입

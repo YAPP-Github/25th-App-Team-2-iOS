@@ -43,6 +43,7 @@ public struct CreateProfileView: View {
             
             Spacer()
         }
+        .navigationBarBackButtonHidden()
         .keyboardDismissOnTap()
         .safeAreaInset(edge: .bottom) {
             TBottomButton(

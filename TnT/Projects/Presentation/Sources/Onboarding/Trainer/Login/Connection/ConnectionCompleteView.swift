@@ -10,6 +10,7 @@ import SwiftUI
 import ComposableArchitecture
 
 import DesignSystem
+import Domain
 
 @ViewAction(for: ConnectionCompleteFeature.self)
 public struct ConnectionCompleteView: View {
@@ -28,18 +29,22 @@ public struct ConnectionCompleteView: View {
                     .ignoresSafeArea()
                     .scaledToFill()
                 
-                VStack {
+                VStack(spacing: 0) {
                     Spacer()
                     
                     Header()
-                    
-                    Spacer()
+                        .padding(.bottom, 35)
                     
                     Image(.imgBoom)
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 320, height: 320)
+                    
                     TBottomButton(title: "다음", isEnable: true) {
                         send(.tappedNextButton)
                     }
                     .padding(.bottom, 40)
+                    .ignoresSafeArea(.all, edges: .bottom)
                 }
             }
             .navigationBarBackButtonHidden()
@@ -48,29 +53,80 @@ public struct ConnectionCompleteView: View {
     
     @ViewBuilder
     private func Header() -> some View {
-        Text("김회원 트레이니와\n연결되었어요!")
-            .typographyStyle(.heading1, with: .common0)
-            .multilineTextAlignment(.center)
-        
-        HStack(spacing: 16) {
-            userProfileView(imgae: .imgOnboardingTrainee, name: "김회원")
-            userProfileView(imgae: .imgOnboardingTrainer, name: "김피티")
+        VStack(spacing: 40) {
+            Text("\(store.traineeProfile?.traineeName ?? "") 트레이니와\n연결되었어요!")
+                .typographyStyle(.heading1, with: .common0)
+                .multilineTextAlignment(.center)
+            
+            HStack(spacing: 16) {
+                Spacer()
+                UserProfileView(
+                    imageURL: store.connectionInfo?.traineeProfileImageUrl,
+                    userType: .trainee,
+                    name: store.connectionInfo?.traineeName ?? ""
+                )
+                UserProfileView(
+                    imageURL: store.connectionInfo?.trainerProfileImageUrl,
+                    userType: .trainer,
+                    name: store.connectionInfo?.trainerName ?? ""
+                )
+                Spacer()
+            }
         }
     }
-    
-    @ViewBuilder
-    private func userProfileView(imgae: ImageResource, name: String) -> some View {
-        VStack(spacing: 12) {
-            Image(imgae)
-                .resizable()
-                .frame(width: 100, height: 100)
-                .scaledToFill()
-                .clipShape(Circle())
-            
-            Text(name)
-                .typographyStyle(.body2Medium, with: .neutral300)
-                .frame(maxWidth: .infinity)
+}
+
+private extension ConnectionCompleteView {
+    struct UserProfileView: View {
+        let imageURL: URL?
+        let userType: UserType
+        let name: String
+        
+        var defaultImage: ImageResource {
+            self.userType == .trainee ? .imgDefaultTraineeImage : .imgDefaultTrainerImage
         }
-        .frame(width: 100)
+        
+        var body: some View {
+            VStack(spacing: 12) {
+                if let url = imageURL {
+                    AsyncImage(url: url) { phase in
+                        switch phase {
+                        case .empty:
+                            ProgressView()
+                                .tint(.red500)
+                                .frame(width: 100, height: 100)
+                            
+                        case .success(let image):
+                            image
+                                .resizable()
+                                .frame(width: 100, height: 100)
+                                .scaledToFill()
+                                .clipShape(Circle())
+                            
+                        case .failure:
+                            Image(defaultImage)
+                                .resizable()
+                                .frame(width: 100, height: 100)
+                                .scaledToFill()
+                                .clipShape(Circle())
+                            
+                        @unknown default:
+                            EmptyView()
+                        }
+                    }
+                } else {
+                    Image(defaultImage)
+                        .resizable()
+                        .frame(width: 100, height: 100)
+                        .scaledToFill()
+                        .clipShape(Circle())
+                }
+                
+                Text(name)
+                    .typographyStyle(.body2Medium, with: .neutral300)
+                    .frame(maxWidth: .infinity)
+            }
+            .frame(width: 100)
+        }
     }
 }

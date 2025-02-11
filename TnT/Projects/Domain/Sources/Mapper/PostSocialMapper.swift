@@ -8,26 +8,51 @@
 
 import Foundation
 
-public struct PostSocialMapper {
-    public static func toDTO(from entity: PostSocailEntity) -> PostSocialLoginReqDTO {
-        return PostSocialLoginReqDTO(
-            socialType: entity.socialType,
-            fcmToken: entity.fcmToken,
-            socialAccessToken: entity.socialAccessToken,
-            authorizationCode: entity.authorizationCode,
-            idToken: entity.idToken
+public extension PostSocialEntity {
+    func toDTO() -> PostSocialLoginReqDTO {
+        return .init(
+            socialType: self.socialType.rawValue,
+            fcmToken: self.fcmToken,
+            socialAccessToken: self.socialAccessToken,
+            idToken: self.idToken
         )
     }
-    
-    public static func toEntity(from dto: PostSocialLoginReqDTO) -> PostSocailEntity {
-        return PostSocailEntity(
-            socialType: dto.socialType,
-            fcmToken: dto.fcmToken,
-            socialAccessToken: dto.socialAccessToken,
-            authorizationCode: dto.authorizationCode,
-            idToken: dto.idToken
+}
+
+public extension PostSocialLoginResDTO {
+    func toEntity() -> PostSocialLoginResEntity {
+        return .init(
+            sessionId: self.sessionId,
+            socialId: self.socialId,
+            socialEmail: self.socialEmail,
+            socialType: self.socialType,
+            isSignUp: self.isSignUp
         )
     }
+}
+
+public extension PostSignUpEntity {
+    func toDTO() -> PostSignUpReqDTO? {
+        guard let memberType, let socialType, let socialId, let socialEmail, let name else { return nil }
+        return .init(
+            // TODO: FCM 서버 로직 나오면 수정
+            fcmToken: self.fcmToken ?? "temp",
+            memberType: memberType.englishName,
+            socialType: socialType.rawValue,
+            socialId: socialId,
+            socialEmail: socialEmail,
+            serviceAgreement: self.serviceAgreement,
+            collectionAgreement: self.collectionAgreement,
+            advertisementAgreement: self.advertisementAgreement,
+            name: name,
+            birthday: self.birthday?.replacingOccurrences(of: "/", with: "-"),
+            height: self.height,
+            weight: self.weight,
+            cautionNote: self.cautionNote,
+            goalContents: self.goalContents ?? []
+        )
+    }
+<<<<<<< TNT-158-trainerSignup
     
     /// `PostSocialLoginResDTO` → `PostSocialLoginResEntity` 변환
     public static func toResEntity(from dto: PostSocialLoginResDTO) -> PostSocialLoginResEntity {
@@ -52,4 +77,17 @@ public struct PostSocialMapper {
                 memberType: entity.membertype
             )
         }
+=======
+}
+
+public extension PostSignUpResDTO {
+    func toEntity() -> PostSignUpResEntity {
+        return .init(
+            memberType: self.memberType,
+            sessionId: self.sessionId,
+            name: self.name,
+            profileImageUrl: self.profileImageUrl
+        )
+    }
+>>>>>>> develop
 }

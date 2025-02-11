@@ -18,6 +18,8 @@ public struct TraineeTrainingPurposeFeature {
     @ObservableState
     public struct State: Equatable {
         // MARK: Data related state
+        /// 현재 회원가입 정보
+        @Shared var signUpEntity: PostSignUpEntity
         /// 사용자가 선택한 트레이닝 목적 목록 (다중 선택 가능)
         var selectedPurposes: Set<TrainingPurpose>
         
@@ -27,12 +29,15 @@ public struct TraineeTrainingPurposeFeature {
         
         /// `TraineeTrainingPurposeFeature.State`의 생성자
         /// - Parameters:
+        ///   - signUpEntity: 현재 회원가입 정보 @Shared
         ///   - selectedPurposes: 사용자가 선택한 트레이닝 목적 목록 (기본값: 빈 `Set`)
         ///   - view_isNextButtonEnabled: "다음" 버튼 활성화 여부 (기본값: `false`)
         public init(
+            signUpEntity: Shared<PostSignUpEntity>,
             selectedPurposes: Set<TrainingPurpose> = [],
             view_isNextButtonEnabled: Bool = false
         ) {
+            self._signUpEntity = signUpEntity
             self.selectedPurposes = selectedPurposes
             self.view_isNextButtonEnabled = view_isNextButtonEnabled
         }
@@ -74,6 +79,10 @@ public struct TraineeTrainingPurposeFeature {
                     return self.validate(&state)
                     
                 case .tapNextButton:
+                    let purposes = state.selectedPurposes.map {
+                        $0.koreanName
+                    }
+                    state.$signUpEntity.withLock { $0.goalContents = purposes }
                     return .send(.setNavigating)
                 }
 

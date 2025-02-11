@@ -24,10 +24,13 @@ struct ToyProjectApp: App {
 
     var body: some Scene {
         WindowGroup {
-            LoginView(store: Store(initialState: LoginFeature.State(), reducer: {
-                LoginFeature()
-            }))
-            .onOpenURL(perform: { url in
+            AppFlowCoordinatorView(
+                store: .init(
+                    initialState: AppFlowCoordinatorFeature.State(),
+                    reducer: { AppFlowCoordinatorFeature()
+                    })
+            )
+             .onOpenURL(perform: { url in
                 if AuthApi.isKakaoTalkLoginUrl(url) {
                     debugPrint(AuthController.handleOpenUrl(url: url))
                 }

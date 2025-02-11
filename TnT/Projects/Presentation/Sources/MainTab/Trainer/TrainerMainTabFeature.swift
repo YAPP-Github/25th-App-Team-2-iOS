@@ -14,7 +14,7 @@ public struct TrainerMainTabFeature {
     @ObservableState
     public enum State: Equatable {
         case home(TrainerHomeFeature.State)
-        case feedback
+//        case feedback
         case traineeList
         case myPage(TrainerMypageFeature.State)
         
@@ -23,12 +23,24 @@ public struct TrainerMainTabFeature {
             switch self {
             case .home:
                 return .home
-            case .feedback:
-                return .feedback
+//            case .feedback:
+//                return .feedback
             case .traineeList:
                 return .traineeList
             case .myPage:
                 return .mypage
+            }
+        }
+        
+        /// 하위 Feature에서 팝업이 활성화되었는지 여부를 전달
+        var isPopupActive: Bool {
+            switch self {
+            case .home(let homeState):
+                return homeState.view_isPopUpPresented
+            case .traineeList:
+                return false
+            case .myPage(let myPageState):
+                return myPageState.view_isPopUpPresented
             }
         }
         
@@ -54,8 +66,8 @@ public struct TrainerMainTabFeature {
         public enum SubFeatureAction: Sendable {
             /// 홈 화면에서 발생하는 액션 처리
             case homeAction(TrainerHomeFeature.Action)
-            /// 피드백 화면에서 발생하는 액션 처리
-            case feedbackAction
+//            /// 피드백 화면에서 발생하는 액션 처리
+//            case feedbackAction
             /// 회원 목록 화면에서 발생하는 액션 처리
             case traineeListAction
             /// 마이페이지 화면에서 발생하는 액션 처리
@@ -75,10 +87,10 @@ public struct TrainerMainTabFeature {
                     case .home:
                         state = .home(.init())
                         return .none
-                    case .feedback:
-                        // TODO: feedback Feature 작성 후 추가해주세요
-                        state = .feedback
-                        return .none
+//                    case .feedback:
+//                        // TODO: feedback Feature 작성 후 추가해주세요
+//                        state = .feedback
+//                        return .none
                     case .traineeList:
                         // TODO: traineeList Feature 작성 후 추가해주세요
                         state = .traineeList
@@ -92,14 +104,24 @@ public struct TrainerMainTabFeature {
             case .subFeature(let internalAction):
                 // TODO: Feature에 RoutingScreen 추가 후 추가해주세요
                 switch internalAction {
+                case .homeAction(.setNavigating(let screen)):
+                    return .send(.setNavigating(.trainerHome(screen)))
+                case .myPageAction(.setNavigating(let screen)):
+                    return .send(.setNavigating(.trainerMyPage(screen)))
                 default:
                     return .none
                 }
-            case .setNavigating(let screen):
+                
+            case .setNavigating:
                 return .none
             }
         }
-        // .ifCaseLet cases in here
+        .ifCaseLet(\.home, action: \.subFeature.homeAction) {
+            TrainerHomeFeature()
+        }
+        .ifCaseLet(\.myPage, action: \.subFeature.myPageAction) {
+            TrainerMypageFeature()
+        }
     }
 }
 
@@ -108,12 +130,12 @@ extension TrainerMainTabFeature {
     // TODO: Feature에 RoutingScreen 추가 후 추가해주세요
     public enum RoutingScreen: Sendable {
         /// 트레이너 홈
-        case trainerHome
-        /// 트레이너 피드백
-        case trainerFeedback
+        case trainerHome(TrainerHomeFeature.RoutingScreen)
+//        /// 트레이너 피드백
+//        case trainerFeedback
         /// 트레이너 회원 목록
         case trainerTraineeList
         /// 트레이너 마이페이지
-        case trainerMyPage
+        case trainerMyPage(TrainerMypageFeature.RoutingScreen)
     }
 }

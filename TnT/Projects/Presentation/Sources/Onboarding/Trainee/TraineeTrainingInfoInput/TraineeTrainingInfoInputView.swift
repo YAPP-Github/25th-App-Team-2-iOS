@@ -35,7 +35,7 @@ public struct TraineeTrainingInfoInputView: View {
                 leftAction: { dismiss() }
             )
             
-            TInfoTitleHeader(title: "\(store.trainerName)트레이너와\n언제부터 함께하셨나요?")
+            TInfoTitleHeader(title: "\(store.trainerName) 트레이너와\n언제부터 함께하셨나요?")
                 .padding(.top, 24)
                 .padding(.bottom, 48)
             

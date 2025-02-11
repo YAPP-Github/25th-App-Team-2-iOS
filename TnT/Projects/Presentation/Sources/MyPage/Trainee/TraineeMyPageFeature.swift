@@ -11,6 +11,8 @@ import ComposableArchitecture
 
 import Domain
 import DesignSystem
+import UserNotifications
+import UIKit
 
 @Reducer
 public struct TraineeMyPageFeature {
@@ -20,6 +22,8 @@ public struct TraineeMyPageFeature {
     @ObservableState
     public struct State: Equatable {
         // MARK: Data related state
+        /// 3일 동안 보지 않기 시작 날짜
+        @Shared(.appStorage(AppStorage.hideHomePopupUntil)) var hidePopupUntil: Date?
         /// 사용자 이름
         var userName: String
         /// 사용자 이미지 URL
@@ -70,10 +74,20 @@ public struct TraineeMyPageFeature {
     }
     
     @Dependency(\.userUseCase) private var userUseCase: UserUseCase
+    @Dependency(\.userUseRepoCase) private var userUseRepoCase: UserRepository
+    @Dependency(\.keyChainManager) private var keyChainManager
     
     public enum Action: Sendable, ViewAction {
         /// 뷰에서 발생한 액션을 처리합니다.
         case view(View)
+        /// API 콜 액션 처리
+        case api(APIAction)
+        /// 푸시 알람 허용 여부 설정
+        case setAppPushNotificationAllowed(Bool)
+        /// 푸시 알람 허용 시스템 화면 이동
+        case sendAppPushNotificationSetting
+        /// 팝업 세팅 처리
+        case setPopUpStatus(PopUp?)
         /// 네비게이션 여부 설정
         case setNavigating(RoutingScreen)
         
@@ -101,6 +115,16 @@ public struct TraineeMyPageFeature {
             case tapPopUpSecondaryButton(popUp: PopUp?)
             /// 팝업 우측 primary 버튼 탭
             case tapPopUpPrimaryButton(popUp: PopUp?)
+            /// 표시될 때
+            case onAppear
+        }
+        
+        @CasePathable
+        public enum APIAction: Sendable {
+            /// 로그아웃 API
+            case logout
+            /// 회원 탈퇴 API
+            case withdraw
         }
     }
     
@@ -114,11 +138,11 @@ public struct TraineeMyPageFeature {
             case .view(let action):
                 switch action {
                 case .binding(\.appPushNotificationAllowed):
-                    print("푸쉬알림 변경: \(state.appPushNotificationAllowed)")
-                    return .none
+                    return self.getAppPushNotificationAllowed(state: &state, tryToggle: true)
                     
                 case .binding:
                     return .none
+                    
                 case .tapEditProfileButton:
                     print("tapEditProfileButton")
                     return .none
@@ -128,41 +152,94 @@ public struct TraineeMyPageFeature {
                     return .none
                     
                 case .tapTOSButton:
-                    print("tapTOSButton")
+                    if let url = URL(string: AppLinks.termsOfService) {
+                        UIApplication.shared.open(url)
+                    }
                     return .none
                     
                 case .tapPrivacyPolicyButton:
-                    print("tapPrivacyPolicyButton")
+                    if let url = URL(string: AppLinks.privacyPolicy) {
+                        UIApplication.shared.open(url)
+                    }
                     return .none
                     
                 case .tapOpenSourceLicenseButton:
-                    print("tapOpenSourceLicenseButton")
+                    if let url = URL(string: AppLinks.openSourceLicense) {
+                        UIApplication.shared.open(url)
+                    }
                     return .none
                     
                 case .tapDisconnectTrainerButton:
-                    return setPopUpStatus(&state, status: .disconnectTrainer(trainerName: state.trainerName))
+                    return .send(.setPopUpStatus(.disconnectTrainer(trainerName: state.trainerName)))
                     
                 case .tapLogoutButton:
-                    return setPopUpStatus(&state, status: .logout)
+                    return .send(.setPopUpStatus(.logout))
                     
                 case .tapWithdrawButton:
-                    return setPopUpStatus(&state, status: .withdraw)
+                    return .send(.setPopUpStatus(.withdraw))
                     
                 case .tapPopUpSecondaryButton(let popUp):
                     guard popUp != nil else { return .none }
-                    return setPopUpStatus(&state, status: nil)
+                    return .send(.setPopUpStatus(nil))
                     
                 case .tapPopUpPrimaryButton(let popUp):
                     guard let popUp else { return .none }
                     switch popUp {
-                    case .disconnectTrainer, .logout, .withdraw:
-                        return setPopUpStatus(&state, status: popUp.nextPopUp)
+                    case .disconnectTrainer:
+                        return .send(.setPopUpStatus(popUp.nextPopUp))
                         
-                    case .disconnectCompleted, .logoutCompleted, .withdrawCompleted:
-                        return setPopUpStatus(&state, status: nil)
+                    case .logout:
+                        return .send(.api(.logout))
+                        
+                    case .withdraw:
+                        return .send(.api(.withdraw))
+                        
+                    case .disconnectCompleted:
+                        return .send(.setPopUpStatus(nil))
+                        
+                    case .logoutCompleted, .withdrawCompleted:
+                        state.$hidePopupUntil.withLock { $0 = nil }
+                        return .concatenate(
+                            .send(.setPopUpStatus(nil)),
+                            .send(.setNavigating(.onboardingLogin))
+                        )
+                    }
+                    
+                case .onAppear:
+                    return self.getAppPushNotificationAllowed(state: &state, tryToggle: false)
+                }
+                
+            case .api(let action):
+                switch action {
+                case .logout:
+                    return .run { send in
+                        let result = try await userUseRepoCase.postLogout()
+                        try keyChainManager.delete(.sessionId)
+                        await send(.setPopUpStatus(.logoutCompleted))
+                    }
+                case .withdraw:
+                    return .run { send in
+                        let result = try await userUseRepoCase.postWithdrawal()
+                        try keyChainManager.delete(.sessionId)
+                        await send(.setPopUpStatus(.withdrawCompleted))
                     }
                 }
-
+                
+            case .setPopUpStatus(let popUp):
+                state.view_popUp = popUp
+                state.view_isPopUpPresented = popUp != nil
+                return .none
+                
+            case .setAppPushNotificationAllowed(let isAllowed):
+                state.appPushNotificationAllowed = isAllowed
+                return .none
+                
+            case .sendAppPushNotificationSetting:
+                if let url = URL(string: UIApplication.openSettingsURLString) {
+                    UIApplication.shared.open(url)
+                }
+                return .none
+                
             case .setNavigating:
                 return .none
             }
@@ -170,14 +247,17 @@ public struct TraineeMyPageFeature {
     }
 }
 
-// MARK: Internal Logic
-private extension TraineeMyPageFeature {
-    /// 팝업 상태, 표시 상태를 업데이트
-    /// status nil 입력인 경우 팝업 표시 해제
-    func setPopUpStatus(_ state: inout State, status: PopUp?) -> Effect<Action> {
-        state.view_popUp = status
-        state.view_isPopUpPresented = status != nil
-        return .none
+extension TraineeMyPageFeature {
+    func getAppPushNotificationAllowed(state: inout State, tryToggle: Bool) -> Effect<Action> {
+        return .run { send in
+            let settings = await UNUserNotificationCenter.current().notificationSettings()
+            let isAllowed = (settings.authorizationStatus == .authorized)
+            if tryToggle {
+                await send(.sendAppPushNotificationSetting)
+            } else {
+                await send(.setAppPushNotificationAllowed(isAllowed))
+            }
+        }
     }
 }
 
@@ -188,6 +268,8 @@ extension TraineeMyPageFeature {
         case traineeInfoEdit
         /// 초대코드 입력 페이지
         case traineeInvitationCodeInput
+        /// 초기 로그인 페이지
+        case onboardingLogin
     }
 }
 
@@ -239,9 +321,9 @@ public extension TraineeMyPageFeature {
         
         var message: String {
             switch self {
-            case .disconnectTrainer(let name):
+            case .disconnectTrainer:
                 return "힘께 나눴던 기록들이 사라져요"
-            case .disconnectCompleted(let name):
+            case .disconnectCompleted:
                 return "더 폭발적인 케미로 다시 만나요!"
             case .logout, .logoutCompleted:
                 return "언제든지 다시 로그인 할 수 있어요!"

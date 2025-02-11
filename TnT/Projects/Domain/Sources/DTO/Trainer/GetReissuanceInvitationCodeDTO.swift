@@ -9,14 +9,9 @@
 import Foundation
 
 public struct GetReissuanceInvitationCodeDTO: Decodable {
-    public let trainerId: String
     public let invitationCode: String
     
-    public init(
-        trainerId: String,
-        invitationCode: String
-    ) {
-        self.trainerId = trainerId
+    public init(invitationCode: String) {
         self.invitationCode = invitationCode
     }
 }

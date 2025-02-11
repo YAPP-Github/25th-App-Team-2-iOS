@@ -59,7 +59,7 @@ public struct TraineeConnectionCompleteView: View {
     @ViewBuilder
     private func Header() -> some View {
         VStack(spacing: 40) {
-            Text("\(store.view_opponentUserName) \(store.view_opponentUserType.koreanName)와\n연결되었어요!")
+            Text("\(store.view_opponentUserName)  \(store.view_opponentUserType.koreanName)와\n연결되었어요!")
                 .typographyStyle(.heading1, with: .common0)
                 .multilineTextAlignment(.center)
             

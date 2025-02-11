@@ -64,6 +64,16 @@ public struct TNavigation: View {
             Rectangle()
                 .fill(Color.clear)
                 .frame(width: 32, height: 32)
+            
+        case .LTextRButtonTitle(let leftTitle, let pointText, _):
+            HStack(spacing: 6){
+                Text(leftTitle)
+                    .typographyStyle(.heading2, with: .neutral900)
+                if let pointText = pointText {
+                    Text(pointText)
+                        .typographyStyle(.heading2, with: .red500)
+                } else { EmptyView() }
+            }
         }
     }
     
@@ -78,7 +88,7 @@ public struct TNavigation: View {
             Text(centerTitle)
                 .typographyStyle(.heading4, with: .neutral900)
                 .frame(maxWidth: .infinity, alignment: .center)
-        case .LButton:
+        case .LButton, .LTextRButtonTitle(_, _, _):
             EmptyView()
         }
     }
@@ -105,6 +115,14 @@ public struct TNavigation: View {
             Rectangle()
                 .fill(Color.clear)
                 .frame(width: 32, height: 32)
+            
+        case .LTextRButtonTitle(_, _, let rightButton):
+            TButton(
+                title: rightButton,
+                config: .small,
+                state: .disable(.gray(isEnabled: true))) {
+                    rightAction?()
+                }
         }
     }
 }
@@ -143,4 +161,6 @@ public enum TNavigationCase {
     case Title(centerTitle: String)
     /// 왼쪽 이미지
     case LButton(leftImage: ImageResource)
+    /// 왼쪽 텍스트, 오른쪽 버튼
+    case LTextRButtonTitle(leftTitle: String, pointText: String?, rightButton: String)
 }

@@ -17,7 +17,7 @@ public struct TrainerMainFlowFeature {
     public struct State: Equatable {
         public var path: StackState<Path.State>
         
-        public init(path: StackState<Path.State> = .init([])) {
+        public init(path: StackState<Path.State> = .init([.mainTab(.home(.init()))])) {
             self.path = path
         }
     }
@@ -25,6 +25,8 @@ public struct TrainerMainFlowFeature {
     public enum Action: Sendable {
         /// 현재 표시되고 있는 path 화면 내부에서 일어나는 액션을 처리합니다.
         case path(StackActionOf<Path>)
+        /// Flow 변경을 AppCoordinator로 전달합니다
+        case switchFlow(AppFlow)
         case onAppear
     }
     
@@ -38,53 +40,47 @@ public struct TrainerMainFlowFeature {
                     /// 트레이니 탭뷰의 네비 관련 액션 처리
                 case .element(_, action: .mainTab(.setNavigating(let screen))):
                     switch screen {
-                        /// 트레이니 홈
-                    case .traineeHome(let screen):
+                        /// 트레이너 홈
+                    case .trainerHome(let screen):
                         switch screen {
-                            /// 홈 화면 알림 버튼 탭 -> 알림 화면 이동
                         case .alarmPage:
-                            state.path.append(.alarmCheck(.init(userType: .trainee)))
+                            state.path.append(.alarmCheck(.init(userType: .trainer)))
                             return .none
-                        case .sessionRecordPage:
+                        case .addPTSessionPage:
+                            state.path.append(.addPTSession(.init()))
                             return .none
-                        case .recordFeedbackPage:
-                            return .none
-                        case .addWorkoutRecordPage:
-                            return .none
-                        case .addMealRecordPage:
+                        case .trainerMakeInvitationCodePage:
+                            state.path.append(.trainerMakeInvitationCodePage(.init()))
                             return .none
                         }
-                        /// 트레이니 마이페이지
-                    case .traineeMyPage(let screen):
+                        
+                        /// 트레이너 회원목록
+                    case .trainerTraineeList:
+                        return .none
+                        
+                        /// 트레이너 마이페이지
+                    case .trainerMyPage(let screen):
                         switch screen {
-                        case .traineeInfoEdit:
-                            return .none
-                            
-                            /// 마이페이지 초대코드 입력하기 버튼 탭-> 초대코드 입력 화면 이동
-                        case .traineeInvitationCodeInput:
-                            state.path.append(.traineeInvitationCodeInput(.init()))
-                            return .none
+                        case .onboardingLogin:
+                            return .send(.switchFlow(.onboardingFlow))
                         }
                     }
                     
-                    /// 알림 목록 특정 알림 탭 -> 해당 알림 내용 화면 이동
-                case .element(_, action: .alarmCheck(.setNavigating)):
-                    // 특정 화면 append
-                    return .none
-
-                    /// 마이페이지 초대코드 입력화면 다음 버튼 탭 - > PT 정보 입력 화면 이동
-                case .element(_, action: .traineeInvitationCodeInput(.setNavigating)):
-                    state.path.append(.traineeTrainingInfoInput(.init()))
+                    /// 트레이너 초대코드 발급 페이지 건너 뛰기 -> 홈으로
+                case .element(id: _, action: .trainerMakeInvitationCodePage(.setNavigation)):
+                    state.path.removeLast()
                     return .none
                     
-                    /// PT 정보 입력 화면 다음 버튼 탭 -> 연결 완료 화면 이동
-                case .element(_, action: .traineeTrainingInfoInput(.setNavigating)):
-                    state.path.append(.traineeConnectionComplete(.init(userType: .trainee, traineeName: "여기에", trainerName: "데이터 연결")))
+                case .element(id: _, action: .connectionComplete(.setNavigating(let profile))):
+                    state.path.append(.connectedTraineeProfile(.init(traineeProfile: profile)))
                     return .none
                     
                 default:
                     return .none
                 }
+                
+            case .switchFlow:
+                return .none
                 
             case .onAppear:
                 return .none
@@ -100,19 +96,20 @@ extension TrainerMainFlowFeature {
     public enum Path {
         // MARK: MainTab
         /// 트레이니 메인탭 - 홈/마이페이지
-        case mainTab(TraineeMainTabFeature)
+        case mainTab(TrainerMainTabFeature)
         
         // MARK: Home
         /// 알림 목록
         case alarmCheck(AlarmCheckFeature)
+        /// PT 일정 추가
+        case addPTSession(TrainerAddPTSessionFeature)
+        /// 연결 완료
+        case connectionComplete(ConnectionCompleteFeature)
+        /// 연결된 트레이니 프로필
+        case connectedTraineeProfile(ConnectedTraineeProfileFeature)
         
         // MARK: MyPage
-        /// 트레이니 초대 코드입력
-        case traineeInvitationCodeInput(TraineeInvitationCodeInputFeature)
-        /// 트레이니 수업 정보 입력
-        case traineeTrainingInfoInput(TraineeTrainingInfoInputFeature)
-        /// 트레이니-트레이너 연결 완료
-        /// TODO: 트레이너/트레이니 연결 완료 화면으로 통합 필요
-        case traineeConnectionComplete(TraineeConnectionCompleteFeature)
+        /// 초대코드 발급
+        case trainerMakeInvitationCodePage(MakeInvitationCodeFeature)
     }
 }

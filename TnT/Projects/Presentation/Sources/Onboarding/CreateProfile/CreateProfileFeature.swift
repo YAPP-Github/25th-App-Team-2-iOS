@@ -20,6 +20,8 @@ public struct CreateProfileFeature {
     @ObservableState
     public struct State: Equatable {
         // MARK: Data related state
+        /// 현재 회원가입 정보
+        @Shared var signUpEntity: PostSignUpEntity
         /// 현재 선택된 유저 타입 (트레이너/트레이니)
         var userType: UserType
         /// 현재 입력된 사용자 이름
@@ -49,6 +51,7 @@ public struct CreateProfileFeature {
         
         /// `CreateProfileFeature.State`의 생성자
         /// - Parameters:
+        ///   - signUpEntity: 현재 회원가입 정보 @Shared
         ///   - userType: 현재 선택된 유저 타입 (기본값: `.trainer`)
         ///   - userName: 입력된 유저 이름  (기본값: 공백)
         ///   - userImageData: 선택된 이미지 데이터 (기본값: `nil`)
@@ -61,6 +64,7 @@ public struct CreateProfileFeature {
         ///   - view_photoPickerItem: 현재 선택된 이미지 아이템 (기본값: `nil`)
         ///   - view_nameMaxLength:유저의 최대 이름 길이 (기본값: `nil`)
         public init(
+            signUpEntity: Shared<PostSignUpEntity>,
             userType: UserType,
             userImageData: Data? = nil,
             userName: String = "",
@@ -72,6 +76,7 @@ public struct CreateProfileFeature {
             view_photoPickerItem: PhotosPickerItem? = nil,
             view_nameMaxLength: Int? = nil
         ) {
+            self._signUpEntity = signUpEntity
             self.userType = userType
             self.userImageData = userImageData
             self.userName = userName
@@ -86,14 +91,18 @@ public struct CreateProfileFeature {
     }
     
     @Dependency(\.userUseCase) private var userUseCase: UserUseCase
+    @Dependency(\.userUseRepoCase) private var userUseRepoCase: UserRepository
+    @Dependency(\.keyChainManager) var keyChainManager
     
     public enum Action: Sendable, ViewAction {
         /// 네비게이션 여부 설정
-        case setNavigating(Bool)
+        case setNavigating(RoutingScreen)
         /// 선택된 이미지 데이터 저장
         case imagePicked(Data?)
         /// 뷰에서 발생한 액션을 처리합니다.
         case view(View)
+        /// 회원가입 POST
+        case postSignUp
         
         @CasePathable
         public enum View: Sendable, BindableAction {
@@ -134,11 +143,29 @@ public struct CreateProfileFeature {
                     return .none
                     
                 case .tapNextButton:
-                    return .send(.setNavigating(true))
+                    state.$signUpEntity.withLock { $0.name = state.userName }
+                    state.$signUpEntity.withLock { $0.imageData = state.userImageData }
+                    switch state.userType {
+                    case .trainee:
+                        return .send(.setNavigating(.traineeBasicInfoInput))
+                    case .trainer:
+                        return .send(.postSignUp)
+                    }
                 }
                 
-            case .setNavigating(let isNavigating):
-                state.view_isNavigating = isNavigating
+            case .postSignUp:
+                guard let reqDTO = state.signUpEntity.toDTO() else {
+                    return .none
+                }
+                let imgData = state.signUpEntity.imageData
+                
+                return .run { send in
+                    let result = try await userUseRepoCase.postSignUp(reqDTO, profileImage: imgData).toEntity()
+                    saveSessionId(result.sessionId)
+                    await send(.setNavigating(.trainerSignUpComplete(result)))
+                }
+                
+            case .setNavigating:
                 return .none
                 
             case .imagePicked(let imgData):
@@ -162,5 +189,25 @@ private extension CreateProfileFeature {
         state.view_textFieldStatus = .filled
         state.view_isNextButtonEnabled = true
         return .none
+    }
+    
+    /// 세션 값 저장
+    private func saveSessionId(_ sessionId: String?) {
+        guard let sessionId else { return }
+        do {
+            try keyChainManager.save(sessionId, for: .sessionId)
+        } catch {
+            print("로그인 정보 저장 싪패")
+        }
+    }
+}
+
+extension CreateProfileFeature {
+    /// 본 화면에서 라우팅(파생)되는 화면
+    public enum RoutingScreen: Sendable {
+        /// 트레이니 회원가입
+        case traineeBasicInfoInput
+        /// 트레이너 프로필 생성 완료
+        case trainerSignUpComplete(PostSignUpResEntity)
     }
 }

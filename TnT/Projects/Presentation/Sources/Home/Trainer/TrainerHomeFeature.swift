@@ -18,6 +18,8 @@ public struct TrainerHomeFeature {
     @ObservableState
     public struct State: Equatable {
         // MARK: Data related state
+        /// 3일 동안 보지 않기 시작 날짜
+        @Shared(.appStorage(AppStorage.hideHomePopupUntil)) var hidePopupUntil: Date?
         /// 선택된 날짜
         var selectedDate: Date
         /// 캘린더 이벤트
@@ -30,6 +32,10 @@ public struct TrainerHomeFeature {
         var records: [RecordListItemEntity]
         /// 특정 날짜의 수업 정보
         var tappedsessionInfo: GetDateSessionListEntity?
+        /// 3일 동안 보지 않기 선택되었는지 여부
+        var isHideUntilSelected: Bool
+        /// 트레이니 연결 여부
+        var isConnected: Bool
         
         // MARK: UI related state
         /// 캘린더 표시 페이지
@@ -43,8 +49,8 @@ public struct TrainerHomeFeature {
         var view_recordTitleString: String {
             return TDateFormatUtility.formatter(for: .M월_d일_EEEE).string(from: selectedDate)
         }
-        /// 선택 바텀 시트 표시
-        var view_isBottomSheetPresented: Bool
+        /// 팝업 표시 여부
+        var view_isPopUpPresented: Bool
         
         public init(
             selectedDate: Date = .now,
@@ -52,18 +58,22 @@ public struct TrainerHomeFeature {
             sessionCount: Int = 0,
             sessionInfo: WorkoutListItemEntity? = nil,
             records: [RecordListItemEntity] = [],
+            isHideUntilSelected: Bool = false,
+            isConnected: Bool = false,
             view_currentPage: Date = .now,
-            view_isBottomSheetPresented: Bool = false,
-            tappedsessionInfo: GetDateSessionListEntity? = nil
+            tappedsessionInfo: GetDateSessionListEntity? = nil,
+            view_isPopUpPresented: Bool = false
         ) {
             self.selectedDate = selectedDate
             self.events = events
             self.sessionCount = sessionCount
             self.sessionInfo = sessionInfo
             self.records = records
+            self.isHideUntilSelected = isHideUntilSelected
+            self.isConnected = isConnected
             self.view_currentPage = view_currentPage
-            self.view_isBottomSheetPresented = view_isBottomSheetPresented
             self.tappedsessionInfo = tappedsessionInfo
+            self.view_isPopUpPresented = view_isPopUpPresented
         }
     }
     
@@ -73,7 +83,7 @@ public struct TrainerHomeFeature {
         /// 뷰에서 발생한 액션을 처리합니다.
         case view(View)
         /// 네비게이션 여부 설정
-        case setNavigating
+        case setNavigating(RoutingScreen)
         
         @CasePathable
         public enum View: Sendable, BindableAction {
@@ -83,8 +93,16 @@ public struct TrainerHomeFeature {
             case tapAlarmPageButton
             /// 수업 완료 버튼 탭
             case tapSessionCompleted(id: String)
-            /// 식단 기록 추가 버튼 탭
-            case tapAddSessionRecordButton
+            /// 수업 추가 버튼 탭
+            case tapAddSessionButton
+            /// 연결 권장 팝업 - 다음에 버튼 탭
+            case tapPopUpNextButton
+            /// 연결 권장 팝업 - 3일 동안 보지 않기 버튼 탭
+            case tapPopUpDontShowUntilThreeDaysButton(Bool)
+            /// 연결 권장 팝업 - 연결하기 버튼 탭
+            case tapPopUpConnectButton
+            /// 화면이 표시될 때
+            case onAppear
         }
     }
     
@@ -101,24 +119,65 @@ public struct TrainerHomeFeature {
                 case .binding(\.selectedDate):
                     print(state.events[state.selectedDate])
                     return .none
+                    
                 case .binding:
                     return .none
+                    
                 case .tapAlarmPageButton:
-                    // TODO: 네비게이션 연결 시 추가
-                    print("tapAlarmPageButton")
-                    return .none
+                    return .send(.setNavigating(.alarmPage))
+                    
                 case .tapSessionCompleted(let id):
                     // TODO: 네비게이션 연결 시 추가
                     print("tapSessionCompleted otLessionID \(id)")
                     return .none
-                case .tapAddSessionRecordButton:
-                    // TODO: 네비게이션 연결 시 추가
-                    print("tapAddSessionRecordButton")
+                    
+                case .tapAddSessionButton:
+                    return .send(.setNavigating(.addPTSessionPage))
+                    
+                case .tapPopUpNextButton:
+                    if state.isHideUntilSelected {
+                        state.$hidePopupUntil.withLock {
+                            $0 = Calendar.current.date(byAdding: .day, value: 3, to: Date())
+                        }
+                    }
+                    state.view_isPopUpPresented = false
+                    return .none
+                    
+                case .tapPopUpDontShowUntilThreeDaysButton(let isHidden):
+                    state.isHideUntilSelected = isHidden
+                    return .none
+                    
+                case .tapPopUpConnectButton:
+                    if state.isHideUntilSelected {
+                        state.$hidePopupUntil.withLock {
+                            $0 = Calendar.current.date(byAdding: .day, value: 3, to: Date())
+                        }
+                    }
+                    state.view_isPopUpPresented = false
+                    return .send(.setNavigating(.trainerMakeInvitationCodePage))
+                    
+                case .onAppear:
+                    if let hideUntil = state.hidePopupUntil, hideUntil > Date() {
+                        state.view_isPopUpPresented = false
+                    } else {
+                        state.view_isPopUpPresented = true
+                    }
                     return .none
                 }
             case .setNavigating:
                 return .none
             }
         }
+    }
+}
+
+extension TrainerHomeFeature {
+    public enum RoutingScreen: Sendable {
+        /// 알림 페이지
+        case alarmPage
+        /// PT 일정 추가페이지
+        case addPTSessionPage
+        /// 초대 코드 발급페이지
+        case trainerMakeInvitationCodePage
     }
 }

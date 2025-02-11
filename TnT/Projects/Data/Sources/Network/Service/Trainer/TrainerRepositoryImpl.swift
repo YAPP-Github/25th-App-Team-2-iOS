@@ -41,8 +41,19 @@ public struct TrainerRepositoryImpl: TrainerRepository {
     
     public func getDateSessionList(date: String) async throws -> GetDateSessionListDTO {
         return try await networkService.request(
-            TrainerTargetType.getDateLessionList(date: date),
+            TrainerTargetType.getDateLessonList(date: date),
             decodingType: GetDateSessionListDTO.self
         )
+    }
+    
+    public func getMembersList() async throws -> GetMembersListDTO {
+        return try await networkService.request(
+            TrainerTargetType.getMemebersList,
+            decodingType: GetMembersListDTO.self
+        )
+    }
+    
+    public func getConnectedTraineeInfo(trainerId: Int, traineeId: Int) async throws -> GetConnectedTraineeInfoResponseDTO {
+        return try await networkService.request(TrainerTargetType.getConnectedTraineeInfo(trainerId: trainerId, traineeId: traineeId), decodingType: GetConnectedTraineeInfoResponseDTO.self)
     }
 }

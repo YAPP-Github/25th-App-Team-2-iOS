@@ -24,6 +24,8 @@ public struct MakeInvitationCodeView: View {
             Header()
             InvitationCode()
         }
+        .navigationBarBackButtonHidden()
+        .onAppear { send(.onAppear) }
     }
     
     @ViewBuilder
@@ -54,12 +56,12 @@ public struct MakeInvitationCodeView: View {
                 
                 HStack(spacing: 0) {
                     ZStack(alignment: .bottom) {
-                        Text("\(store.state.view_invitationCode)")
+                        Text("\(store.invitationCode)")
                             .typographyStyle(.body1Medium, with: .neutral600)
                             .padding(8)
                             .frame(maxWidth: .infinity, alignment: .leading)
                             .onTapGesture {
-                                send(.copyCode)
+                                send(.tapCodeToCopy)
                             }
                         
                         TDivider(height: 1, color: .neutral300)
@@ -70,7 +72,7 @@ public struct MakeInvitationCodeView: View {
                         config: .small,
                         state: .default(.gray(isEnabled: true))
                     ) {
-                        send(.tappedIssuanceButton)
+                        send(.tappedReissuanceButton)
                     }
                     .frame(width: 82)
                 }
