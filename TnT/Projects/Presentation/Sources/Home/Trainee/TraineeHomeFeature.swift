@@ -146,9 +146,8 @@ public struct TraineeHomeFeature {
                     return .none
                     
                 case .tapAddDietRecordButton:
-                    // TODO: 네비게이션 연결 시 추가
-                    print("tapAddMealRecordButton")
-                    return .none
+                    state.view_isBottomSheetPresented = false
+                    return .send(.setNavigating(.addDietRecordPage))
                     
                 case .tapPopUpNextButton:
                     if state.isHideUntilSelected {

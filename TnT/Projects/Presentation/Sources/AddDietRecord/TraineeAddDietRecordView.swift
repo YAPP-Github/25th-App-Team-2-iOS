@@ -52,6 +52,7 @@ public struct TraineeAddDietRecordView: View {
                 }
                 .padding(.bottom, .safeAreaBottom + 20)
             }
+            .keyboardDismissOnTap()
         }
         .onTapGesture { focusedField = nil }
         .navigationBarBackButtonHidden()
