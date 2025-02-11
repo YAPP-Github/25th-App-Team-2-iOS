@@ -37,15 +37,13 @@ public struct TraineeAddDietRecordView: View {
                 leftAction: { send(.tapNavBackButton) }
             )
             ScrollView {
-                VStack(alignment: .leading, spacing: 0) {
-                    Header()
-                        .padding(.bottom, 28)
+                VStack(alignment: .leading, spacing: 8) {
+                    DietPhotoSection()
                     
                     VStack(spacing: 48) {
                         DietDateSection()
                         DietTimeSection()
                         DietTypeSection()
-                        DietPhotoSection()
                         DietInfoSection()
                     }
                     .padding(.horizontal, 20)
@@ -60,12 +58,21 @@ public struct TraineeAddDietRecordView: View {
         .keyboardDismissOnTap()
         .safeAreaInset(edge: .bottom) {
             if store.view_focusField == nil {
-                TBottomButton(
-                    title: "완료",
-                    isEnable: store.view_isSubmitButtonEnabled
+                TButton(
+                    title: "저장",
+                    config: .xLarge,
+                    state: .default(.primary(isEnabled: store.view_isSubmitButtonEnabled))
                 ) {
                     send(.tapSubmitButton)
                 }
+                .padding(.horizontal, 16)
+                
+//                TBottomButton(
+//                    title: "완료",
+//                    isEnable: store.view_isSubmitButtonEnabled
+//                ) {
+//                    send(.tapSubmitButton)
+//                }
             }
         }
         .sheet(item: $store.view_bottomSheetItem) { item in
@@ -107,14 +114,62 @@ public struct TraineeAddDietRecordView: View {
     }
     
     // MARK: - Sections
+//    @ViewBuilder
+//    private func Header() -> some View {
+//        VStack(alignment: .leading, spacing: 8) {
+//            Text("오늘의 식단을 기록해 주세요")
+//                .typographyStyle(.heading2, with: .neutral950)
+//            Text("식단을 기록하면 트레이너가 피드백을 남길 수 있어요")
+//                .typographyStyle(.body2Medium, with: .neutral500)
+//        }
+//        .padding(20)
+//    }
+    
     @ViewBuilder
-    private func Header() -> some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Text("오늘의 식단을 기록해 주세요")
-                .typographyStyle(.heading2, with: .neutral950)
-            Text("식단을 기록하면 트레이너가 피드백을 남길 수 있어요")
-                .typographyStyle(.body2Medium, with: .neutral500)
+    private func DietPhotoSection() -> some View {
+        PhotosPicker(
+            selection: $store.view_photoPickerItem,
+            matching: .images,
+            photoLibrary: .shared()
+        ) {
+            if let imageData = store.dietImageData,
+               let uiImage = UIImage(data: imageData) {
+                Image(uiImage: uiImage)
+                    .resizable()
+                    .aspectRatio(1, contentMode: .fill)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .clipShape(.rect(cornerRadius: 20))
+                    .overlay(alignment: .topTrailing) {
+                        ZStack {
+                            Circle()
+                                .fill(Color.common100.opacity(0.5))
+                                .frame(width: 24, height: 24)
+                            Image(.icnDelete)
+                                .renderingMode(.template)
+                                .resizable()
+                                .tint(.common0)
+                                .frame(width: 12, height: 12)
+                        }
+                        .padding(8)
+                    }
+            } else {
+                ZStack {
+                    RoundedRectangle(cornerRadius: 8)
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                        .aspectRatio(1, contentMode: .fit)
+                        
+                    VStack(spacing: 8) {
+                        Image(.icnImage)
+                        .resizable()
+                        .frame(width: 48, height: 48)
+                        
+                        Text("오늘 먹은 식단을 추가해보세요")
+                            .typographyStyle(.body2Medium, with: .neutral400)
+                    }
+                }
+            }
         }
+        .background(Color.clear)
         .padding(20)
     }
 
@@ -143,9 +198,9 @@ public struct TraineeAddDietRecordView: View {
     @ViewBuilder
     private func DietTimeSection() -> some View {
         TTextField(
-            placeholder: "오전 11:16",
+            placeholder: "09:00",
             text: Binding(get: {
-                store.dietTime?.toString(format: .a_HHmm) ?? ""
+                store.dietTime?.toString(format: .HHmm) ?? ""
             }, set: { _ in }),
             textFieldStatus: $store.view_dietTimeStatus
         )
@@ -165,7 +220,7 @@ public struct TraineeAddDietRecordView: View {
     @ViewBuilder
     private func DietTypeSection() -> some View {
         VStack(alignment: .leading, spacing: 12) {
-            TTextField.Header(isRequired: true, title: "카테고리", limitCount: nil, textCount: nil)
+            TTextField.Header(isRequired: true, title: "분류", limitCount: nil, textCount: nil)
             
             HStack(spacing: 8) {
                 ForEach(DietType.allCases, id: \.koreanName) { item in
@@ -178,64 +233,17 @@ public struct TraineeAddDietRecordView: View {
                                 with: store.dietType == item ? .red600 : .neutral500
                             )
                             .padding(.horizontal, 16)
-                            .padding(.vertical, 8)
-                            .background(store.dietType == item ? Color.red50 : Color.common0)
-                            .clipShape(Capsule())
-                            .overlay(
-                                Capsule()
+                            .padding(.vertical, 13)
+                            .frame(maxWidth: .infinity)
+                            .background {
+                                RoundedRectangle(cornerRadius: 12)
+                                    .fill(store.dietType == item ? Color.red50 : Color.common0)
                                     .stroke(
                                         store.dietType == item ? Color.red400 : Color.neutral300,
                                         lineWidth: 1.5
                                     )
-                            )
-                            .frame(height: 40)
+                            }
                     }
-                }
-            }
-        }
-    }
-    
-    @ViewBuilder
-    private func DietPhotoSection() -> some View {
-        Group {
-            if let imageData = store.dietImageData,
-               let uiImage = UIImage(data: imageData) {
-                Image(uiImage: uiImage)
-                    .resizable()
-                    .scaledToFill()
-                    .frame(width: 80, height: 80)
-                    .clipShape(.rect(cornerRadius: 8))
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 8)
-                            .stroke(Color.neutral300, lineWidth: 1.5)
-                    )
-            } else {
-                ZStack {
-                    RoundedRectangle(cornerRadius: 8)
-                        .stroke(Color.neutral300, lineWidth: 1.5)
-                        .frame(width: 80, height: 80)
-                        
-                    Image(.icnImage)
-                    .resizable()
-                    .frame(width: 18, height: 18)
-                }
-                .frame(width: 80, height: 80)
-            }
-        }
-        .frame(width: 90, height: 90)
-        .overlay(alignment: .bottomTrailing) {
-            PhotosPicker(
-                selection: $store.view_photoPickerItem,
-                matching: .images,
-                photoLibrary: .shared()
-            ) {
-                ZStack {
-                    Circle()
-                        .fill(Color.neutral900)
-                        .frame(width: 28, height: 28)
-                    Image(.icnWriteWhite)
-                        .resizable()
-                        .frame(width: 16, height: 16)
                 }
             }
         }
