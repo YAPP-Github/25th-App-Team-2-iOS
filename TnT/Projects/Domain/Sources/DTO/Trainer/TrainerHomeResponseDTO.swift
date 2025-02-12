@@ -98,3 +98,79 @@ public struct SessonEntity: Equatable, Encodable {
         self.isCompleted = isCompleted
     }
 }
+
+// mapper
+// MARK: - GetDateSessionListDTO -> GetDateSessionListEntity
+public extension GetDateSessionListDTO {
+    func toEntity() -> GetDateSessionListEntity {
+        return GetDateSessionListEntity(
+            count: self.count,
+            date: self.date,
+            lessons: self.lessons.map { $0.toEntity() }
+        )
+    }
+    
+    // GetDateSessionListEntity -> GetDateSessionListDTO
+    func toDTO() -> GetDateSessionListDTO {
+        return GetDateSessionListDTO(
+            count: self.count,
+            date: self.date,
+            lessons: self.lessons.map { $0.toDTO() }
+        )
+    }
+}
+
+// MARK: - SessonDTO -> SessonEntity
+public extension SessonDTO {
+    public func toEntity() -> SessonEntity {
+        return SessonEntity(
+            ptLessonId: self.ptLessonId,
+            traineeId: self.traineeId,
+            traineeName: self.traineeName,
+            session: self.session,
+            startTime: self.startTime,
+            endTime: self.endTime,
+            isCompleted: self.isCompleted
+        )
+    }
+    
+    // SessonEntity -> SessonDTO
+    public func toDTO() -> SessonDTO {
+        return SessonDTO(
+            ptLessonId: self.ptLessonId,
+            traineeId: self.traineeId,
+            traineeName: self.traineeName,
+            session: self.session,
+            startTime: self.startTime,
+            endTime: self.endTime,
+            isCompleted: self.isCompleted
+        )
+    }
+}
+
+// MARK: - GetDateSessionListEntity -> GetDateSessionListDTO
+public extension GetDateSessionListEntity {
+    public func toDTO() -> GetDateSessionListDTO {
+        return GetDateSessionListDTO(
+            count: self.count,
+            date: self.date,
+            lessons: self.lessons.map { $0.toDTO() }
+        )
+    }
+}
+
+// MARK: - SessonEntity -> SessonDTO
+public extension SessonEntity {
+    public func toDTO() -> SessonDTO {
+        return SessonDTO(
+            ptLessonId: self.ptLessonId,
+            traineeId: self.traineeId,
+            traineeName: self.traineeName,
+            session: self.session,
+            startTime: self.startTime,
+            endTime: self.endTime,
+            isCompleted: self.isCompleted
+        )
+    }
+}
+

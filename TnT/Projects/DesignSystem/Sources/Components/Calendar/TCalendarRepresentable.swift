@@ -64,9 +64,10 @@ public struct TCalendarRepresentable: UIViewRepresentable {
         calendar.appearance.titleDefaultColor = .clear
         calendar.calendarWeekdayView.weekdayLabels[0].textColor = UIColor(.red500)
         
+        
         return calendar
     }
-    
+
     public func updateUIView(_ uiView: FSCalendar, context: Context) {
         // `selectedDate` 반영
         uiView.select(selectedDate)

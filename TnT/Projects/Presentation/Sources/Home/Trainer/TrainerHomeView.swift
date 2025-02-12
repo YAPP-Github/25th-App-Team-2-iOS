@@ -75,11 +75,15 @@ public struct TrainerHomeView: View {
                     currentPage: $store.view_currentPage,
                     events: store.events
                 )
+                .onChange(of: store.state.selectedDate, { oldValue, newValue in
+                    let startOfDay = Calendar.current.startOfDay(for: newValue)
+                    store.selectedDate = startOfDay
+                    store.send(.view(.calendarDateTap))
+                })
                 .padding(.horizontal, 20)
             }
         }
         .padding(.vertical, 12)
-        
     }
     
     /// 수업 리스트 상단 타이틀
@@ -110,7 +114,7 @@ public struct TrainerHomeView: View {
     @ViewBuilder
     private func RecordList() -> some View {
         VStack {
-            if let record = store.tappedsessionInfo {
+            if let record = store.tappedsessionInfo, !record.lessons.isEmpty {
                 ForEach(record.lessons, id: \.id) { record in
                     SessionCellView(session: record) {
                         send(.tapSessionCompleted(id: record.ptLessonId))

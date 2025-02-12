@@ -78,6 +78,7 @@ public struct TrainerHomeFeature {
     }
     
     @Dependency(\.traineeUseCase) private var traineeUseCase: TraineeUseCase
+    @Dependency(\.trainerRepoUseCase) private var trainerRepoUseCase: TrainerRepository
     
     public enum Action: Sendable, ViewAction {
         /// 뷰에서 발생한 액션을 처리합니다.
@@ -103,6 +104,14 @@ public struct TrainerHomeFeature {
             case tapPopUpConnectButton
             /// 화면이 표시될 때
             case onAppear
+            /// events 타입에 맞춰서 달력 스케줄 캐수 표시 데이터 계산
+            case fetchMonthlyLessons(year: Int, month: Int)
+            /// 달력 스케줄 캐수 표시 데이터 업데이트
+            case updateEvents([Date: Int])
+            /// 특정 날짜 탭
+            case calendarDateTap
+            /// 탭한 일자 api 형태에 맞춰 변환하기(yyyy-mm-dd)
+            case settingSessionList(sessions: GetDateSessionListEntity)
         }
     }
     
@@ -117,7 +126,7 @@ public struct TrainerHomeFeature {
             case .view(let action):
                 switch action {
                 case .binding(\.selectedDate):
-                    print(state.events[state.selectedDate])
+                    print("state.events[state.selectedDate] \(state.events[state.selectedDate])")
                     return .none
                     
                 case .binding:
@@ -157,11 +166,59 @@ public struct TrainerHomeFeature {
                     return .send(.setNavigating(.trainerMakeInvitationCodePage))
                     
                 case .onAppear:
+                    let year: Int = Calendar.current.component(.year, from: state.selectedDate)
+                    let month: Int = Calendar.current.component(.month, from: state.selectedDate)
+                    
                     if let hideUntil = state.hidePopupUntil, hideUntil > Date() {
                         state.view_isPopUpPresented = false
                     } else {
                         state.view_isPopUpPresented = true
                     }
+                    
+                    return .send(.view(.fetchMonthlyLessons(year: year, month: month)))
+                    
+                case .fetchMonthlyLessons(year: let year, month: let month):
+                    return .run { send in
+                        do {
+                            let temp: GetMonthlyLessonListResDTO = try await trainerRepoUseCase.getMonthlyLessonList(
+                                year: year,
+                                month: month
+                            )
+                            
+                            let dateFormatter: DateFormatter = DateFormatter()
+                            dateFormatter.dateFormat = "yyyy-MM-dd"
+                            
+                            var events: [Date: Int] = [:]
+                            for lesson in temp.calendarPtLessonCounts {
+                                if let date = dateFormatter.date(from: lesson.date) {
+                                    events[date] = lesson.count
+                                } else {
+                                    print("Invalid date format: \(lesson.date)")
+                                }
+                            }
+                            await send(.view(.updateEvents(events)))
+                        } catch {
+                            print("리스트 Fetching Error: \(error)")
+                        }
+                    }
+                case .updateEvents(let events):
+                    state.events = events
+                    return .none
+                    
+                case .calendarDateTap:
+                    let formattedDate = TDateFormatUtility.formatter(for: .yyyyMMdd).string(from: state.selectedDate)
+                    
+                    return .run { send in
+                        do {
+                            let sessionList: GetDateSessionListEntity = try await trainerRepoUseCase.getDateSessionList(date: formattedDate).toEntity()
+                            await send(.view(.settingSessionList(sessions: sessionList)))
+                        } catch {
+                            print("error \(error.localizedDescription)")
+                        }
+                    }
+                    
+                case .settingSessionList(let list):
+                    state.tappedsessionInfo = list
                     return .none
                 }
             case .setNavigating:
