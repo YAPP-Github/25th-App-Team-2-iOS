@@ -22,6 +22,8 @@ public struct TTextEditor: View {
     private let footer: Footer?
     /// Placeholder 텍스트
     private let placeholder: String
+    /// 텍스트 에디터 사이즈
+    private let size: Size
     /// 텍스트 필드 상태
     @Binding private var status: Status
     /// 입력된 텍스트
@@ -35,74 +37,58 @@ public struct TTextEditor: View {
     /// TTextEditor 생성자
     /// - Parameters:
     ///   - placeholder: Placeholder 텍스트 (기본값: "내용을 입력해주세요").
+    ///   - size: 텍스트 에디터 사이즈.
     ///   - text: 입력된 텍스트를 관리하는 바인딩.
     ///   - textEditorStatus: 텍스트 에디터 상태를 관리하는 바인딩.
     ///   - footer: Textfield 하단에 표시될 `TTextEditor.FooterView`를 정의하는 클로저.
     public init(
         placeholder: String = "내용을 입력해주세요",
+        size: Size = .large,
         text: Binding<String>,
         textEditorStatus: Binding<Status>,
         footer: () -> Footer? = { nil }
     ) {
         self.placeholder = placeholder
+        self.size = size
         self._text = text
         self._status = textEditorStatus
         self.footer = footer()
     }
     
     public var body: some View {
-        GeometryReader { geometry in
-            VStack(alignment: .leading, spacing: 8) {
-                ZStack(alignment: .topLeading) {
-                    TextEditor(text: $text)
-                        .autocorrectionDisabled()
-                        .scrollDisabled(true)
-                        .focused($isFocused)
-                        .font(Typography.FontStyle.body1Medium.font)
-                        .lineSpacing(Typography.FontStyle.body1Medium.lineSpacing)
-                        .kerning(Typography.FontStyle.body1Medium.letterSpacing)
-                        .tint(Color.neutral800)
-                        .frame(minHeight: textHeight, maxHeight: .infinity)
-                        .padding(.vertical, TTextEditor.verticalPadding)
-                        .padding(.horizontal, TTextEditor.horizontalPadding)
-                        .background(Color.common0)
-                        .scrollContentBackground(.hidden)
-                        .cornerRadius(8)
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 8)
-                                .stroke(status.borderColor(isFocused: isFocused), lineWidth: status.borderWidth(isFocused: isFocused))
-                        )
-                        .onChange(of: text) {
-                            withAnimation {
-                                textHeight = getNewHeight(geometry: geometry)
-                            }
-                        }
-                        .onAppear {
-                            textHeight = getNewHeight(geometry: geometry)
-                        }
-                    
-                    if text.isEmpty {
-                        Text(placeholder)
-                            .typographyStyle(.body1Medium, with: .neutral400)
-                            .padding(.vertical, TTextEditor.verticalPadding + 8)
-                            .padding(.horizontal, TTextEditor.horizontalPadding + 4)
-                    }
-                }
-                if let footer {
-                    footer
+        VStack(alignment: .leading, spacing: 8) {
+            ZStack(alignment: .topLeading) {
+                TextEditor(text: $text)
+                    .autocorrectionDisabled()
+                    .scrollDisabled(true)
+                    .focused($isFocused)
+                    .font(Typography.FontStyle.body1Medium.font)
+                    .lineSpacing(Typography.FontStyle.body1Medium.lineSpacing)
+                    .kerning(Typography.FontStyle.body1Medium.letterSpacing)
+                    .tint(Color.neutral800)
+                    .frame(minHeight: textHeight, maxHeight: .infinity)
+                    .padding(.vertical, TTextEditor.verticalPadding)
+                    .padding(.horizontal, TTextEditor.horizontalPadding)
+                    .background(Color.common0)
+                    .scrollContentBackground(.hidden)
+                    .cornerRadius(8)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 8)
+                            .stroke(status.borderColor(isFocused: isFocused), lineWidth: status.borderWidth(isFocused: isFocused))
+                    )
+                    .frame(height: size.height)
+                
+                if text.isEmpty {
+                    Text(placeholder)
+                        .typographyStyle(.body1Medium, with: .neutral400)
+                        .padding(.vertical, TTextEditor.verticalPadding + 8)
+                        .padding(.horizontal, TTextEditor.horizontalPadding + 4)
                 }
             }
+            if let footer {
+                footer
+            }
         }
-        .frame(height: TTextEditor.defaultHeight)
-    }
-    
-    private func getNewHeight(geometry: GeometryProxy) -> CGFloat {
-        let newHeight: CGFloat = TextUtility.calculateTextHeight(
-            boxWidth: geometry.size.width - TTextEditor.horizontalPadding * 2,
-            text: text,
-            style: .body1Medium
-        ) + TTextEditor.verticalPadding * 2
-        return max(newHeight, TTextEditor.defaultHeight)
     }
 }
 
@@ -195,6 +181,22 @@ public extension TTextEditor {
                 return .neutral300
             case .invalid:
                 return .red500
+            }
+        }
+    }
+    
+    /// TextEditor의 크기
+    enum Size {
+        case small
+        case large
+        
+        /// 높이
+        var height: CGFloat {
+            switch self {
+            case .small:
+                return 52
+            case .large:
+                return 130
             }
         }
     }

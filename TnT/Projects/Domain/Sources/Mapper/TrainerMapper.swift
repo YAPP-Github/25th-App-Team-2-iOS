@@ -32,3 +32,12 @@ public extension GetConnectedTraineeInfoResponseDTO {
         )
     }
 }
+
+public extension ActiveTraineeInfoResDTO {
+    func toEntity() -> TraineeListItemEntity {
+        return .init(
+            id: self.id,
+            name: self.name
+        )
+    }
+}

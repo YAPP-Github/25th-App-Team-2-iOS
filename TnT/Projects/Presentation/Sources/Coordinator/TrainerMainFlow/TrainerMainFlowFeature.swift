@@ -80,6 +80,11 @@ public struct TrainerMainFlowFeature {
                 case .element(id: _, action: .connectedTraineeProfile(.setNavigating)):
                     state.path.removeLast(2)
                     return.none
+
+                    /// 트레이너 수업 추가 -> 홈으로
+                case .element(id: _, action: .addPTSession(.setNavigating)):
+                    state.path.removeLast()
+                    return .none
                     
                 default:
                     return .none

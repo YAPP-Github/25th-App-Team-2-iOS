@@ -35,12 +35,27 @@ public struct TrainerAddPTSessionView: View {
                 ),
                 leftAction: { send(.tapNavBackButton) }
             )
+            TDivider(height: 1, color: .neutral200)
             ScrollView {
                 VStack(alignment: .leading, spacing: 0) {
                     Header()
                         .padding(.bottom, 28)
                     
-                    FieldSection()
+                    VStack(spacing: 48) {
+                        TraineeDropDown()
+                        
+                        PtDateDropDown()
+                        
+                        VStack(spacing: 20) {
+                            TimeDropDown()
+                            TimeResult()
+                        }
+                        
+                        TimeChip()
+                        
+                        Memo()
+                    }
+                    .padding(.horizontal, 20)
                     
                     Spacer()
                 }
@@ -103,6 +118,7 @@ public struct TrainerAddPTSessionView: View {
                 send(.setFocus(oldValue, newValue))
             }
         }
+        .onAppear { send(.onAppear) }
     }
     
     // MARK: - Sections
@@ -118,15 +134,73 @@ public struct TrainerAddPTSessionView: View {
     }
     
     @ViewBuilder
-    private func FieldSection() -> some View {
-        VStack(spacing: 48) {
-            // TraineeDropDown
+    private func TraineeDropDown() -> some View {
+        TTextField(
+            placeholder: "회원을 입력해주세요",
+            text: Binding(get: {
+                store.trainee?.name ?? ""
+            }, set: { _ in }),
+            textFieldStatus: $store.view_traineeStatus
+        ) {
+            TTextField.RightView(
+                style: .dropDown(
+                    tintColor: focusedField == .ptDate ? Color.neutral600 : Color.neutral400,
+                    tapAction: { }
+                )
+            )
+        }
+        .withSectionLayout(header: .init(isRequired: true, title: "회원선택", limitCount: nil, textCount: nil))
+        .focused($focusedField, equals: .ptDate)
+        .allowsHitTesting(false)
+        .overlay(
+            Rectangle()
+                .fill(Color.clear)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .contentShape(Rectangle())
+                .onTapGesture { send(.tapTraineeDropDown) }
+        )
+        .frame(maxWidth: .infinity)
+    }
+    
+    @ViewBuilder
+    private func PtDateDropDown() -> some View {
+        TTextField(
+            placeholder: "날짜를 입력해주세요",
+            text: Binding(get: {
+                store.ptDate?.toString(format: .yyyyMMddSlash) ?? ""
+            }, set: { _ in }),
+            textFieldStatus: $store.view_ptDateStatus
+        ) {
+            TTextField.RightView(
+                style: .dropDown(
+                    tintColor: focusedField == .ptDate ? Color.neutral600 : Color.neutral400,
+                    tapAction: { }
+                )
+            )
+        }
+        .withSectionLayout(header: .init(isRequired: true, title: "PT 날짜", limitCount: nil, textCount: nil))
+        .focused($focusedField, equals: .trainee)
+        .allowsHitTesting(false)
+        .overlay(
+            Rectangle()
+                .fill(Color.clear)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .contentShape(Rectangle())
+                .onTapGesture { send(.tapPtDateDropDown) }
+        )
+        .frame(maxWidth: .infinity)
+    }
+    
+    @ViewBuilder
+    private func TimeDropDown() -> some View {
+        HStack(alignment: .bottom, spacing: 12) {
+            // StartTime
             TTextField(
-                placeholder: "회원을 입력해주세요",
+                placeholder: "09:00",
                 text: Binding(get: {
-                    store.trainee?.name ?? ""
+                    store.startTime?.toString(format: .HHmm) ?? ""
                 }, set: { _ in }),
-                textFieldStatus: $store.view_traineeStatus
+                textFieldStatus: $store.view_startTimeStatus
             ) {
                 TTextField.RightView(
                     style: .dropDown(
@@ -135,27 +209,7 @@ public struct TrainerAddPTSessionView: View {
                     )
                 )
             }
-            .withSectionLayout(header: .init(isRequired: true, title: "회원선택", limitCount: nil, textCount: nil))
-            .focused($focusedField, equals: .ptDate)
-            .allowsHitTesting(false)
-            .overlay(
-                Rectangle()
-                    .fill(Color.clear)
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .contentShape(Rectangle())
-                    .onTapGesture { send(.tapTraineeDropDown) }
-            )
-            .frame(maxWidth: .infinity)
-            
-            // PtDateDropDown
-            TTextField(
-                placeholder: "2025/01/30",
-                text: Binding(get: {
-                    store.ptDate?.toString(format: .yyyyMMddSlash) ?? ""
-                }, set: { _ in }),
-                textFieldStatus: $store.view_ptDateStatus
-            )
-            .withSectionLayout(header: .init(isRequired: true, title: "PT 날짜", limitCount: nil, textCount: nil))
+            .withSectionLayout(header: .init(isRequired: true, title: "시작 시간", limitCount: nil, textCount: nil))
             .focused($focusedField, equals: .trainee)
             .allowsHitTesting(false)
             .overlay(
@@ -163,80 +217,101 @@ public struct TrainerAddPTSessionView: View {
                     .fill(Color.clear)
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                     .contentShape(Rectangle())
-                    .onTapGesture { send(.tapPtDateDropDown) }
+                    .onTapGesture { send(.tapStartTimeDropDown) }
             )
             .frame(maxWidth: .infinity)
             
-            // StartTime ~ EndTime
-            HStack(alignment: .bottom, spacing: 12) {
-                // StartTime
-                TTextField(
-                    placeholder: "09:00",
-                    text: Binding(get: {
-                        store.startTime?.toString(format: .HHmm) ?? ""
-                    }, set: { _ in }),
-                    textFieldStatus: $store.view_startTimeStatus
-                )
-                .withSectionLayout(header: .init(isRequired: true, title: "시작 시간", limitCount: nil, textCount: nil))
-                .focused($focusedField, equals: .trainee)
-                .allowsHitTesting(false)
-                .overlay(
-                    Rectangle()
-                        .fill(Color.clear)
-                        .frame(maxWidth: .infinity, maxHeight: .infinity)
-                        .contentShape(Rectangle())
-                        .onTapGesture { send(.tapStartTimeDropDown) }
-                )
-                .frame(maxWidth: .infinity)
-                
-                Text("~")
-                    .typographyStyle(.body1Medium, with: .neutral600)
-                    .padding(8)
-                
-                // EndTime
-                TTextField(
-                    placeholder: "10:00",
-                    text: Binding(get: {
-                        store.endTime?.toString(format: .HHmm) ?? ""
-                    }, set: { _ in }),
-                    textFieldStatus: $store.view_endTimeStatus
-                )
-                .withSectionLayout(header: .init(isRequired: true, title: "종료 시간", limitCount: nil, textCount: nil))
-                .focused($focusedField, equals: .endTime)
-                .allowsHitTesting(false)
-                .overlay(
-                    Rectangle()
-                        .fill(Color.clear)
-                        .frame(maxWidth: .infinity, maxHeight: .infinity)
-                        .contentShape(Rectangle())
-                        .onTapGesture { send(.tapEndTimeDropDown) }
-                )
-                .frame(maxWidth: .infinity)
-            }
+            Text("~")
+                .typographyStyle(.body1Medium, with: .neutral600)
+                .padding(8)
             
-            // Time
-            if store.startTime != nil {
-                VStack(alignment: .leading, spacing: 16) {
-                    Text("수업 시간")
-                        .typographyStyle(.body1Bold, with: .neutral900)
-                    
-                    LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible())], spacing: 12) {
-                        ForEach(TrainerAddPTSessionFeature.SessionTime.allCases, id: \.rawValue) { interval in
-                            TButton(
-                                title: "+\(interval.rawValue)분",
-                                config: .medium,
-                                state: store.view_sessionTime == interval.rawValue
-                                ? .default(.primary(isEnabled: true))
-                                : .default(.gray(isEnabled: true)),
-                                action: { send(.tapSessionIntervalButton(interval)) }
-                            )
-                            .frame(height: 50)
+            // EndTime
+            TTextField(
+                placeholder: "10:00",
+                text: Binding(get: {
+                    store.endTime?.toString(format: .HHmm) ?? ""
+                }, set: { _ in }),
+                textFieldStatus: $store.view_endTimeStatus
+            ) {
+                TTextField.RightView(
+                    style: .dropDown(
+                        tintColor: focusedField == .ptDate ? Color.neutral600 : Color.neutral400,
+                        tapAction: { }
+                    )
+                )
+            }
+            .withSectionLayout(header: .init(isRequired: true, title: "종료 시간", limitCount: nil, textCount: nil))
+            .focused($focusedField, equals: .endTime)
+            .allowsHitTesting(false)
+            .overlay(
+                Rectangle()
+                    .fill(Color.clear)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .contentShape(Rectangle())
+                    .onTapGesture { send(.tapEndTimeDropDown) }
+            )
+            .frame(maxWidth: .infinity)
+        }
+    }
+    
+    @ViewBuilder
+    private func TimeChip() -> some View {
+        if store.startTime != nil && store.endTime == nil {
+            VStack(alignment: .leading, spacing: 16) {
+                Text("수업 시간")
+                    .typographyStyle(.body1Bold, with: .neutral900)
+                
+                LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible())], spacing: 12) {
+                    ForEach(TrainerAddPTSessionFeature.SessionTime.allCases, id: \.rawValue) { interval in
+                        Button(action: { send(.tapSessionIntervalButton(interval)) }) {
+                            Text("+\(interval.rawValue)분")
+                                .typographyStyle(.body1Medium, with: store.view_sessionTime == interval.rawValue ? Color.red600 : Color.neutral500)
+                                .padding(.vertical, 13)
+                                .padding(.horizontal, 33)
+                                .frame(maxWidth: .infinity)
+                                .frame(height: 50)
+                                .background(
+                                    RoundedRectangle(cornerRadius: 12)
+                                        .stroke(store.view_sessionTime == interval.rawValue ? Color.red400 : Color.neutral300, lineWidth: 1.5)
+                                        .backgroundStyle(store.view_sessionTime == interval.rawValue ? Color.red50 : Color.common0)
+                                )
                         }
                     }
                 }
             }
-            
-            // Memo
+        }
+    }
+    
+    @ViewBuilder
+    private func TimeResult() -> some View {
+        if store.startTime != nil && store.endTime != nil {
+            HStack(spacing: 8) {
+                Image(.icnClockRed)
+                    .resizable()
+                    .frame(width: 16, height: 16)
+                HStack(spacing: 0) {
+                    Text("총")
+                        .typographyStyle(.body2Medium, with: .neutral700)
+                    Text(" \(store.view_sessionTime ?? 0)분 ")
+                        .typographyStyle(.body2Bold, with: .neutral700)
+                    Text("수업이에요")
+                        .typographyStyle(.body2Medium, with: .neutral700)
+                }
+                Spacer()
+            }
+            .padding(.horizontal, 20)
+            .padding(.vertical, 16)
+            .background(
+                RoundedRectangle(cornerRadius: 8)
+                    .fill(Color.neutral100)
+            )
+        }
+    }
+    
+    @ViewBuilder
+    private func Memo() -> some View {
+        VStack(spacing: 8) {
+            TTextField.Header(isRequired: false, title: "메모하기", limitCount: nil, textCount: nil)
             TTextEditor(
                 placeholder: "PT 수업에서 기억해야 할 것을 메모해보세요",
                 text: $store.memo,
@@ -252,7 +327,6 @@ public struct TrainerAddPTSessionView: View {
             )
             .focused($focusedField, equals: .memo)
         }
-        .padding(.horizontal, 20)
     }
     
     @ViewBuilder

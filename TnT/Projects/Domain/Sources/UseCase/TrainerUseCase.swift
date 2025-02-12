@@ -40,4 +40,20 @@ public struct DefaultTrainerUseCase: TrainerRepository {
     public func getConnectedTraineeInfo(trainerId: Int, traineeId: Int) async throws -> GetConnectedTraineeInfoResponseDTO {
         return try await trainerRepository.getConnectedTraineeInfo(trainerId: trainerId, traineeId: traineeId)
     }
+    
+    public func getMonthlyLessonList(year: Int, month: Int) async throws -> GetMonthlyLessonListResDTO {
+        return try await trainerRepository.getMonthlyLessonList(year: year, month: month)
+    }
+    
+    public func getActiveTraineesList() async throws -> GetActiveTraineesListResDTO {
+        return try await trainerRepository.getActiveTraineesList()
+    }
+    
+    public func postLesson(reqDTO: PostLessonReqDTO) async throws -> PostLessonResDTO {
+        return try await trainerRepository.postLesson(reqDTO: reqDTO)
+    }
+    
+    public func putCompleteLesson(lessonId: Int) async throws -> PutCompleteLessonResDTO {
+        return try await trainerRepository.putCompleteLesson(lessonId: lessonId)
+    }
 }
