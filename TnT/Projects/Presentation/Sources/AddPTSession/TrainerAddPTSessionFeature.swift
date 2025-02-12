@@ -263,7 +263,7 @@ public struct TrainerAddPTSessionFeature {
                           let endDate = combinedDietDateTime(date: state.ptDate, time: state.endTime)?.toString(format: .ISO8601),
                           let traineeId = state.trainee?.id
                     else { return .none }
-
+                    
                     return .run { send in
                         let result = try await trainerRepoUseCase.postLesson(
                             reqDTO: .init(
@@ -279,7 +279,7 @@ public struct TrainerAddPTSessionFeature {
             case .setTraineeList(let trainees):
                 state.traineeList = trainees
                 return .none
-
+                
             case .setNavigating:
                 return .none
             }
@@ -303,26 +303,29 @@ private extension TrainerAddPTSessionFeature {
     
     /// 시작시간 종료시간 업데이트
     func updateTime(
-      state: inout State,
-      field: FocusField,
-      with date: Date
+        state: inout State,
+        field: FocusField,
+        with date: Date
     ) {
-      switch field {
-      case .startTime:
-        state.startTime = date
-        state.view_startTimeStatus = .filled
-      case .endTime:
-        state.endTime = date
-        state.view_endTimeStatus = .filled
-      default:
-        return
-      }
-      
-      if let start = state.startTime, let end = state.endTime,
-         let status = self.validateTimes(startTime: start, endTime: end) {
-        state.view_startTimeStatus = status
-        state.view_endTimeStatus = status
-      }
+        switch field {
+        case .startTime:
+            state.startTime = date
+            state.view_startTimeStatus = .filled
+            // 시작 시간 선택시 종료시간 초기화
+            state.endTime = nil
+            state.view_endTimeStatus = .empty
+        case .endTime:
+            state.endTime = date
+            state.view_endTimeStatus = .filled
+        default:
+            return
+        }
+        
+        if let start = state.startTime, let end = state.endTime,
+           let status = self.validateTimes(startTime: start, endTime: end) {
+            state.view_startTimeStatus = status
+            state.view_endTimeStatus = status
+        }
     }
     
     /// 모든 필드의 상태를 검증하여 "다음" 버튼 활성화 여부를 결정
