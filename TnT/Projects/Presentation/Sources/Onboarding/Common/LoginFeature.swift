@@ -20,13 +20,11 @@ public struct LoginFeature {
         public var userType: UserType?
         public var nickname: String?
         public var socialType: LoginType?
-        public var termAgree: Bool
         public var socialEmail: String?
-        public var postUserEntity: PostSocailEntity?
+        public var postUserEntity: PostSocialEntity?
         public var termState: Bool = false
         public var fcmToken: String?
         @Shared var signUpEntity: PostSignUpEntity
-        public var postUserEntity: PostSocialEntity?
         @Presents var termFeature: TermFeature.State?
         
         public init(
@@ -41,11 +39,9 @@ public struct LoginFeature {
     @Dependency(\.userUseCase) private var userUseCase: UserUseCase
     @Dependency(\.userUseRepoCase) private var userUseCaseRepo: UserRepository
     @Dependency(\.socialLogInUseCase) private var socialLoginUseCase: SocialLoginUseCase
-    @Dependency(\.keyChainManager) var keyChainManager
+    @Dependency(\.keyChainManager) var keyChainManager: KeyChainManager
     
-    public enum Action: ViewAction,  BindableAction {
-        /// 바인딩할 액션을 처리
-        case binding(BindingAction<State>)
+    public enum Action: ViewAction {
         /// 뷰에서 일어나는 액션을 처리합니다.(카카오,애플로그인 실행)
         case view(View)
         /// 하위 화면에서 일어나는 액션을 처리합니다
@@ -65,7 +61,6 @@ public struct LoginFeature {
         public enum View: Equatable {
             case tappedAppleLogin
             case tappedKakaoLogin
-            case goTerm
         }
         
         @CasePathable
@@ -85,14 +80,13 @@ public struct LoginFeature {
                 case .tappedAppleLogin:
                     return .run { @Sendable send in
                         guard let result = await socialLoginUseCase.appleLogin() else { return }
-                        let fcmToken: String? = try? KeyChainManager.read(for: .apns)
+                        let fcmToken: String? = try keyChainManager.read(for: .apns)
                         
                         /// 서버 <-> 소셜 로그인을 위한 객체 생성
-                        let entity: PostSocailEntity = PostSocailEntity(
-                            socialType: "APPLE",
+                        let entity: PostSocialEntity = PostSocialEntity(
+                            socialType: .apple,
                             fcmToken: fcmToken ?? "",
                             socialAccessToken: "",
-                            authorizationCode: result.authorizationCode,
                             idToken: result.identityToken
                         )
                         
@@ -102,23 +96,18 @@ public struct LoginFeature {
                 case .tappedKakaoLogin:
                     return .run { @Sendable send in
                         guard let result = await socialLoginUseCase.kakaoLogin() else { return }
-                        let fcmToken: String? = try? KeyChainManager.read(for: .apns)
+                        let fcmToken: String? = try keyChainManager.read(for: .apns)
                         
                         /// 서버 <-> 소셜 로그인을 위한 객체 생성
-                        let entity: PostSocailEntity = PostSocailEntity(
-                            socialType: "KAKAO",
+                        let entity: PostSocialEntity = PostSocialEntity(
+                            socialType: .kakao,
                             fcmToken: fcmToken ?? "",
                             socialAccessToken: result.accessToken,
-                            authorizationCode: "",
                             idToken: ""
                         )
                         
                         await send(.postSocialLogin(entity: entity))
                     }
-                    
-                case .goTerm:
-                    state.termState = true
-                    return .send(.setNavigating(.term))
                 }
                 
             case .subFeature(.termAction(.presented(.setNavigating))):
@@ -136,7 +125,8 @@ public struct LoginFeature {
                 return .none
                 
             case .postSocialLogin(let entity):
-                let post = entity.toDTO()
+                let post: PostSocialLoginReqDTO = entity.toDTO()
+                
                 return .run { send in
                     do {
                         let result = try await userUseCaseRepo.postSocialLogin(post)
@@ -153,11 +143,12 @@ public struct LoginFeature {
                             print("unknown 타입이에요 토스트해줏요")
                         }
                     } catch {
-                        await send(.view(.goTerm))
+                        await send(.socialLoginFail)
                     }
                 }
                 
-            case .setNavigating:
+            case .socialLoginFail:
+                print("네트워크 에러 발생")
                 return .none
                 
             case .updateSignUpEntityWithSocialInfo(let res):

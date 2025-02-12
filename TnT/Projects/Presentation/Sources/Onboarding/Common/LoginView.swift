@@ -36,23 +36,12 @@ public struct LoginView: View {
         }
         .padding(.horizontal, 28)
         .navigationBarBackButtonHidden()
-<<<<<<< TNT-158-trainerSignup
-//        .sheet(isPresented: .init(
-//             get: { store.state.termState },
-//             set: { _ in store.send(.view(.goTerm)) }
-//         )) {
-//             TermView(store: Store(initialState: TermFeature.State(), reducer: {
-//                 TermFeature()
-//             }))
-//         }
-=======
         .sheet(item: $store.scope(state: \.termFeature, action: \.subFeature.termAction)) { store in
             TermView(store: store)
                 .padding(.top, 10)
                 .presentationDetents([.height(512)])
                 .presentationDragIndicator(.visible)
         }
->>>>>>> develop
     }
     
     @ViewBuilder

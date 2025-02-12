@@ -55,7 +55,10 @@ public struct TermFeature {
                     return .none
                     
                 case .nextButtonTapped:
-                    return .run { _ in await self.dismiss() }
+                    return .concatenate(
+//                        .run { _ in await self.dismiss() },
+                        .send(.setNavigating)
+                    )
                 }
                 
             case .setNavigating:

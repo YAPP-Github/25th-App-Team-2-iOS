@@ -26,7 +26,8 @@ public extension PostSocialLoginResDTO {
             socialId: self.socialId,
             socialEmail: self.socialEmail,
             socialType: self.socialType,
-            isSignUp: self.isSignUp
+            isSignUp: self.isSignUp,
+            membertype: self.memberType
         )
     }
 }
@@ -52,10 +53,9 @@ public extension PostSignUpEntity {
             goalContents: self.goalContents ?? []
         )
     }
-<<<<<<< TNT-158-trainerSignup
     
     /// `PostSocialLoginResDTO` → `PostSocialLoginResEntity` 변환
-    public static func toResEntity(from dto: PostSocialLoginResDTO) -> PostSocialLoginResEntity {
+    static func toResEntity(from dto: PostSocialLoginResDTO) -> PostSocialLoginResEntity {
         return PostSocialLoginResEntity(
             sessionId: dto.sessionId,
             socialId: dto.socialId,
@@ -65,29 +65,4 @@ public extension PostSignUpEntity {
             membertype: dto.memberType
         )
     }
-    
-    /// `PostSocialLoginResEntity` → `PostSocialLoginResDTO` 변환
-    public static func toDTO(from entity: PostSocialLoginResEntity) -> PostSocialLoginResDTO {
-            return PostSocialLoginResDTO(
-                sessionId: entity.sessionId,
-                socialId: entity.socialId,
-                socialEmail: entity.socialEmail,
-                socialType: entity.socialType,
-                isSignUp: entity.isSignUp,
-                memberType: entity.membertype
-            )
-        }
-=======
-}
-
-public extension PostSignUpResDTO {
-    func toEntity() -> PostSignUpResEntity {
-        return .init(
-            memberType: self.memberType,
-            sessionId: self.sessionId,
-            name: self.name,
-            profileImageUrl: self.profileImageUrl
-        )
-    }
->>>>>>> develop
 }

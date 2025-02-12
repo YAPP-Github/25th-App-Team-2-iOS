@@ -34,9 +34,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     // MARK: - APNs 등록 성공
     func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
         let tokenString = deviceToken.map { String(format: "%02.2hhx", $0) }.joined()
-
         do {
-            try KeyChainManager.save(deviceToken, for: .apns)
+            try keyChainManager.save(deviceToken, for: .apns)
         } catch {
             print("KeyChain 저장 중 오류 발생 \(error.localizedDescription)")
         }
@@ -72,7 +71,7 @@ extension AppDelegate: MessagingDelegate {
         }
 
         do {
-            try KeyChainManager.save(fcmToken, for: .apns)
+            try keyChainManager.save(fcmToken, for: .apns)
         } catch {
             print("❌ FCM 토큰 저장 중 오류 발생: \(error.localizedDescription)")
         }

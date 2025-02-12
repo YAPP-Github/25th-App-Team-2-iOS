@@ -50,5 +50,5 @@ public struct PostSocialLoginResEntity: Equatable {
     /// 가입 여부 (`true`: 이미 가입됨, `false`: 미가입)
     public let isSignUp: Bool
     /// 멤버타입
-    public let membertype: MemberType
+    public let membertype: MemberTypeResDTO
 }
