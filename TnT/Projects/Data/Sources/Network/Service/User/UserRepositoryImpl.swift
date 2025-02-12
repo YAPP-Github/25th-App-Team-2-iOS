@@ -50,4 +50,9 @@ public struct UserRepositoryImpl: UserRepository {
     public func postWithdrawal() async throws -> PostWithdrawalResDTO {
         return try await networkService.request(UserTargetType.postWithdrawal, decodingType: PostWithdrawalResDTO.self)
     }
+    
+    /// 마이페이지 요청을 수행
+    public func getMyPageInfo() async throws -> GetMyPageInfoResDTO {
+        return try await networkService.request(UserTargetType.getMyPageInfo, decodingType: GetMyPageInfoResDTO.self)
+    }
 }

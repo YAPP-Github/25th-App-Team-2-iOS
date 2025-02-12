@@ -104,6 +104,50 @@ public struct PostLogoutResDTO: Decodable {
 /// 회원탈퇴 응답 DTO
 public typealias PostWithdrawalResDTO = EmptyResponse
 
+/// 마이페이지 정보 응답 DTO
+public struct GetMyPageInfoResDTO: Decodable {
+    /// 회원 이름
+    public let name: String
+    /// 이메일
+    public let email: String
+    /// 프로필 사진 URL
+    public let profileImageUrl: String
+    /// 회원 타입
+    public let memberType: MemberTypeResDTO
+    /// 소셜 타입
+    public let socialType: String
+    /// 트레이너 DTO
+    public let trainer: TrainerInfoResDTO?
+    /// 트레이니 DTO
+    public let trainee: TraineeInfoResDTO?
+}
+
+/// 트레이너 정보 표시에 사용되는 TrainerInfoDTO
+public struct TrainerInfoResDTO: Decodable {
+    /// 관리 중인 회원
+    public let activeTraineeCount: Int?
+    /// 함께했던 회원
+    public let totalTraineeCount: Int?
+}
+
+/// 트레이니 정보 표시에 사용되는 TraineeInfoDTO
+public struct TraineeInfoResDTO: Decodable {
+    /// 트레이니 ID
+    public let id: Int
+    /// 트레이니 이름
+    public let name: String
+    /// 프로필 사진 URL
+    public let profileImageUrl: String
+    /// 진행한 PT 횟수
+    public let finishedPtCount: Int
+    /// 총 PT 횟수
+    public let totalPtCount: Int
+    /// 메모
+    public let memo: String?
+    /// PT 목표
+    public let ptGoals: [String]
+}
+
 public extension PostSignUpResDTO {
     func toEntity() -> PostSignUpResEntity {
         return .init(

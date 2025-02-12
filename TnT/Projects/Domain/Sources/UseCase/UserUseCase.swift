@@ -28,7 +28,7 @@ public protocol UserUseCase {
 }
 
 // MARK: - Default 구현체
-public struct DefaultUserUseCase: UserRepository, UserUseCase {
+public struct DefaultUserUseCase: UserUseCase {
     
     public let userRepostiory: UserRepository
     
@@ -67,7 +67,7 @@ public struct DefaultUserUseCase: UserRepository, UserUseCase {
 }
 
 // MARK: - Repository
-extension DefaultUserUseCase {
+extension DefaultUserUseCase: UserRepository {
     public func getSessionCheck() async throws -> GetSessionCheckResDTO {
         return try await userRepostiory.getSessionCheck()
     }
@@ -86,5 +86,9 @@ extension DefaultUserUseCase {
     
     public func postWithdrawal() async throws -> PostWithdrawalResDTO {
         return try await userRepostiory.postWithdrawal()
+    }
+    
+    public func getMyPageInfo() async throws -> GetMyPageInfoResDTO {
+        return try await userRepostiory.getMyPageInfo()
     }
 }
