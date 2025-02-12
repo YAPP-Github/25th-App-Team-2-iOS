@@ -84,6 +84,11 @@ public struct TraineeMainFlowFeature {
                     // 특정 화면 append
                     return .none
                     
+                    /// 식단 기록 화면 등록 -> 홈화면으로 이동
+                case .element(id: _, action: .addDietRecordPage(.setNavigating)):
+                    state.path.removeLast()
+                    return .none
+                    
                     /// 마이페이지 초대코드 입력화면 다음 버튼 탭 - > PT 정보 입력 화면 or 홈 이동
                 case .element(_, action: .traineeInvitationCodeInput(.setNavigating(let screen))):
                     switch screen {

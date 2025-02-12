@@ -34,4 +34,6 @@ public enum TDateFormat: String {
     case a_HHmm = "a HH:mm"
     /// "17:00"
     case HHmm = "HH:mm"
+    /// "2024-02-12T15:30:00Z"
+    case ISO8601 = "yyyy-MM-dd'T'HH:mm:ss'Z'"
 }

@@ -13,7 +13,7 @@ extension DietType {
     /// 해당 식단을 표시하는 이모지 입니다
     var emoji: String {
         switch self {
-        case .morning:
+        case .breakfast:
             "🌞"
         case .lunch:
             "⛅"

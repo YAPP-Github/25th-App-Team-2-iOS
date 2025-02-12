@@ -6,6 +6,8 @@
 //  Copyright © 2025 yapp25thTeamTnT. All rights reserved.
 //
 
+import Foundation
+
 // MARK: - TraineeUseCase 프로토콜
 public protocol TraineeUseCase {
     /// 입력 초대 코드 검증
@@ -65,5 +67,9 @@ public struct DefaultTraineeUseCase: TraineeUseCase {
 extension DefaultTraineeUseCase: TraineeRepository {
     public func postConnectTrainer(_ reqDTO: PostConnectTrainerReqDTO) async throws -> PostConnectTrainerResDTO {
         return try await traineeRepository.postConnectTrainer(reqDTO)
+    }
+    
+    public func postTraineeDietRecord(_ reqDTO: PostTraineeDietRecordReqDTO, imgData: Data?) async throws -> PostTraineeDietRecordResDTO {
+        return try await traineeRepository.postTraineeDietRecord(reqDTO, imgData: imgData)
     }
 }

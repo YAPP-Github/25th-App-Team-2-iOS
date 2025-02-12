@@ -31,3 +31,23 @@ public struct PostConnectTrainerReqDTO: Encodable {
         self.finishedPtCount = finishedPtCount
     }
 }
+
+/// 트레이니 식단 기록 요청 DTO
+public struct PostTraineeDietRecordReqDTO: Encodable {
+    /// 식단 dateTime
+    public let date: String
+    /// 식단 타입
+    public let dietType: String
+    /// 식단 메모
+    public let memo: String
+    
+    public init(
+        date: String,
+        dietType: String,
+        memo: String
+    ) {
+        self.date = date
+        self.dietType = dietType
+        self.memo = memo
+    }
+}

@@ -83,11 +83,14 @@ public struct TraineeAddDietRecordFeature {
         }
     }
     
+    @Dependency(\.traineeRepoUseCase) private var traineeRepoUseCase
     @Dependency(\.dismiss) private var dismiss
     
     public enum Action: Sendable, ViewAction {
         /// 뷰에서 발생한 액션을 처리합니다.
         case view(View)
+        /// api 콜 액션을 처리합니다
+        case api(APIAction)
         /// 선택된 이미지 데이터 저장
         case imagePicked(Data?)
         /// 네비게이션 여부 설정
@@ -118,6 +121,12 @@ public struct TraineeAddDietRecordFeature {
             /// 포커스 상태 변경
             case setFocus(FocusField?, FocusField?)
         }
+        
+        @CasePathable
+        public enum APIAction: Sendable {
+            /// 식단 등록 API
+            case registerDietRecord
+        }
     }
     
     public init() {}
@@ -129,7 +138,9 @@ public struct TraineeAddDietRecordFeature {
             switch action {
             case .view(let action):
                 switch action {
-                case .binding(\.dietDate), .binding(\.dietTime), .binding(\.dietType):
+                case .binding(\.dietDate),
+                        .binding(\.dietTime),
+                        .binding(\.dietType):
                     return self.validateAllFields(&state)
                     
                 case .binding(\.dietInfo):
@@ -139,14 +150,15 @@ public struct TraineeAddDietRecordFeature {
                 case .binding(\.view_photoPickerItem):
                     let item: PhotosPickerItem? = state.view_photoPickerItem
                     return .run { [item] send in
-                        if let item, let data = try? await item.loadTransferable(type: Data.self) {
+                        if let item,
+                           let data = try? await item.loadTransferable(type: Data.self) {
                             await send(.imagePicked(data))
                         }
                     }
-
+                    
                 case .binding:
                     return .none
-                
+                    
                 case .tapNavBackButton:
                     if state.view_isSubmitButtonEnabled {
                         return self.setPopUpStatus(&state, status: .cancelDietAdd)
@@ -164,11 +176,11 @@ public struct TraineeAddDietRecordFeature {
                 case .tapDietDateDropDown:
                     state.view_bottomSheetItem = .datePicker(.dietDate)
                     return .send(.view(.setFocus(state.view_focusField, .dietDate)))
-
+                    
                 case .tapDietTimeDropDown:
                     state.view_bottomSheetItem = .timePicker(.dietTime)
                     return .send(.view(.setFocus(state.view_focusField, .dietTime)))
-                             
+                    
                 case let .tapBottomSheetSubmitButton(field, date):
                     state.view_bottomSheetItem = nil
                     
@@ -193,7 +205,7 @@ public struct TraineeAddDietRecordFeature {
                     return self.validateAllFields(&state)
                     
                 case .tapSubmitButton:
-                    return .send(.setNavigating)
+                    return .send(.api(.registerDietRecord))
                     
                 case .tapPopUpSecondaryButton(let popUp):
                     guard popUp != nil else { return .none }
@@ -202,11 +214,29 @@ public struct TraineeAddDietRecordFeature {
                 case .tapPopUpPrimaryButton(let popUp):
                     guard popUp != nil else { return .none }
                     return setPopUpStatus(&state, status: nil)
-                
+                    
                 case let .setFocus(oldFocus, newFocus):
                     guard oldFocus != newFocus else { return .none }
                     state.view_focusField = newFocus
                     return .none
+                }
+                
+            case .api(let action):
+                switch action {
+                case .registerDietRecord:
+                    guard let date = combinedDietDateTime(date: state.dietDate, time: state.dietTime)?.toString(format: .ISO8601),
+                          let dietType = state.dietType?.rawValue else { return .none }
+                    return .run { [state] send in
+                        let result = try await traineeRepoUseCase.postTraineeDietRecord(
+                            .init(
+                                date: date,
+                                dietType: dietType,
+                                memo: state.dietInfo
+                            ),
+                            imgData: state.dietImageData
+                        )
+                        await send(.setNavigating)
+                    }
                 }
                 
             case .imagePicked(let imgData):
@@ -235,7 +265,8 @@ private extension TraineeAddDietRecordFeature {
         guard state.dietDate != nil else { return .none }
         guard state.dietTime != nil else { return .none }
         guard state.dietType != nil else { return .none }
-
+        guard state.dietInfo != nil else { return .none }
+        
         state.view_isSubmitButtonEnabled = true
         return .none
     }
@@ -246,6 +277,24 @@ private extension TraineeAddDietRecordFeature {
         state.view_popUp = status
         state.view_isPopUpPresented = status != nil
         return .none
+    }
+    
+    /// dietDate와 dietTime을 결합하여 최종 `Date`를 생성
+    func combinedDietDateTime(date: Date?, time: Date?) -> Date? {
+        guard let date = date, let time = time else { return nil }
+        
+        let calendar = Calendar.current
+        let dateComponents = calendar.dateComponents([.year, .month, .day], from: date)
+        let timeComponents = calendar.dateComponents([.hour, .minute, .second], from: time)
+        
+        return calendar.date(from: DateComponents(
+            year: dateComponents.year,
+            month: dateComponents.month,
+            day: dateComponents.day,
+            hour: timeComponents.hour,
+            minute: timeComponents.minute,
+            second: timeComponents.second
+        ))
     }
 }
 
@@ -317,7 +366,6 @@ public extension TraineeAddDietRecordFeature {
                 return nil
             case .cancelDietAdd:
                 return .tapPopUpSecondaryButton(popUp: self)
-                return nil
             }
         }
         

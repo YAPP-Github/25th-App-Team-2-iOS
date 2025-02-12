@@ -254,20 +254,24 @@ public struct TraineeAddDietRecordView: View {
     
     @ViewBuilder
     private func DietInfoSection() -> some View {
-        TTextEditor(
-            placeholder: "식단에 대한 정보를 입력해주세요!",
-            text: $store.dietInfo,
-            textEditorStatus: $store.view_dietInfoStatus,
-            footer: {
-                .init(
-                    textLimit: 100,
-                    status: $store.view_dietInfoStatus,
-                    textCount: store.dietInfo.count,
-                    warningText: "100자 미만으로 입력해주세요"
-                )
-            }
-        )
-        .focused($focusedField, equals: .dietInfo)
+        VStack(alignment: .leading, spacing: 8) {
+            TTextField.Header(isRequired: true, title: "메모하기", limitCount: nil, textCount: nil)
+            
+            TTextEditor(
+                placeholder: "식단에 대한 정보를 입력해주세요!",
+                text: $store.dietInfo,
+                textEditorStatus: $store.view_dietInfoStatus,
+                footer: {
+                    .init(
+                        textLimit: 100,
+                        status: $store.view_dietInfoStatus,
+                        textCount: store.dietInfo.count,
+                        warningText: "100자 미만으로 입력해주세요"
+                    )
+                }
+            )
+            .focused($focusedField, equals: .dietInfo)
+        }
     }
     
     @ViewBuilder

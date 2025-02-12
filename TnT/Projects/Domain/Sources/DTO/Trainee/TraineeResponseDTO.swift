@@ -19,3 +19,6 @@ public struct PostConnectTrainerResDTO: Decodable {
     /// 트레이니 프로필 이미지 URL
     public let traineeProfileImageUrl: String
 }
+
+/// 트레이니 식단 기록 응답 DTO
+public typealias PostTraineeDietRecordResDTO = EmptyResponse
