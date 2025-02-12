@@ -114,6 +114,11 @@ public struct TraineeMainFlowFeature {
                     )
                     return .none
                     
+                    /// 연결 완료 화면 -> 홈으로 이동
+                case .element(id: _, action: .traineeConnectionComplete(.setNavigating)):
+                    state.path.removeLast(2)
+                    return .none
+                    
                 default:
                     return .none
                 }
