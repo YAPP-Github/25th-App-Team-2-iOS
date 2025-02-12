@@ -16,4 +16,14 @@ public struct PostLessonReqDTO: Encodable {
     let end: String
     /// 트레이니 id
     let traineeId: Int
+    
+    public init(
+        start: String,
+        end: String,
+        traineeId: Int
+    ) {
+        self.start = start
+        self.end = end
+        self.traineeId = traineeId
+    }
 }
