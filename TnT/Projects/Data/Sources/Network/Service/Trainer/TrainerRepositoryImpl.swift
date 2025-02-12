@@ -34,7 +34,7 @@ public struct TrainerRepositoryImpl: TrainerRepository {
     
     public func getReissuanceInvitationCode() async throws -> GetReissuanceInvitationCodeDTO {
         return try await networkService.request(
-            TrainerTargetType.getReissuanceInvitationCode,
+            TrainerTargetType.putReissuanceInvitationCode,
             decodingType: GetReissuanceInvitationCodeDTO.self
         )
     }
@@ -46,6 +46,10 @@ public struct TrainerRepositoryImpl: TrainerRepository {
         )
     }
     
+    public func getMonthlyLessonList(year: Int, month: Int) async throws -> GetMonthlyLessonListResDTO {
+        return try await networkService.request(TrainerTargetType.getMonthlyLessonList(year: year, month: month), decodingType: GetMonthlyLessonListResDTO.self)
+    }
+    
     public func getMembersList() async throws -> GetMembersListDTO {
         return try await networkService.request(
             TrainerTargetType.getMemebersList,
@@ -55,5 +59,17 @@ public struct TrainerRepositoryImpl: TrainerRepository {
     
     public func getConnectedTraineeInfo(trainerId: Int, traineeId: Int) async throws -> GetConnectedTraineeInfoResponseDTO {
         return try await networkService.request(TrainerTargetType.getConnectedTraineeInfo(trainerId: trainerId, traineeId: traineeId), decodingType: GetConnectedTraineeInfoResponseDTO.self)
+    }
+    
+    public func getActiveTraineesList() async throws -> GetActiveTraineesListResDTO {
+        return try await networkService.request(TrainerTargetType.getActiveTraineesList, decodingType: GetActiveTraineesListResDTO.self)
+    }
+    
+    public func postLesson(reqDTO: PostLessonReqDTO) async throws -> PostLessonResDTO {
+        return try await networkService.request(TrainerTargetType.postLesson(reqDTO: reqDTO), decodingType: PostLessonResDTO.self)
+    }
+    
+    public func putCompleteLesson(lessonId: Int) async throws -> PutCompleteLessonResDTO {
+        return try await networkService.request(TrainerTargetType.putCompleteLesson(lessonId: lessonId), decodingType: PutCompleteLessonResDTO.self)
     }
 }

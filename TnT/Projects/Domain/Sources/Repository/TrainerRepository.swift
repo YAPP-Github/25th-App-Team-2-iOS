@@ -26,9 +26,21 @@ public protocol TrainerRepository {
     /// 트레이너 캘린더에 특정 날짜의 수업 정보 가져오기
     func getDateSessionList(date: String) async throws -> GetDateSessionListDTO
     
+    /// 달력 스케줄 카운트 표시에 필요한 PT 리스트 불러오기
+    func getMonthlyLessonList(year: Int, month: Int) async throws -> GetMonthlyLessonListResDTO
+    
     /// 회원 조희
     func getMembersList() async throws -> GetMembersListDTO
     
     /// 연결 완료된 트레이니 정보 불러오기
     func getConnectedTraineeInfo(trainerId: Int, traineeId: Int) async throws -> GetConnectedTraineeInfoResponseDTO
+    
+    /// 관리 중인 회원 목록 요청
+    func getActiveTraineesList() async throws -> GetActiveTraineesListResDTO
+    
+    /// PT 수업 추가
+    func postLesson(reqDTO: PostLessonReqDTO) async throws -> PostLessonResDTO
+    
+    /// PT 수업 완료 처리
+    func putCompleteLesson(lessonId: Int) async throws -> PutCompleteLessonResDTO
 }
