@@ -10,6 +10,6 @@
 public enum Environment {
     public static let appName: String = "TnTApp"
     public static let organizationName = "yapp25thTeamTnT"
-    public static let destinations: Destinations = .iOS
+    public static let destinations: Destinations = [.iPhone]
     public static let deploymentTarget: DeploymentTargets = .iOS("17.0")
 }
