@@ -111,12 +111,14 @@ public extension KeyChainManager {
     enum Key {
         case sessionId
         case userId
+        case apns
         
         /// 키 고유 문자열
         var keyString: String {
             switch self {
             case .sessionId: return "com.TnT.sessionId"
             case .userId: return "com.TnT.userId"
+            case .apns: return "come.TnT.apns"
             }
         }
         
@@ -125,6 +127,7 @@ public extension KeyChainManager {
             switch self {
             case .sessionId: return KeyConverter(type: String.self, convert: { $0 })
             case .userId: return KeyConverter(type: Int.self, convert: { Int($0) })
+            case .apns: return KeyConverter(type: String.self, convert: { $0 })
             }
         }
     }

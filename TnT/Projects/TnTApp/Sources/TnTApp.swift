@@ -7,6 +7,7 @@
 //
 
 import SwiftUI
+import KakaoSDKAuth
 
 import Presentation
 import ComposableArchitecture
@@ -14,6 +15,8 @@ import DesignSystem
 
 @main
 struct ToyProjectApp: App {
+    
+    @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     
     init() {
         DesignSystemFontFamily.registerAllCustomFonts()
@@ -27,6 +30,11 @@ struct ToyProjectApp: App {
                     reducer: { AppFlowCoordinatorFeature()
                     })
             )
+             .onOpenURL(perform: { url in
+                if AuthApi.isKakaoTalkLoginUrl(url) {
+                    debugPrint(AuthController.handleOpenUrl(url: url))
+                }
+            })
         }
     }
 }

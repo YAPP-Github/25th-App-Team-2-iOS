@@ -27,6 +27,16 @@ public struct PostSocialLoginResDTO: Decodable {
     public let isSignUp: Bool
     /// 회원 타입 (TRAINER, TRAINEE, UNREGISTERED)
     public let memberType: MemberTypeResDTO
+    
+    /// Coding Keys를 활용해 Decodable 처리
+    enum CodingKeys: String, CodingKey {
+        case sessionId
+        case socialId
+        case socialEmail
+        case socialType
+        case isSignUp
+        case memberType
+    }
 }
 
 /// Trainer, Trainee, Unregistered로 구분되는 MemberTypeDTO
@@ -46,15 +56,46 @@ public enum MemberTypeResDTO: String, Decodable {
 /// 회원 정보 응답 DTO
 public struct PostSignUpResDTO: Decodable {
     /// 회원 타입 (trainer, trainee)
-    let memberType: String
+    public let memberType: String
     /// 세션 ID
-    let sessionId: String
+    public let sessionId: String
     /// 회원 이름
-    let name: String
+    public let name: String
     /// 프로필 이미지 URL
-    let profileImageUrl: String?
+    public let profileImageUrl: String?
+    
+    public init(
+        memberType: String,
+        sessionId: String,
+        name: String,
+        profileImageUrl: String?
+    ) {
+        self.memberType = memberType
+        self.sessionId = sessionId
+        self.name = name
+        self.profileImageUrl = profileImageUrl
+    }
 }
 
+public enum MemberType: String, Decodable {
+    case trainer = "TRAINER"
+    case trainee = "TRAINEE"
+    case unregistered = "UNREGISTERED"
+    
+    public init?(rawValue: String) {
+        switch rawValue.lowercased() {
+        case "TRAINER":
+            self = .trainer
+        case "TRAINEE":
+            self = .trainee
+        case "UNREGISTERED":
+            self = .unregistered
+        default:
+            return nil
+        }
+    }
+}
+    
 /// 로그아웃 응답 DTO
 public struct PostLogoutResDTO: Decodable {
     let sessionId: String
@@ -62,3 +103,14 @@ public struct PostLogoutResDTO: Decodable {
 
 /// 회원탈퇴 응답 DTO
 public typealias PostWithdrawalResDTO = EmptyResponse
+
+public extension PostSignUpResDTO {
+    func toEntity() -> PostSignUpResEntity {
+        return .init(
+            memberType: self.memberType,
+            sessionId: self.sessionId,
+            name: self.name,
+            profileImageUrl: self.profileImageUrl
+        )
+    }
+}

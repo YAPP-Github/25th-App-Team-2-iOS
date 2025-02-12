@@ -26,7 +26,8 @@ public extension PostSocialLoginResDTO {
             socialId: self.socialId,
             socialEmail: self.socialEmail,
             socialType: self.socialType,
-            isSignUp: self.isSignUp
+            isSignUp: self.isSignUp,
+            membertype: self.memberType
         )
     }
 }
@@ -52,15 +53,16 @@ public extension PostSignUpEntity {
             goalContents: self.goalContents ?? []
         )
     }
-}
-
-public extension PostSignUpResDTO {
-    func toEntity() -> PostSignUpResEntity {
-        return .init(
-            memberType: self.memberType,
-            sessionId: self.sessionId,
-            name: self.name,
-            profileImageUrl: self.profileImageUrl
+    
+    /// `PostSocialLoginResDTO` → `PostSocialLoginResEntity` 변환
+    static func toResEntity(from dto: PostSocialLoginResDTO) -> PostSocialLoginResEntity {
+        return PostSocialLoginResEntity(
+            sessionId: dto.sessionId,
+            socialId: dto.socialId,
+            socialEmail: dto.socialEmail,
+            socialType: dto.socialType,
+            isSignUp: dto.isSignUp,
+            membertype: dto.memberType
         )
     }
 }

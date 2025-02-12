@@ -40,6 +40,7 @@ public struct TermFeature {
     
     public init() { }
     
+    @Dependency(\.dismiss) var dismiss
     public var body: some ReducerOf<Self> {
         Reduce { state, action in
             switch action {
@@ -54,7 +55,10 @@ public struct TermFeature {
                     return .none
                     
                 case .nextButtonTapped:
-                    return .send(.setNavigating)
+                    return .concatenate(
+//                        .run { _ in await self.dismiss() },
+                        .send(.setNavigating)
+                    )
                 }
                 
             case .setNavigating:

@@ -11,13 +11,20 @@ import SwiftUI
 
 import Domain
 import DIContainer
+import Data
 
 @Reducer
 public struct LoginFeature {
     @ObservableState
     public struct State: Equatable {
-        @Shared var signUpEntity: PostSignUpEntity
+        public var userType: UserType?
+        public var nickname: String?
+        public var socialType: LoginType?
+        public var socialEmail: String?
         public var postUserEntity: PostSocialEntity?
+        public var termState: Bool = false
+        public var fcmToken: String?
+        @Shared var signUpEntity: PostSignUpEntity
         @Presents var termFeature: TermFeature.State?
         
         public init(
@@ -32,7 +39,7 @@ public struct LoginFeature {
     @Dependency(\.userUseCase) private var userUseCase: UserUseCase
     @Dependency(\.userUseRepoCase) private var userUseCaseRepo: UserRepository
     @Dependency(\.socialLogInUseCase) private var socialLoginUseCase: SocialLoginUseCase
-    @Dependency(\.keyChainManager) var keyChainManager
+    @Dependency(\.keyChainManager) var keyChainManager: KeyChainManager
     
     public enum Action: ViewAction {
         /// 뷰에서 일어나는 액션을 처리합니다.(카카오,애플로그인 실행)
@@ -72,12 +79,14 @@ public struct LoginFeature {
                 switch view {
                 case .tappedAppleLogin:
                     return .run { @Sendable send in
-                        let result = await socialLoginUseCase.appleLogin()
-                        guard let result else { return }
+                        guard let result = await socialLoginUseCase.appleLogin() else { return }
+                        let fcmToken: String? = try keyChainManager.read(for: .apns)
                         
-                        let entity = PostSocialEntity(
+                        /// 서버 <-> 소셜 로그인을 위한 객체 생성
+                        let entity: PostSocialEntity = PostSocialEntity(
                             socialType: .apple,
-                            fcmToken: "asdfg", // TODO: FCM 로직 나오면 추후 수정
+                            fcmToken: fcmToken ?? "",
+                            socialAccessToken: "",
                             idToken: result.identityToken
                         )
                         
@@ -86,13 +95,15 @@ public struct LoginFeature {
                     
                 case .tappedKakaoLogin:
                     return .run { @Sendable send in
-                        let result = await socialLoginUseCase.kakaoLogin()
-                        guard let result else { return }
+                        guard let result = await socialLoginUseCase.kakaoLogin() else { return }
+                        let fcmToken: String? = try keyChainManager.read(for: .apns)
                         
-                        let entity = PostSocialEntity(
+                        /// 서버 <-> 소셜 로그인을 위한 객체 생성
+                        let entity: PostSocialEntity = PostSocialEntity(
                             socialType: .kakao,
-                            fcmToken: "asdfg", // TODO: FCM 로직 나오면 추후 수정
-                            socialAccessToken: result.accessToken
+                            fcmToken: fcmToken ?? "",
+                            socialAccessToken: result.accessToken,
+                            idToken: ""
                         )
                         
                         await send(.postSocialLogin(entity: entity))
@@ -114,7 +125,8 @@ public struct LoginFeature {
                 return .none
                 
             case .postSocialLogin(let entity):
-                let post = entity.toDTO()
+                let post: PostSocialLoginReqDTO = entity.toDTO()
+                
                 return .run { send in
                     do {
                         let result = try await userUseCaseRepo.postSocialLogin(post)
