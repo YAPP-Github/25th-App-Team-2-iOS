@@ -35,6 +35,7 @@ public struct TrainerAddPTSessionView: View {
                 ),
                 leftAction: { send(.tapNavBackButton) }
             )
+            TDivider(height: 1, color: .neutral200)
             ScrollView {
                 VStack(alignment: .leading, spacing: 0) {
                     Header()
@@ -103,6 +104,7 @@ public struct TrainerAddPTSessionView: View {
                 send(.setFocus(oldValue, newValue))
             }
         }
+        .onAppear { send(.onAppear) }
     }
     
     // MARK: - Sections
@@ -222,15 +224,19 @@ public struct TrainerAddPTSessionView: View {
                     
                     LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible())], spacing: 12) {
                         ForEach(TrainerAddPTSessionFeature.SessionTime.allCases, id: \.rawValue) { interval in
-                            TButton(
-                                title: "+\(interval.rawValue)분",
-                                config: .medium,
-                                state: store.view_sessionTime == interval.rawValue
-                                ? .default(.primary(isEnabled: true))
-                                : .default(.gray(isEnabled: true)),
-                                action: { send(.tapSessionIntervalButton(interval)) }
-                            )
-                            .frame(height: 50)
+                            Button(action: { send(.tapSessionIntervalButton(interval)) }) {
+                                Text("+\(interval.rawValue)분")
+                                    .typographyStyle(.body1Medium, with: store.view_sessionTime == interval.rawValue ? Color.red600 : Color.neutral500)
+                                    .padding(.vertical, 13)
+                                    .padding(.horizontal, 33)
+                                    .frame(maxWidth: .infinity)
+                                    .frame(height: 50)
+                                    .background(
+                                        RoundedRectangle(cornerRadius: 12)
+                                            .stroke(store.view_sessionTime == interval.rawValue ? Color.red400 : Color.neutral300, lineWidth: 1.5)
+                                            .backgroundStyle(store.view_sessionTime == interval.rawValue ? Color.red50 : Color.common0)
+                                    )
+                            }
                         }
                     }
                 }

@@ -94,11 +94,16 @@ public struct TrainerAddPTSessionFeature {
         }
     }
     
+    @Dependency(\.trainerRepoUseCase) private var trainerRepoUseCase
     @Dependency(\.dismiss) private var dismiss
     
     public enum Action: Sendable, ViewAction {
         /// 뷰에서 발생한 액션을 처리합니다.
         case view(View)
+        /// api 콜 액션을 처리합니다
+        case api(APIAction)
+        /// 현재 관리 회원 목록 설정
+        case setTraineeList([TraineeListItemEntity])
         /// 네비게이션 여부 설정
         case setNavigating
         
@@ -130,6 +135,16 @@ public struct TrainerAddPTSessionFeature {
             case tapPopUpPrimaryButton(popUp: PopUp?)
             /// 포커스 상태 변경
             case setFocus(FocusField?, FocusField?)
+            /// 화면이 표시될 때
+            case onAppear
+        }
+        
+        @CasePathable
+        public enum APIAction: Sendable {
+            /// 관리 회원 목록 API
+            case getTraineeList
+            /// 수업 등록 API
+            case registerPTSession
         }
     }
     
@@ -145,10 +160,10 @@ public struct TrainerAddPTSessionFeature {
                 case .binding(\.memo):
                     state.view_memoStatus = validateMemo(state.memo)
                     return self.validateAllFields(&state)
-
+                    
                 case .binding:
                     return .none
-                
+                    
                 case .tapNavBackButton:
                     if state.view_isSubmitButtonEnabled {
                         return self.setPopUpStatus(&state, status: .cancelSessionAdd)
@@ -157,7 +172,7 @@ public struct TrainerAddPTSessionFeature {
                             await self.dismiss()
                         }
                     }
-                
+                    
                 case .tapTraineeDropDown:
                     state.view_bottomSheetItem = .traineeList
                     return .send(.view(.setFocus(state.view_focusField, .trainee)))
@@ -173,7 +188,7 @@ public struct TrainerAddPTSessionFeature {
                 case .tapEndTimeDropDown:
                     state.view_bottomSheetItem = .timePicker(.endTime)
                     return .send(.view(.setFocus(state.view_focusField, .endTime)))
-                
+                    
                 case .tapTraineeAtBottomSheet(let item):
                     state.view_bottomSheetItem = nil
                     state.trainee = item
@@ -182,7 +197,7 @@ public struct TrainerAddPTSessionFeature {
                         .send(.view(.setFocus(.trainee, nil))),
                         self.validateAllFields(&state)
                     )
-                             
+                    
                 case let .tapBottomSheetSubmitButton(field, date):
                     state.view_bottomSheetItem = nil
                     
@@ -190,7 +205,8 @@ public struct TrainerAddPTSessionFeature {
                     case .ptDate:
                         state.ptDate = date
                         state.view_ptDateStatus = .filled
-                    case .startTime, .endTime:
+                    case .startTime,
+                            .endTime:
                         updateTime(state: &state, field: field, with: date)
                     default:
                         return .none
@@ -205,27 +221,64 @@ public struct TrainerAddPTSessionFeature {
                     let interval: Int = sessionTime.rawValue
                     
                     if let startTime = state.startTime,
-                        let endTime = Calendar.current.date(byAdding: .minute, value: interval, to: startTime) {
+                       let endTime = Calendar.current.date(byAdding: .minute, value: interval, to: startTime) {
                         updateTime(state: &state, field: .endTime, with: endTime)
                     }
                     
                     return self.validateAllFields(&state)
                     
                 case .tapSubmitButton:
-                    return .send(.setNavigating)
+                    return .send(.api(.registerPTSession))
                     
                 case .tapPopUpSecondaryButton(let popUp):
                     guard popUp != nil else { return .none }
-                    return setPopUpStatus(&state, status: nil)
+                    return .concatenate(
+                        setPopUpStatus(&state, status: nil),
+                        .send(.setNavigating)
+                    )
                     
                 case .tapPopUpPrimaryButton(let popUp):
                     guard popUp != nil else { return .none }
                     return setPopUpStatus(&state, status: nil)
-                
+                    
                 case let .setFocus(oldFocus, newFocus):
                     state.view_focusField = newFocus
                     return .none
+                    
+                case .onAppear:
+                    return .send(.api(.getTraineeList))
                 }
+                
+            case .api(let action):
+                switch action {
+                case .getTraineeList:
+                    return .run { send in
+                        let result = try await trainerRepoUseCase.getActiveTraineesList()
+                        let trainees: [TraineeListItemEntity] = result.trainees.map { $0.toEntity() }
+                        await send(.setTraineeList(trainees))
+                    }
+                    
+                case .registerPTSession:
+                    guard let startDate = combinedDietDateTime(date: state.ptDate, time: state.startTime)?.toString(format: .ISO8601),
+                          let endDate = combinedDietDateTime(date: state.ptDate, time: state.endTime)?.toString(format: .ISO8601),
+                          let traineeId = state.trainee?.id
+                    else { return .none }
+
+                    return .run { send in
+                        let result = try await trainerRepoUseCase.postLesson(
+                            reqDTO: .init(
+                                start: startDate,
+                                end: endDate,
+                                traineeId: traineeId
+                            )
+                        )
+                        await send(.setNavigating)
+                    }
+                }
+                
+            case .setTraineeList(let trainees):
+                state.traineeList = trainees
+                return .none
 
             case .setNavigating:
                 return .none
@@ -293,6 +346,24 @@ private extension TrainerAddPTSessionFeature {
         state.view_popUp = status
         state.view_isPopUpPresented = status != nil
         return .none
+    }
+    
+    /// date와 time을 결합하여 최종 `Date`를 생성
+    func combinedDietDateTime(date: Date?, time: Date?) -> Date? {
+        guard let date = date, let time = time else { return nil }
+        
+        let calendar = Calendar.current
+        let dateComponents = calendar.dateComponents([.year, .month, .day], from: date)
+        let timeComponents = calendar.dateComponents([.hour, .minute, .second], from: time)
+        
+        return calendar.date(from: DateComponents(
+            year: dateComponents.year,
+            month: dateComponents.month,
+            day: dateComponents.day,
+            hour: timeComponents.hour,
+            minute: timeComponents.minute,
+            second: timeComponents.second
+        ))
     }
 }
 

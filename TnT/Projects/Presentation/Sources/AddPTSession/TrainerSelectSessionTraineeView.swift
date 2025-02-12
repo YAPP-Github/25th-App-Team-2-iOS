@@ -21,6 +21,8 @@ public struct TrainerSelectSessionTraineeView: View {
     @State private var contentHeight: CGFloat = 708
     /// 최대 높이
     let maxHeight: CGFloat = 708
+    /// 최소 높이
+    let minHeight: CGFloat = 206
     
     @Environment(\.dismiss) var dismiss
     
@@ -35,22 +37,18 @@ public struct TrainerSelectSessionTraineeView: View {
     public var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             Header()
+                .padding(.top, 10)
             
-            ScrollView {
+            if contentHeight >= 708 {
+                ScrollView {
+                    Contents()
+                }
+            } else {
                 Contents()
             }
+            
+            Spacer(minLength: 0)
         }
-        .background(
-            GeometryReader { proxy in
-                Color.clear
-                    .onAppear {
-                        updateHeight(with: proxy.size.height)
-                    }
-                    .onChange(of: proxy.size.height) { _, newHeight in
-                        updateHeight(with: newHeight)
-                    }
-            }
-        )
         .presentationDetents([.height(contentHeight)])
         .presentationDragIndicator(contentHeight == maxHeight ? .visible : .hidden)
     }
@@ -76,7 +74,6 @@ public struct TrainerSelectSessionTraineeView: View {
             .padding(20)
             TDivider(height: 2, color: .neutral100)
         }
-        .padding(.top, 24)
     }
     
     @ViewBuilder
@@ -91,12 +88,25 @@ public struct TrainerSelectSessionTraineeView: View {
                 .frame(height: 40)
             }
         }
+        .background(
+            GeometryReader { proxy in
+                Color.clear
+                    .onAppear {
+                        updateHeight(with: proxy.size.height)
+                    }
+                    .onChange(of: proxy.size.height) { _, newHeight in
+                        updateHeight(with: newHeight)
+                    }
+            }
+        )
     }
 }
 
 private extension TrainerSelectSessionTraineeView {
     /// 바텀 시트 높이 업데이트 함수
     func updateHeight(with newHeight: CGFloat) {
+        var newHeight: CGFloat = newHeight
+        newHeight = newHeight < minHeight ? minHeight : newHeight
         contentHeight = newHeight >= maxHeight ? maxHeight : newHeight
     }
 }
