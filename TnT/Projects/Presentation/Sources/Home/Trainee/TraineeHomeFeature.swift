@@ -19,6 +19,8 @@ public struct TraineeHomeFeature {
         // MARK: Data related state
         /// 3일 동안 보지 않기 시작 날짜
         @Shared(.appStorage(AppStorage.hideHomePopupUntil)) var hidePopupUntil: Date?
+        /// 트레이너 연결 여부
+        @Shared(.appStorage(AppStorage.isConnected)) var isConnected: Bool = false
         /// 선택된 날짜
         var selectedDate: Date
         /// 캘린더 이벤트
@@ -29,8 +31,6 @@ public struct TraineeHomeFeature {
         var records: [RecordListItemEntity]
         /// 3일 동안 보지 않기 선택되었는지 여부
         var isHideUntilSelected: Bool
-        /// 트레이너 연결 여부
-        var isConnected: Bool
         
         // MARK: UI related state
         /// 캘린더 표시 페이지
@@ -55,7 +55,6 @@ public struct TraineeHomeFeature {
             sessionInfo: WorkoutListItemEntity? = nil,
             records: [RecordListItemEntity] = [],
             isHideUntilSelected: Bool = false,
-            isConnected: Bool = false,
             view_currentPage: Date = .now,
             view_isBottomSheetPresented: Bool = false,
             view_isPopUpPresented: Bool = false
@@ -65,7 +64,6 @@ public struct TraineeHomeFeature {
             self.sessionInfo = sessionInfo
             self.records = records
             self.isHideUntilSelected = isHideUntilSelected
-            self.isConnected = isConnected
             self.view_currentPage = view_currentPage
             self.view_isBottomSheetPresented = view_isBottomSheetPresented
             self.view_isPopUpPresented = view_isPopUpPresented
@@ -172,11 +170,9 @@ public struct TraineeHomeFeature {
                     return .send(.setNavigating(.traineeInvitationCodeInput))
                     
                 case .onAppear:
-                    if let hideUntil = state.hidePopupUntil, hideUntil > Date() {
-                        state.view_isPopUpPresented = false
-                    } else {
-                        state.view_isPopUpPresented = true
-                    }
+                    let hideUntil = state.hidePopupUntil ?? Date()
+                    let hidePopUp = state.isConnected || hideUntil > Date()
+                    state.view_isPopUpPresented = !hidePopUp
                     return .none
                 }
                 

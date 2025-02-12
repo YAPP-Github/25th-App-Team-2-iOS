@@ -10,6 +10,9 @@ import Foundation
 
 /// 로그인 세션 유효 확인 응답 DTO
 public struct GetSessionCheckResDTO: Decodable {
+    /// 트레이너/트레이니 연결 여부
+    public let isConnected: Bool
+    /// 멤버 유형
     public let memberType: MemberTypeResDTO
 }
 
@@ -103,6 +106,50 @@ public struct PostLogoutResDTO: Decodable {
 
 /// 회원탈퇴 응답 DTO
 public typealias PostWithdrawalResDTO = EmptyResponse
+
+/// 마이페이지 정보 응답 DTO
+public struct GetMyPageInfoResDTO: Decodable {
+    /// 회원 이름
+    public let name: String
+    /// 이메일
+    public let email: String
+    /// 프로필 사진 URL
+    public let profileImageUrl: String
+    /// 회원 타입
+    public let memberType: MemberTypeResDTO
+    /// 소셜 타입
+    public let socialType: String
+    /// 트레이너 DTO
+    public let trainer: TrainerInfoResDTO?
+    /// 트레이니 DTO
+    public let trainee: TraineeInfoResDTO?
+}
+
+/// 트레이너 정보 표시에 사용되는 TrainerInfoDTO
+public struct TrainerInfoResDTO: Decodable {
+    /// 관리 중인 회원
+    public let activeTraineeCount: Int?
+    /// 함께했던 회원
+    public let totalTraineeCount: Int?
+}
+
+/// 트레이니 정보 표시에 사용되는 TraineeInfoDTO
+public struct TraineeInfoResDTO: Decodable {
+    /// 트레이너 연결 여부
+    public let isConnected: Bool
+    /// 생년월일
+    public let birthday: String?
+    /// 나이
+    public let age: Int?
+    /// 진행한 PT 횟수
+    public let height: Double?
+    /// 총 PT 횟수
+    public let weight: Double?
+    /// 주의사항
+    public let cautionNote: String?
+    /// PT 목표
+    public let ptGoals: [String]
+}
 
 public extension PostSignUpResDTO {
     func toEntity() -> PostSignUpResEntity {

@@ -23,9 +23,14 @@ public struct AppFlowCoordinatorFeature {
     @ObservableState
     public struct State: Equatable {
         // MARK: Data related state
+        /// 트레이너/트레이니 연결 여부
+        @Shared(.appStorage(AppStorage.isConnected)) var isConnected: Bool = false
+        /// 유저 멤버 유형
         var userType: UserType?
         // MARK: UI related state
+        /// 스플래시 표시 여부
         var view_isSplashActive: Bool
+        /// 팝업 표시 여부
         var view_isPopUpPresented: Bool
         
         // MARK: SubFeature state
@@ -59,7 +64,7 @@ public struct AppFlowCoordinatorFeature {
         /// 저장 세션 정보 확인
         case checkSessionInfo
         /// 현재 유저 정보 업데이트
-        case updateUserInfo(UserType?)
+        case updateUserInfo(type: UserType?, isConnected: Bool)
         /// 스플래시 표시 종료 시
         case splashFinished
         /// 세션 만료 팝업 표시
@@ -139,15 +144,20 @@ public struct AppFlowCoordinatorFeature {
                 switch action {
                 case .checkSession:
                     return .run { send in
-                        let result = try? await userUseCaseRepo.getSessionCheck()
-                        switch result?.memberType {
+                        guard let result = try? await userUseCaseRepo.getSessionCheck() else {
+                            try keyChainManager.delete(.sessionId)
+                            await send(.updateUserInfo(type: nil, isConnected: false))
+                            return
+                        }
+                        
+                        switch result.memberType {
                         case .trainer:
-                            await send(.updateUserInfo(.trainer))
+                            await send(.updateUserInfo(type: .trainer, isConnected: result.isConnected))
                         case .trainee:
-                            await send(.updateUserInfo(.trainee))
+                            await send(.updateUserInfo(type: .trainee, isConnected: result.isConnected))
                         default:
                             try keyChainManager.delete(.sessionId)
-                            await send(.updateUserInfo(nil))
+                            await send(.updateUserInfo(type: nil, isConnected: false))
                         }
                     }
                 }
@@ -156,9 +166,11 @@ public struct AppFlowCoordinatorFeature {
                 let session: String? = try? keyChainManager.read(for: .sessionId)
                 return session != nil
                 ? .send(.api(.checkSession))
-                : .send(.updateUserInfo(nil))
+                : .send(.updateUserInfo(type: nil, isConnected: false))
                 
-            case .updateUserInfo(let userType):
+            case let .updateUserInfo(userType, isConnected):
+                state.$isConnected.withLock { $0 = isConnected }
+                
                 switch userType {
                 case .trainee:
                     return self.setFlow(.traineeMainFlow, state: &state)

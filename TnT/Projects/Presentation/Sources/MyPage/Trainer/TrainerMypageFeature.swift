@@ -70,6 +70,8 @@ public struct TrainerMypageFeature {
         case setAppPushNotificationAllowed(Bool)
         /// 푸시 알람 허용 시스템 화면 이동
         case sendAppPushNotificationSetting
+        /// 마이페이지 정보 반영
+        case setMyPageInfo(TrainerMyPageEntity)
         /// 팝업 세팅 처리
         case setPopUpStatus(PopUp?)
         /// 네비게이션 여부 설정
@@ -103,6 +105,8 @@ public struct TrainerMypageFeature {
             case logout
             /// 회원 탈퇴 API
             case withdraw
+            /// 마이페이지 정보 get API
+            case myPageInfo
         }
     }
     
@@ -167,7 +171,10 @@ public struct TrainerMypageFeature {
                     }
                     
                 case .onAppear:
-                    return self.getAppPushNotificationAllowed(state: &state, tryToggle: false)
+                    return .merge(
+                        self.getAppPushNotificationAllowed(state: &state, tryToggle: false),
+                        .send(.api(.myPageInfo))
+                    )
                 }
                 
             case .api(let action):
@@ -178,13 +185,30 @@ public struct TrainerMypageFeature {
                         try keyChainManager.delete(.sessionId)
                         await send(.setPopUpStatus(.logoutCompleted))
                     }
+                    
                 case .withdraw:
                     return .run { send in
                         let result = try await userUseRepoCase.postWithdrawal()
                         try keyChainManager.delete(.sessionId)
                         await send(.setPopUpStatus(.withdrawCompleted))
                     }
+                    
+                case .myPageInfo:
+                    return .run { send in
+                        let result = try await userUseRepoCase.getMyPageInfo()
+                        let info: TrainerMyPageEntity = result.toEntity()
+                        await send(.setMyPageInfo(info))
+                    }
                 }
+                
+            case .setMyPageInfo(let myPageInfo):
+                state.userName = myPageInfo.name
+                state.userImageUrl = myPageInfo.profileImageUrl
+                if let activeCount = myPageInfo.activeTraineeCount, let totalCount = myPageInfo.totalTraineeCount {
+                    state.studentCount = activeCount
+                    state.oldStudentCount = totalCount
+                }
+                return .none
                 
             case .setPopUpStatus(let popUp):
                 state.view_popUp = popUp

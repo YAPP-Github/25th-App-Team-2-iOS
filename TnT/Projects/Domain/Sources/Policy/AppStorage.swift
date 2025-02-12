@@ -10,4 +10,5 @@ import Foundation
 
 public enum AppStorage {
     public static let hideHomePopupUntil: String = "hideHomePopupUntil"
+    public static let isConnected: String = "isConnected"
 }

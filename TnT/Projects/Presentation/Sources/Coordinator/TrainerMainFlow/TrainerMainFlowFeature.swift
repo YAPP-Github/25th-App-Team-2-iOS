@@ -71,10 +71,16 @@ public struct TrainerMainFlowFeature {
                     state.path.removeLast()
                     return .none
                     
+                    /// 연결 완료 -> 트레이니 정보
                 case .element(id: _, action: .connectionComplete(.setNavigating(let profile))):
                     state.path.append(.connectedTraineeProfile(.init(traineeProfile: profile)))
                     return .none
                     
+                    /// 트레이니 정보 -> 홈으로
+                case .element(id: _, action: .connectedTraineeProfile(.setNavigating)):
+                    state.path.removeLast(2)
+                    return.none
+
                     /// 트레이너 수업 추가 -> 홈으로
                 case .element(id: _, action: .addPTSession(.setNavigating)):
                     state.path.removeLast()

@@ -22,6 +22,8 @@ public enum UserTargetType {
     case postLogout
     /// 회원 탈퇴 요청
     case postWithdrawal
+    /// 마이페이지 정보 요청
+    case getMyPageInfo
 }
 
 extension UserTargetType: TargetType {
@@ -45,12 +47,15 @@ extension UserTargetType: TargetType {
             
         case .postWithdrawal:
             return "/members/withdraw"
+            
+        case .getMyPageInfo:
+            return "/members"
         }
     }
     
     var method: HTTPMethod {
         switch self {
-        case .getSessionCheck:
+        case .getSessionCheck, .getMyPageInfo:
             return .get
             
         case .postSocialLogin, .postSignUp, .postLogout, .postWithdrawal:
@@ -60,7 +65,7 @@ extension UserTargetType: TargetType {
     
     var task: RequestTask {
         switch self {
-        case .getSessionCheck, .postLogout, .postWithdrawal:
+        case .getSessionCheck, .postLogout, .postWithdrawal, .getMyPageInfo:
             return .requestPlain
         
         case .postSocialLogin(let reqDto):
@@ -80,7 +85,7 @@ extension UserTargetType: TargetType {
     
     var headers: [String: String]? {
         switch self {
-        case .getSessionCheck, .postLogout, .postWithdrawal:
+        case .getSessionCheck, .postLogout, .postWithdrawal, .getMyPageInfo:
             return nil
             
         case .postSocialLogin:
@@ -96,7 +101,7 @@ extension UserTargetType: TargetType {
     
     var interceptors: [any Interceptor] {
         switch self {
-        case .getSessionCheck, .postLogout, .postWithdrawal:
+        case .getSessionCheck, .postLogout, .postWithdrawal, .getMyPageInfo:
             return [
                 LoggingInterceptor(),
                 AuthTokenInterceptor(),
