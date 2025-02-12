@@ -132,18 +132,16 @@ public struct TrainerInfoResDTO: Decodable {
 
 /// 트레이니 정보 표시에 사용되는 TraineeInfoDTO
 public struct TraineeInfoResDTO: Decodable {
-    /// 트레이니 ID
-    public let id: Int
-    /// 트레이니 이름
-    public let name: String
-    /// 프로필 사진 URL
-    public let profileImageUrl: String
+    /// 생년월일
+    public let birthday: String
+    /// 나이
+    public let age: Int
     /// 진행한 PT 횟수
-    public let finishedPtCount: Int
+    public let height: Double?
     /// 총 PT 횟수
-    public let totalPtCount: Int
-    /// 메모
-    public let memo: String?
+    public let weight: Double?
+    /// 주의사항
+    public let cautionNote: String?
     /// PT 목표
     public let ptGoals: [String]
 }
