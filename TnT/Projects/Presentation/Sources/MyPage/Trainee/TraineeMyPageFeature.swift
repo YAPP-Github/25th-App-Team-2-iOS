@@ -24,6 +24,8 @@ public struct TraineeMyPageFeature {
         // MARK: Data related state
         /// 3일 동안 보지 않기 시작 날짜
         @Shared(.appStorage(AppStorage.hideHomePopupUntil)) var hidePopupUntil: Date?
+        /// 트레이너 연결 여부
+        @Shared(.appStorage(AppStorage.isConnected)) var isConnected: Bool = false
         /// 사용자 이름
         var userName: String
         /// 사용자 이미지 URL
@@ -240,6 +242,7 @@ public struct TraineeMyPageFeature {
                 }
             
             case .setMyPageInfo(let myPageInfo):
+                state.$isConnected.withLock { $0 = myPageInfo.isConnected }
                 state.userName = myPageInfo.name
                 state.userImageUrl = myPageInfo.profileImageUrl
                 return .none

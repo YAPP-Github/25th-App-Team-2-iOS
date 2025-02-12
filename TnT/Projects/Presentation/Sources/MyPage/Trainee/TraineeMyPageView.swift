@@ -70,7 +70,7 @@ public struct TraineeMyPageView: View {
     @ViewBuilder
     private func TopItemSection() -> some View {
         VStack(spacing: 12) {
-            if !store.view_isTrainerConnected {
+            if !store.isConnected {
                 ProfileItemView(title: "트레이너 연결하기", tapAction: { send(.tapConnectTrainerButton) })
                     .padding(.vertical, 4)
                     .background(Color.common0)
