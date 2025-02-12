@@ -9,7 +9,7 @@
 import UIKit
 import UserNotifications
 
-class NotificationManager {
+final class NotificationManager {
     static let shared: NotificationManager = NotificationManager()
 
     func checkNotificationPermission() {
