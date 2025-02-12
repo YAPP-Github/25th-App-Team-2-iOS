@@ -61,7 +61,7 @@ public struct TraineeHomeView: View {
         .sheet(isPresented: $store.view_isBottomSheetPresented) {
             TraineeRecordStartView(itemContents: [
                 ("🏋🏻‍♀️", "개인 운동", { send(.tapAddWorkoutRecordButton) }),
-                ("🥗", "식단", { send(.tapAddMealRecordButton) })
+                ("🥗", "식단", { send(.tapAddDietRecordButton) })
             ])
             .padding(.top, 10)
             .padding(.bottom, 20)

@@ -13,7 +13,7 @@ public enum RecordType: Sendable, Equatable {
     /// 운동
     case workout(type: WorkoutType)
     /// 식단
-    case meal(type: MealType)
+    case diet(type: DietType)
 }
 
 public extension RecordType {
@@ -24,7 +24,7 @@ public extension RecordType {
             return "\(count)회차 수업"
         case .workout(let type):
             return type.koreanName
-        case .meal(let type):
+        case .diet(let type):
             return type.koreanName
         }
     }

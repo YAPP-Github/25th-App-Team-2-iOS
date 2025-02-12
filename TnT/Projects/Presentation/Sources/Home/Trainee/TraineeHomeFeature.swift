@@ -95,7 +95,7 @@ public struct TraineeHomeFeature {
             /// 개인 운동 기록 추가 버튼 탭
             case tapAddWorkoutRecordButton
             /// 식단 기록 추가 버튼 탭
-            case tapAddMealRecordButton
+            case tapAddDietRecordButton
             /// 연결 권장 팝업 - 다음에 버튼 탭
             case tapPopUpNextButton
             /// 연결 권장 팝업 - 3일 동안 보지 않기 버튼 탭
@@ -145,10 +145,9 @@ public struct TraineeHomeFeature {
                     print("tapAddWorkoutRecordButton")
                     return .none
                     
-                case .tapAddMealRecordButton:
-                    // TODO: 네비게이션 연결 시 추가
-                    print("tapAddMealRecordButton")
-                    return .none
+                case .tapAddDietRecordButton:
+                    state.view_isBottomSheetPresented = false
+                    return .send(.setNavigating(.addDietRecordPage))
                     
                 case .tapPopUpNextButton:
                     if state.isHideUntilSelected {
@@ -199,7 +198,7 @@ extension TraineeHomeFeature {
         /// 운동 기록 추가 페이지
         case addWorkoutRecordPage
         /// 식단 기록 추가 페이지
-        case addMealRecordPage
+        case addDietRecordPage
         /// 초대코드 입력 페이지
         case traineeInvitationCodeInput
     }

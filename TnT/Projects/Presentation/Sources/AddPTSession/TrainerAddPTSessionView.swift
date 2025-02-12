@@ -304,6 +304,3 @@ public extension TrainerAddPTSessionView {
         }
     }
 }
-
-// TODO: 시작시간 종료시간 선후관계 안맞을때 어떻게 표시할지 문의
-// TODO: 팝업 작성 / 레전드 토스트 다 뜯어고치기

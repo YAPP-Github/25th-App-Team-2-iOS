@@ -30,6 +30,8 @@ public struct TraineeMainFlowView: View {
                 // MARK: Home
             case .alarmCheck(let store):
                 AlarmCheckView(store: store)
+            case .addDietRecordPage(let store):
+                TraineeAddDietRecordView(store: store)
                 
                 // MARK: MyPage
             case .traineeInvitationCodeInput(let store):
