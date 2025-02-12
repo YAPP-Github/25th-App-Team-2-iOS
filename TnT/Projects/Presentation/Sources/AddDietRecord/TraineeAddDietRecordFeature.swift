@@ -138,7 +138,8 @@ public struct TraineeAddDietRecordFeature {
             switch action {
             case .view(let action):
                 switch action {
-                case .binding(\.dietDate),
+                case .binding(\.dietImageData),
+                        .binding(\.dietDate),
                         .binding(\.dietTime),
                         .binding(\.dietType):
                     return self.validateAllFields(&state)
@@ -209,7 +210,10 @@ public struct TraineeAddDietRecordFeature {
                     
                 case .tapPopUpSecondaryButton(let popUp):
                     guard popUp != nil else { return .none }
-                    return setPopUpStatus(&state, status: nil)
+                    return .concatenate(
+                        setPopUpStatus(&state, status: nil),
+                        .run{ _ in await self.dismiss() }
+                    )
                     
                 case .tapPopUpPrimaryButton(let popUp):
                     guard popUp != nil else { return .none }
