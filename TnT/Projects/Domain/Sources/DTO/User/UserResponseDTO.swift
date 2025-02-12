@@ -10,6 +10,9 @@ import Foundation
 
 /// 로그인 세션 유효 확인 응답 DTO
 public struct GetSessionCheckResDTO: Decodable {
+    /// 트레이너/트레이니 연결 여부
+    public let isConnected: Bool
+    /// 멤버 유형
     public let memberType: MemberTypeResDTO
 }
 
@@ -132,10 +135,12 @@ public struct TrainerInfoResDTO: Decodable {
 
 /// 트레이니 정보 표시에 사용되는 TraineeInfoDTO
 public struct TraineeInfoResDTO: Decodable {
+    /// 트레이너 연결 여부
+    public let isConnected: Bool
     /// 생년월일
-    public let birthday: String
+    public let birthday: String?
     /// 나이
-    public let age: Int
+    public let age: Int?
     /// 진행한 PT 횟수
     public let height: Double?
     /// 총 PT 횟수

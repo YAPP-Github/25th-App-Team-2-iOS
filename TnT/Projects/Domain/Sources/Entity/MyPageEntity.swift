@@ -9,6 +9,8 @@
 import Foundation
 
 public struct TraineeMyPageEntity: Equatable, Sendable {
+    /// 트레이니 연결 여부
+    public let isConnected: Bool
     /// 트레이니 이름
     public let name: String
     /// 트레이니 프로필 이미지 URL

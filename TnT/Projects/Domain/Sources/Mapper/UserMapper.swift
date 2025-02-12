@@ -11,6 +11,7 @@ import Foundation
 public extension GetMyPageInfoResDTO {
     func toEntity() -> TraineeMyPageEntity {
         return .init(
+            isConnected: self.trainee?.isConnected ?? false,
             name: self.name,
             profileImageUrl: self.profileImageUrl,
             socialType: self.socialType
