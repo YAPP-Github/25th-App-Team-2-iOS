@@ -75,11 +75,15 @@ public struct TrainerHomeView: View {
                     currentPage: $store.view_currentPage,
                     events: store.events
                 )
+                .onChange(of: store.state.selectedDate, { oldValue, newValue in
+                    let startOfDay = Calendar.current.startOfDay(for: newValue)
+                    store.selectedDate = startOfDay
+                    store.send(.view(.calendarDateTap))
+                })
                 .padding(.horizontal, 20)
             }
         }
         .padding(.vertical, 12)
-        
     }
     
     /// 수업 리스트 상단 타이틀
@@ -110,10 +114,12 @@ public struct TrainerHomeView: View {
     @ViewBuilder
     private func RecordList() -> some View {
         VStack {
-            if let record = store.tappedsessionInfo {
+            if let record = store.tappedsessionInfo, !record.lessons.isEmpty {
                 ForEach(record.lessons, id: \.id) { record in
                     SessionCellView(session: record) {
                         send(.tapSessionCompleted(id: record.ptLessonId))
+                    } onTap: {
+                        // TODO: - 트레이너 기록 추가
                     }
                 }
             } else {
@@ -131,9 +137,10 @@ public struct TrainerHomeView: View {
             .frame(width: 126, height: 58)
             .overlay {
                 HStack(spacing: 4) {
-                    Image(.icnPlusEmpty)
+                    Image(.icnPlus)
                         .resizable()
                         .frame(width: 24, height: 24)
+                        .tint(Color.common0)
                     Text("수업추가")
                         .typographyStyle(.body1Medium, with: .neutral50)
                 }
@@ -215,6 +222,7 @@ extension TrainerHomeView {
     struct SessionCellView: View {
         var session: SessonEntity
         var onTapComplete: () -> Void
+        var onTap: (() -> Void)?
         
         var body: some View {
             HStack(spacing: 20) {
@@ -237,7 +245,7 @@ extension TrainerHomeView {
                     
                     if session.isCompleted {
                         Button {
-                            //
+                            onTap?()
                         } label: {
                             HStack(spacing: 4) {
                                 Image(.icnWriteWhite)
