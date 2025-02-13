@@ -103,6 +103,8 @@ public struct TraineeHomeFeature {
             case tapShowSessionRecordButton(id: Int)
             /// 기록 목록 피드백 보기 버튼 탭
             case tapShowRecordFeedbackButton(id: Int)
+            /// 기록 아이템 탭
+            case tapRecordItem(type: RecordType?, id: Int)
             /// 우측 하단 기록 추가 버튼 탭
             case tapAddRecordButton
             /// 개인 운동 기록 추가 버튼 탭
@@ -159,6 +161,14 @@ public struct TraineeHomeFeature {
                     // TODO: 네비게이션 연결 시 추가
                     print("tapShowRecordFeedbackButton \(id)")
                     return .none
+                    
+                case let .tapRecordItem(recordType, id):
+                    switch recordType {
+                    case .diet:
+                        return .send(.setNavigating(.dietDetailPage(id: id)))
+                    default:
+                        return .none
+                    }
                     
                 case .tapAddRecordButton:
                     state.view_isBottomSheetPresented = true
@@ -280,13 +290,15 @@ extension TraineeHomeFeature {
 }
 
 extension TraineeHomeFeature {
-    public enum RoutingScreen: Sendable {
+    public enum RoutingScreen: Equatable, Sendable {
         /// 알림 페이지
         case alarmPage
         /// 수업 기록 상세 페이지
         case sessionRecordPage
         /// 기록 피드백 페이지
         case recordFeedbackPage
+        /// 식단 상세 페이지
+        case dietDetailPage(id: Int)
         /// 운동 기록 추가 페이지
         case addWorkoutRecordPage
         /// 식단 기록 추가 페이지

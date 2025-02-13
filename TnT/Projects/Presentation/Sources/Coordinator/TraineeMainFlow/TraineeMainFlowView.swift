@@ -32,6 +32,8 @@ public struct TraineeMainFlowView: View {
                 AlarmCheckView(store: store)
             case .addDietRecordPage(let store):
                 TraineeAddDietRecordView(store: store)
+            case .dietRecordDetail(let store):
+                TraineeDietRecordDetailView(store: store)
                 
                 // MARK: MyPage
             case .traineeInvitationCodeInput(let store):

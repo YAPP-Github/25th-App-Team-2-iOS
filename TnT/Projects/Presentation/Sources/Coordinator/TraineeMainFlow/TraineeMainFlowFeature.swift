@@ -61,6 +61,9 @@ public struct TraineeMainFlowFeature {
                         case .traineeInvitationCodeInput:
                             state.path.append(.traineeInvitationCodeInput(.init(view_navigationType: .existingUser)))
                             return .none
+                        case .dietDetailPage(let id):
+                            state.path.append(.dietRecordDetail(.init(dietId: id)))
+                            return .none
                         }
                         /// 트레이니 마이페이지
                     case .traineeMyPage(let screen):
@@ -147,6 +150,8 @@ extension TraineeMainFlowFeature {
         case alarmCheck(AlarmCheckFeature)
         /// 식단 기록 추가
         case addDietRecordPage(TraineeAddDietRecordFeature)
+        /// 식단 상세 화면
+        case dietRecordDetail(TraineeDietRecordDetailFeature)
         
         // MARK: MyPage
         /// 트레이니 초대 코드입력

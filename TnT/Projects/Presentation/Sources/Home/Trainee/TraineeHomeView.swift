@@ -152,6 +152,9 @@ public struct TraineeHomeView: View {
                                 send(.tapShowRecordFeedbackButton(id: item.id))
                             }
                         )
+                        .onTapGesture {
+                            send(.tapRecordItem(type: item.type, id: item.id))
+                        }
                     }
                 } else {
                     RecordEmptyView()
