@@ -33,8 +33,7 @@ public struct TrainerMainTabView: View {
 //                }
             case .traineeList:
                 if let store = store.scope(state: \.traineeList, action: \.subFeature.traineeListAction) {
-                    Color.clear
-                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    TrainerManagementView(store: store)
                 }
             case .myPage:
                 if let store = store.scope(state: \.myPage, action: \.subFeature.myPageAction) {

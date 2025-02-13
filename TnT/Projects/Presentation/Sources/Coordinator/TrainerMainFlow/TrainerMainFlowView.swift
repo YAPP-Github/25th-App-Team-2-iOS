@@ -28,7 +28,7 @@ public struct TrainerMainFlowView: View {
                 TrainerMainTabView(store: store)
             case .addPTSession(let store):
                 TrainerAddPTSessionView(store: store)
-                
+
                 // MARK: Home
             case .alarmCheck(let store):
                 AlarmCheckView(store: store)
@@ -40,6 +40,8 @@ public struct TrainerMainFlowView: View {
                 // MARK: MyPage
             case .trainerMakeInvitationCodePage(let store):
                 MakeInvitationCodeView(store: store)
+            case .trainerManagment(let store):
+                TrainerManagementView(store: store)
             }
         }
     }

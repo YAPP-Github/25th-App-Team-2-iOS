@@ -11,10 +11,10 @@ import ComposableArchitecture
 import Domain
 
 @Reducer
-struct  TrainerManagementFeature {
+public struct  TrainerManagementFeature {
     @ObservableState
-    struct State {
-        var memberList: GetMembersListEntity
+    public struct State: Equatable {
+        var traineeList: [ActiveTraineeInfoResEntity]?
     }
     
     @Dependency(\.trainerRepoUseCase) private var trainerRepoUseCase: TrainerRepository
@@ -27,7 +27,14 @@ struct  TrainerManagementFeature {
         
         @CasePathable
         public enum View: Sendable {
-            case getMembersList
+            /// 관리중인 회원목록 가져오기
+            case getTraineeList
+            /// 회원목록 적용
+            case setTraineeList([ActiveTraineeInfoResEntity])
+            /// 화면 진입시
+            case onappear
+            /// 회원 초대하기로 이동
+            case goTraineeInvitation
         }
     }
     
@@ -36,12 +43,35 @@ struct  TrainerManagementFeature {
     public var body: some ReducerOf<Self> {
         Reduce { state, action in
             switch action {
+            case .view(.onappear):
+                return .run { send in
+                    await send(.view(.getTraineeList))
+                }
+                
             case .setNavigating:
                 return .none
-            case .view(.getMembersList):
+            case .view(.getTraineeList):
+                return .run { send in
+                    let result: GetActiveTraineesListResDTO = try await trainerRepoUseCase.getMembersList()
+                    let trainee: [ActiveTraineeInfoResEntity] = result.trainees.map { $0.dtoToEntity() }
+                    await send(.view(.setTraineeList(trainee)))
+                    
+                }
+            case .view(.setTraineeList(let trainees)):
+                state.traineeList = trainees
+                return .none
+                
+            case .view(.goTraineeInvitation):
+                print("트레이너 내 회원 > 회원 초대하기로 이동")
                 return .none
             }
         }
     }
 }
 
+extension TrainerManagementFeature {
+    public enum RoutingScreen: Sendable {
+        /// 회원추가
+        case addTrainee
+    }
+}

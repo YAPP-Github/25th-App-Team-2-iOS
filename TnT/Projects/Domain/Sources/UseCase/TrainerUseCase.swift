@@ -33,7 +33,7 @@ public struct DefaultTrainerUseCase: TrainerRepository {
         return try await trainerRepository.getDateSessionList(date: date)
     }
     
-    public func getMembersList() async throws -> GetMembersListDTO {
+    public func getMembersList() async throws -> GetActiveTraineesListResDTO {
         return try await trainerRepository.getMembersList()
     }
     

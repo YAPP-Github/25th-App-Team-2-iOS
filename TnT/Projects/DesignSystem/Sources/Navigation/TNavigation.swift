@@ -66,7 +66,7 @@ public struct TNavigation: View {
                 .frame(width: 32, height: 32)
             
         case .LTextRButtonTitle(let leftTitle, let pointText, _):
-            HStack(spacing: 6){
+            HStack(spacing: 6) {
                 Text(leftTitle)
                     .typographyStyle(.heading2, with: .neutral900)
                 if let pointText = pointText {
@@ -88,7 +88,7 @@ public struct TNavigation: View {
             Text(centerTitle)
                 .typographyStyle(.heading4, with: .neutral900)
                 .frame(maxWidth: .infinity, alignment: .center)
-        case .LButton, .LTextRButtonTitle(_, _, _):
+        case .LButton, .LTextRButtonTitle:
             EmptyView()
         }
     }
@@ -120,9 +120,10 @@ public struct TNavigation: View {
             TButton(
                 title: rightButton,
                 config: .small,
-                state: .disable(.gray(isEnabled: true))) {
+                state: .disable(.primary(isEnabled: true))) {
                     rightAction?()
                 }
+                .frame(width: 90)
         }
     }
 }

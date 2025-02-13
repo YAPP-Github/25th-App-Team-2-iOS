@@ -30,7 +30,7 @@ public protocol TrainerRepository {
     func getMonthlyLessonList(year: Int, month: Int) async throws -> GetMonthlyLessonListResDTO
     
     /// 회원 조희
-    func getMembersList() async throws -> GetMembersListDTO
+    func getMembersList() async throws -> GetActiveTraineesListResDTO
     
     /// 연결 완료된 트레이니 정보 불러오기
     func getConnectedTraineeInfo(trainerId: Int, traineeId: Int) async throws -> GetConnectedTraineeInfoResponseDTO

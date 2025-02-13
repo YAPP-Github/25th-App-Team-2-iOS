@@ -48,3 +48,17 @@ public typealias PostLessonResDTO = EmptyResponse
 
 /// PT 수업 완료 처리 응답 DTO
 public typealias PutCompleteLessonResDTO = EmptyResponse
+
+public extension ActiveTraineeInfoResDTO {
+    func dtoToEntity() -> ActiveTraineeInfoResEntity {
+        return .init(
+            id: self.id,
+            name: self.name,
+            profileImageUrl: self.profileImageUrl,
+            finishedPtCount: self.finishedPtCount,
+            totalPtCount: self.totalPtCount,
+            memo: self.memo,
+            ptGoals: self.ptGoals
+        )
+    }
+}
