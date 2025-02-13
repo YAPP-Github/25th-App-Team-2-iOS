@@ -76,9 +76,9 @@ public struct TrainerHomeView: View {
                     events: store.events
                 )
                 .onChange(of: store.state.selectedDate, { oldValue, newValue in
-                    let startOfDay = Calendar.current.startOfDay(for: newValue)
+                    let startOfDay: Date = Calendar.current.startOfDay(for: newValue)
                     store.selectedDate = startOfDay
-                    store.send(.view(.calendarDateTap))
+                    send(.calendarDateTap)
                 })
                 .padding(.horizontal, 20)
             }
@@ -99,7 +99,7 @@ public struct TrainerHomeView: View {
             HStack(spacing: 0) {
                 Text("🧨")
                     .typographyStyle(.label1Medium)
-                Text("\(store.sessionCount)")
+                Text("\(store.tappedsessionInfo?.lessons.count ?? 0)")
                     .typographyStyle(.label2Bold, with: Color.red500)
                 Text("개의 수업이 있어요")
                     .typographyStyle(.label2Medium, with: Color.neutral800)
@@ -137,10 +137,9 @@ public struct TrainerHomeView: View {
             .frame(width: 126, height: 58)
             .overlay {
                 HStack(spacing: 4) {
-                    Image(.icnPlus)
+                    Image(.icnPlusGray)
                         .resizable()
                         .frame(width: 24, height: 24)
-                        .tint(Color.common0)
                     Text("수업추가")
                         .typographyStyle(.body1Medium, with: .neutral50)
                 }
@@ -240,19 +239,29 @@ extension TrainerHomeView {
                         Spacer()
                         Image(.icnClock)
                         Text("\(session.startTime) ~ \(session.endTime)")
+                            .typographyStyle(.label2Medium, with: .neutral500)
+                            .frame(maxWidth: .infinity)
                     }
-                    Text(session.traineeName)
+                    
+                    HStack(spacing: 6) {
+                        ProfileImageView(imageURL: session.traineeProfileImageUrl)
+                        Text(session.traineeName)
+                            .typographyStyle(.body1Bold, with: .neutral800)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                    }
                     
                     if session.isCompleted {
                         Button {
                             onTap?()
                         } label: {
                             HStack(spacing: 4) {
-                                Image(.icnWriteWhite)
+                                Image(.icnWriteGray)
                                 Text("PT 수업 기록 남기기")
                                     .typographyStyle(.label2Medium, with: .neutral400)
                             }
                             .frame(maxWidth: .infinity)
+                            .padding(.vertical, 12)
+                            .background(Color.neutral100)
                             .clipShape(RoundedRectangle(cornerRadius: 8))
                         }
                     }
@@ -262,8 +271,47 @@ extension TrainerHomeView {
                 .clipShape(RoundedRectangle(cornerRadius: 12))
                 .frame(maxWidth: .infinity)
             }
-            .padding(.horizontal, 20)
             .padding(.bottom, 12)
+        }
+    }
+    
+    struct ProfileImageView: View {
+        let imageURL: String?
+        
+        var body: some View {
+            if let urlString = imageURL, let url = URL(string: urlString) {
+                AsyncImage(url: url) { phase in
+                    switch phase {
+                    case .empty:
+                        ProgressView()
+                            .tint(.red500)
+                            .frame(width: 24, height: 24)
+                        
+                    case .success(let image):
+                        image
+                            .resizable()
+                            .aspectRatio(contentMode: .fill)
+                            .frame(width: 24, height: 24)
+                            .clipShape(Circle())
+                        
+                    case .failure:
+                        Image(.imgDefaultTrainerImage)
+                            .resizable()
+                            .aspectRatio(contentMode: .fill)
+                            .frame(width: 24, height: 24)
+                            .clipShape(Circle())
+                        
+                    @unknown default:
+                        EmptyView()
+                    }
+                }
+            } else {
+                Image(.imgDefaultTrainerImage)
+                    .resizable()
+                    .scaledToFill()
+                    .frame(width: 132, height: 132)
+                    .clipShape(Circle())
+            }
         }
     }
 }
