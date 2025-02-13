@@ -56,6 +56,7 @@ public struct TrainerMainFlowFeature {
                         
                         /// 트레이너 회원목록
                     case .trainerTraineeList:
+                        state.path.append(.trainerManagment(.init()))
                         return .none
                         
                         /// 트레이너 마이페이지
@@ -118,6 +119,8 @@ extension TrainerMainFlowFeature {
         case connectionComplete(ConnectionCompleteFeature)
         /// 연결된 트레이니 프로필
         case connectedTraineeProfile(ConnectedTraineeProfileFeature)
+        /// 트레이너 회원 관리 페이지
+        case trainerManagment(TrainerManagementFeature)
         
         // MARK: MyPage
         /// 초대코드 발급

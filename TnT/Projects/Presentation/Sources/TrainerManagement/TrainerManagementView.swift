@@ -10,62 +10,95 @@ import SwiftUI
 import ComposableArchitecture
 
 import DesignSystem
+import Domain
 
 struct TrainerManagementView: View {
+    
+    public var store: StoreOf<TrainerManagementFeature>
+    
+    public init(store: StoreOf<TrainerManagementFeature>) {
+        self.store = store
+    }
+    
     var body: some View {
+        ScrollView {
+            VStack(spacing: 12) {
+                
+                Header()
+                if let trainees = store.traineeList {
+                    TraineeListView(trainees: trainees)
+                } else {
+                    EmptyListView()
+                        .frame(minHeight: UIScreen.main.bounds.height - 204)
+                }
+            }
+            .onAppear {
+                store.send(.view(.onappear))
+            }
+            .navigationBarBackButtonHidden()
+        }
+        .background(Color.neutral100)
+    }
+    
+    @ViewBuilder
+    func Header() -> some View {
+        TNavigation(type: .LTextRButtonTitle(
+            leftTitle: "내 회원",
+            pointText: "\(store.traineeList?.count ?? 0)",
+            rightButton: "회원 초대하기")
+        )
+        .rightTap {
+            store.send(.view(.goTraineeInvitation))
+        }
+    }
+    
+    /// 연결된 회원이 있는 경우
+    @ViewBuilder
+    func TraineeListView(trainees: [ActiveTraineeInfoResEntity]) -> some View {
         VStack(spacing: 0) {
-            TNavigation(type: .LTextRButtonTitle(
-                leftTitle: "내 회원",
-                pointText: "0",
-                rightButton: "회원 초대하기")
-            )
+            ForEach(trainees, id: \.id) { trainee in
+                ListCellView(trainee: trainee)
+                    .padding(.bottom, 16)
+            }
         }
     }
     
     /// 연결된 회원이 없는 경우
     @ViewBuilder
     func EmptyListView() -> some View {
-        VStack(spacing: 0) {
-            TNavigation(type: .LTextRButtonTitle(
-                leftTitle: "내 회원",
-                pointText: "0",
-                rightButton: "회원 초대하기")
-            )
-            
+        VStack(spacing: 4) {
             Spacer()
-            VStack(spacing: 4) {
-                Text("아직 연결된 회원이 없어요")
-                    .typographyStyle(.body2Bold, with: Color.neutral600)
-                Text("추가 버튼을 눌러 회원을 추가해 보세요")
-                    .typographyStyle(.label1Medium, with: Color.neutral400)
-            }
+            Text("아직 연결된 회원이 없어요")
+                .typographyStyle(.body2Bold, with: Color.neutral600)
+            Text("추가 버튼을 눌러 회원을 추가해 보세요")
+                .typographyStyle(.label1Medium, with: Color.neutral400)
             Spacer()
         }
     }
     
     @ViewBuilder
-    func ListCellView() -> some View {
+    func ListCellView(trainee: ActiveTraineeInfoResEntity) -> some View {
         VStack(spacing: 12) {
             HStack {
                 HStack {
-                    ProfileImageView(imageURL: "")
+                    ProfileImageView(imageURL: trainee.profileImageUrl)
                     
                     VStack(spacing: 12) {
-                        Text("")
+                        Text(trainee.name)
                             .typographyStyle(.body1Bold, with: Color.neutral900)
-                        Text("")
+                        Text(trainee.ptGoals.joined(separator: ", "))
                             .typographyStyle(.label2Medium, with: Color.neutral500)
                     }
                 }
                 
                 Spacer()
-                TChip(leadingEmoji: "💪", title: "", style: .blue)
+                TChip(leadingEmoji: "💪", title: "\(trainee.finishedPtCount)", style: .blue)
             }
             
             VStack(spacing: 5) {
                 Text("메모")
                     .typographyStyle(.label2Bold, with: Color.neutral600)
-                Text("")
+                Text(trainee.memo)
                     .typographyStyle(.label2Medium, with: Color.neutral500)
             }
         }
@@ -115,8 +148,4 @@ extension TrainerManagementView {
             }
         }
     }
-}
-
-#Preview {
-    TrainerManagementView()
 }

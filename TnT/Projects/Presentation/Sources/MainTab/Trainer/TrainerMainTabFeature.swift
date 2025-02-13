@@ -15,7 +15,7 @@ public struct TrainerMainTabFeature {
     public enum State: Equatable {
         case home(TrainerHomeFeature.State)
 //        case feedback
-        case traineeList
+        case traineeList(TrainerManagementFeature.State)
         case myPage(TrainerMypageFeature.State)
         
         /// state case와 tabinfo 연결
@@ -69,7 +69,7 @@ public struct TrainerMainTabFeature {
 //            /// 피드백 화면에서 발생하는 액션 처리
 //            case feedbackAction
             /// 회원 목록 화면에서 발생하는 액션 처리
-            case traineeListAction
+            case traineeListAction(TrainerManagementFeature.Action)
             /// 마이페이지 화면에서 발생하는 액션 처리
             case myPageAction(TrainerMypageFeature.Action)
         }
@@ -92,8 +92,7 @@ public struct TrainerMainTabFeature {
 //                        state = .feedback
 //                        return .none
                     case .traineeList:
-                        // TODO: traineeList Feature 작성 후 추가해주세요
-                        state = .traineeList
+                        state = .traineeList(.init())
                         return .none
                     case .mypage:
                         state = .myPage(.init())
@@ -134,7 +133,7 @@ extension TrainerMainTabFeature {
 //        /// 트레이너 피드백
 //        case trainerFeedback
         /// 트레이너 회원 목록
-        case trainerTraineeList
+        case trainerTraineeList(TrainerManagementFeature.RoutingScreen)
         /// 트레이너 마이페이지
         case trainerMyPage(TrainerMypageFeature.RoutingScreen)
     }
