@@ -10,7 +10,7 @@ import SwiftUI
 
 /// 트레이니 - 운동/식단 카드
 public struct TRecordCard: View {
-    private let chipUIInfo: TChip.UIInfo
+    private let chipUIInfo: TChip.UIInfo?
     private let timeText: String
     private let title: String
     private let imgURL: URL?
@@ -18,7 +18,7 @@ public struct TRecordCard: View {
     private let footerTapAction: (() -> Void)?
     
     public init(
-        chipUIInfo: TChip.UIInfo,
+        chipUIInfo: TChip.UIInfo?,
         timeText: String,
         title: String,
         imgURL: URL?,
@@ -94,7 +94,9 @@ public struct TRecordCard: View {
     @ViewBuilder
     public func Header() -> some View {
         HStack {
-            TChip(uiInfo: chipUIInfo)
+            if let chipUIInfo {
+                TChip(uiInfo: chipUIInfo)
+            }
             Spacer()
             TimeIndicator(timeText: timeText)
         }
