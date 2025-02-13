@@ -43,7 +43,11 @@ public struct TCalendarView: View {
         GeometryReader { proxy in
             TCalendarRepresentable(
                 selectedDate: $selectedDate,
-                currentPage: $currentPage,
+                currentPage: Binding(get: {
+                    currentPage
+                }, set: {
+                    if $0 != currentPage { currentPage = $0 }
+                }),
                 calendarHeight: $calendarHeight,
                 mode: mode,
                 events: events
