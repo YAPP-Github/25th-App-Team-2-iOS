@@ -128,7 +128,7 @@ public struct TrainerHomeFeature {
             case .view(let action):
                 switch action {
                 case .binding(\.selectedDate):
-//                    print("state.events[state.selectedDate] \(state.events[state.selectedDate])")
+                    //                    print("state.events[state.selectedDate] \(state.events[state.selectedDate])")
                     return .none
                     
                 case .binding:
@@ -185,7 +185,9 @@ public struct TrainerHomeFeature {
                     }
                     
                     return .concatenate(
+                        .send(.view(.fetchMonthlyLessons(year: month == 1 ? year-1 : year, month: month == 1 ? 12 : month-1))),
                         .send(.view(.fetchMonthlyLessons(year: year, month: month))),
+                        .send(.view(.fetchMonthlyLessons(year: year, month: month+1))),
                         .send(.view(.calendarDateTap))
                     )
                     
@@ -230,7 +232,7 @@ public struct TrainerHomeFeature {
                     }
                     
                 case .settingSessionList(let list):
-                    state.tappedsessionInfo = list                    
+                    state.tappedsessionInfo = list
                     return .none
                 }
             case .setNavigating:
