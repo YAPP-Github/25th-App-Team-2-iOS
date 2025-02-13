@@ -39,8 +39,12 @@ public struct TraineeHomeFeature {
         var view_currentPage: Date
         /// 수업 카드 시간 표시
         var view_sessionCardTimeString: String {
-            guard let sessionInfo else { return "" }
-            return "\(TDateFormatUtility.formatter(for: .a_HHmm).string(from: sessionInfo.startDate)) ~ \(TDateFormatUtility.formatter(for: .a_HHmm).string(from: sessionInfo.endDate))"
+            guard let sessionInfo,
+                  let startDate = sessionInfo.startDate?.toString(format: .a_HHmm),
+                  let endDate = sessionInfo.endDate?.toString(format: .a_HHmm)
+            else { return "" }
+            
+            return "\(startDate) ~ \(endDate)"
         }
         /// 기록 제목 표시
         var view_recordTitleString: String {
@@ -82,6 +86,8 @@ public struct TraineeHomeFeature {
         case api(APIAction)
         /// 새로운 이벤트 추가
         case updateEvents([Date: Int])
+        /// 해당 날짜 수업/기록 표시
+        case setContent(session: WorkoutListItemEntity?, records: [RecordListItemEntity])
         /// 팝업 표시 처리
         case showPopUp
         /// 네비게이션 여부 설정
@@ -118,7 +124,7 @@ public struct TraineeHomeFeature {
             /// 캘린더 수업 기록 존재하는 날짜 조회
             case getActiveDateList(startDate: Date, endDate: Date)
             /// 캘린더 특정 날짜 수업/기록 조회
-            case getActiveDateDetail
+            case getActiveDateDetail(date: Date)
         }
     }
     
@@ -133,7 +139,7 @@ public struct TraineeHomeFeature {
             case .view(let action):
                 switch action {
                 case .binding(\.selectedDate):
-                    return .none
+                    return .send(.api(.getActiveDateDetail(date: state.selectedDate)))
                     
                 case .binding(\.view_currentPage):
                     return self.currentPageUpdated(state: &state)
@@ -214,12 +220,24 @@ public struct TraineeHomeFeature {
                         await send(.updateEvents(newEvents))
                     }
                     
-                case .getActiveDateDetail:
-                    return .none
+                case .getActiveDateDetail(let date):
+                    let date = date.toString(format: .yyyyMMdd)
+                    return .run { send in
+                        let result = try await traineeRepoUseCase.getActiveDateDetail(date: date)
+                        let sessionInfo = result.ptInfo?.toEntity()
+                        let recordsInfo = result.diets.map { $0.toEntity() }
+                        
+                        await send(.setContent(session: sessionInfo, records: recordsInfo))
+                    }
                 }
                 
             case .updateEvents(let newEvents):
                 state.events.merge(newEvents) { _, new in new }
+                return .none
+                
+            case let .setContent(sessionInfo, records):
+                state.sessionInfo = sessionInfo
+                state.records = records
                 return .none
                 
             case .showPopUp:

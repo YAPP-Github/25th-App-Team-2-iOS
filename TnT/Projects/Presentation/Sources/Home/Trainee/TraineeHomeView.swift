@@ -143,8 +143,8 @@ public struct TraineeHomeView: View {
                 if !store.records.isEmpty {
                     ForEach(store.records, id: \.id) { item in
                         TRecordCard(
-                            chipUIInfo: item.type.chipInfo,
-                            timeText: TDateFormatUtility.formatter(for: .a_HHmm).string(from: item.date),
+                            chipUIInfo: item.type?.chipInfo,
+                            timeText: item.date?.toString(format: .a_HHmm) ?? "",
                             title: item.title,
                             imgURL: URL(string: item.imageUrl ?? ""),
                             hasFeedback: item.hasFeedBack,
