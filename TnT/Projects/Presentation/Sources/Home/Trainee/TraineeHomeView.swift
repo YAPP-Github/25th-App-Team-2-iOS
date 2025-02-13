@@ -60,7 +60,7 @@ public struct TraineeHomeView: View {
         .navigationBarBackButtonHidden()
         .sheet(isPresented: $store.view_isBottomSheetPresented) {
             TraineeRecordStartView(itemContents: [
-                ("🏋🏻‍♀️", "개인 운동", { send(.tapAddWorkoutRecordButton) }),
+//                ("🏋🏻‍♀️", "개인 운동", { send(.tapAddWorkoutRecordButton) }),
                 ("🥗", "식단", { send(.tapAddDietRecordButton) })
             ])
             .padding(.top, 10)
