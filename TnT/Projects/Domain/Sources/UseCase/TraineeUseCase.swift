@@ -72,4 +72,16 @@ extension DefaultTraineeUseCase: TraineeRepository {
     public func postTraineeDietRecord(_ reqDTO: PostTraineeDietRecordReqDTO, imgData: Data?) async throws -> PostTraineeDietRecordResDTO {
         return try await traineeRepository.postTraineeDietRecord(reqDTO, imgData: imgData)
     }
+    
+    public func getActiveDateList(startDate: String, endDate: String) async throws -> GetActiveDateListResDTO {
+        return try await traineeRepository.getActiveDateList(startDate: startDate, endDate: endDate)
+    }
+    
+    public func getActiveDateDetail(date: String) async throws -> GetActiveDateDetailResDTO {
+        return try await traineeRepository.getActiveDateDetail(date: date)
+    }
+    
+    public func getDietRecordDetail(dietId: Int) async throws -> GetDietRecordDetailResDTO {
+        return try await traineeRepository.getDietRecordDetail(dietId: dietId)
+    }
 }

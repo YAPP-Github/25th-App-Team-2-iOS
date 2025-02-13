@@ -24,4 +24,26 @@ public protocol TraineeRepository {
     /// - Returns: 등록 성공 시, 응답 DTO (empty) (`PostTraineeDietRecordResDTO`)
     /// - Throws: 네트워크 오류 또는 서버에서 반환한 오류를 발생시킬 수 있음
     func postTraineeDietRecord(_ reqDTO: PostTraineeDietRecordReqDTO, imgData: Data?) async throws -> PostTraineeDietRecordResDTO
+    
+    /// 캘린더 수업, 기록 존재하는 날짜 조회 요청
+    /// - Parameters:
+    ///   - startDate: 조회 시작 날짜
+    ///   - endDate: 조회 종료 날짜
+    /// - Returns: 등록 성공 시, 응답 DTO (`GetActiveDateListResDTO`)
+    /// - Throws: 네트워크 오류 또는 서버에서 반환한 오류를 발생시킬 수 있음
+    func getActiveDateList(startDate: String, endDate: String) async throws -> GetActiveDateListResDTO
+    
+    /// 특정 날짜 수업, 기록 조회
+    /// - Parameters:
+    ///   - date: 조회 특정 날짜
+    /// - Returns: 등록 성공 시, 응답 DTO (`GetActiveDateDetailResDTO`)
+    /// - Throws: 네트워크 오류 또는 서버에서 반환한 오류를 발생시킬 수 있음
+    func getActiveDateDetail(date: String) async throws -> GetActiveDateDetailResDTO
+    
+    /// 특정 식단 조회 요청
+    /// - Parameters:
+    ///   - dietId: 조회 특정 식단 ID
+    /// - Returns: 등록 성공 시, 응답 DTO (`GetDietRecordDetailResDTO`)
+    /// - Throws: 네트워크 오류 또는 서버에서 반환한 오류를 발생시킬 수 있음
+    func getDietRecordDetail(dietId: Int) async throws -> GetDietRecordDetailResDTO
 }

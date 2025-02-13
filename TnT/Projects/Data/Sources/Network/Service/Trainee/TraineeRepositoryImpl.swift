@@ -27,4 +27,16 @@ public struct TraineeRepositoryImpl: TraineeRepository {
     public func postTraineeDietRecord(_ reqDTO: PostTraineeDietRecordReqDTO, imgData: Data?) async throws -> PostTraineeDietRecordResDTO {
         return try await networkService.request(TraineeTargetType.postTraineeDietRecord(reqDto: reqDTO, imgData: imgData), decodingType: PostTraineeDietRecordResDTO.self)
     }
+    
+    public func getActiveDateList(startDate: String, endDate: String) async throws -> GetActiveDateListResDTO {
+        return try await networkService.request(TraineeTargetType.getActiveDateList(startDate: startDate, endDate: endDate), decodingType: GetActiveDateListResDTO.self)
+    }
+    
+    public func getActiveDateDetail(date: String) async throws -> GetActiveDateDetailResDTO {
+        return try await networkService.request(TraineeTargetType.getActiveDateDetail(date: date), decodingType: GetActiveDateDetailResDTO.self)
+    }
+    
+    public func getDietRecordDetail(dietId: Int) async throws -> GetDietRecordDetailResDTO {
+        return try await networkService.request(TraineeTargetType.getDietRecordDetail(dietId: dietId), decodingType: GetDietRecordDetailResDTO.self)
+    }
 }
