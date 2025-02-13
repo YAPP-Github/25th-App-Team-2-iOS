@@ -31,27 +31,44 @@ public struct AlarmCheckView: View {
                 leftAction: { send(.tapNavBackButton) }
             )
             
-            ScrollView {
+            ScrollView(showsIndicators: false) {
                 AlarmList()
                 Spacer()
             }
         }
         .navigationBarBackButtonHidden(true)
+        
     }
     
     // MARK: - Sections
     @ViewBuilder
     private func AlarmList() -> some View {
         VStack(spacing: 0) {
-            ForEach(store.alarmList, id: \.alarmId) { item in
-                AlarmListItem(
-                    alarmTypeText: item.alarmTypeText,
-                    alarmMainText: item.alarmMainText,
-                    alarmTimeText: item.alarmDate.timeAgoDisplay(),
-                    alarmSeenBefore: item.alarmSeenBefore
-                )
+            if store.alarmList.isEmpty {
+                EmptyView()
+            } else {
+                ForEach(store.alarmList, id: \.alarmId) { item in
+                    AlarmListItem(
+                        alarmTypeText: item.alarmTypeText,
+                        alarmMainText: item.alarmMainText,
+                        alarmTimeText: item.alarmDate.timeAgoDisplay(),
+                        alarmSeenBefore: item.alarmSeenBefore
+                    )
+                }
             }
         }
+    }
+    
+    @ViewBuilder
+    private func EmptyView() -> some View {
+        VStack {
+            Spacer()
+            Text("최근 받은 알림이 없어요")
+                .typographyStyle(.label1Medium, with: Color.neutral400)
+                .frame(maxWidth: .infinity, alignment: .center)
+            Spacer()
+        }
+        .frame(minHeight: UIScreen.main.bounds.height - 104)
     }
 }
 
