@@ -36,12 +36,14 @@ public struct TrainerMainFlowView: View {
                 ConnectionCompleteView(store: store)
             case .connectedTraineeProfile(let store):
                 ConnectedTraineeProfileView(store: store)
+            
+                // MARK: - TraineeList
+            case .addTrainee(let store):
+                AddTraineeView(store: store)
                 
                 // MARK: MyPage
             case .trainerMakeInvitationCodePage(let store):
                 MakeInvitationCodeView(store: store)
-            case .trainerManagment(let store):
-                TrainerManagementView(store: store)
             }
         }
     }

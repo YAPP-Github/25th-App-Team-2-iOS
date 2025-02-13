@@ -12,6 +12,7 @@ import ComposableArchitecture
 import DesignSystem
 import Domain
 
+@ViewAction(for: TrainerManagementFeature.self)
 struct TrainerManagementView: View {
     
     public var store: StoreOf<TrainerManagementFeature>
@@ -25,7 +26,7 @@ struct TrainerManagementView: View {
             VStack(spacing: 12) {
                 
                 Header()
-                if let trainees = store.traineeList {
+                if let trainees = store.traineeList, !trainees.isEmpty {
                     TraineeListView(trainees: trainees)
                 } else {
                     EmptyListView()
@@ -33,7 +34,7 @@ struct TrainerManagementView: View {
                 }
             }
             .onAppear {
-                store.send(.view(.onappear))
+                send(.onappear)
             }
             .navigationBarBackButtonHidden()
         }
@@ -48,7 +49,7 @@ struct TrainerManagementView: View {
             rightButton: "회원 초대하기")
         )
         .rightTap {
-            store.send(.view(.goTraineeInvitation))
+            send(.tapTraineeInvitation)
         }
     }
     

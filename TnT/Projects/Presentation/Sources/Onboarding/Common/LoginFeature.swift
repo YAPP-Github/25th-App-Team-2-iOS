@@ -129,7 +129,7 @@ public struct LoginFeature {
                 
                 return .run { send in
                     do {
-                        let result = try await userUseCaseRepo.postSocialLogin(post)
+                        let result: PostSocialLoginResDTO = try await userUseCaseRepo.postSocialLogin(post)
                         saveSessionId(result.sessionId)
                         
                         switch result.memberType {

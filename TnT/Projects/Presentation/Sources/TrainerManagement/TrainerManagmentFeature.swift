@@ -23,7 +23,7 @@ public struct  TrainerManagementFeature {
         /// 뷰에서 발생한 에러를 처리합니다.
         case view(View)
         /// 네비게이션 여부 설정
-        case setNavigating
+        case setNavigating(RoutingScreen)
         
         @CasePathable
         public enum View: Sendable {
@@ -34,7 +34,7 @@ public struct  TrainerManagementFeature {
             /// 화면 진입시
             case onappear
             /// 회원 초대하기로 이동
-            case goTraineeInvitation
+            case tapTraineeInvitation
         }
     }
     
@@ -48,21 +48,21 @@ public struct  TrainerManagementFeature {
                     await send(.view(.getTraineeList))
                 }
                 
-            case .setNavigating:
-                return .none
             case .view(.getTraineeList):
                 return .run { send in
-                    let result: GetActiveTraineesListResDTO = try await trainerRepoUseCase.getMembersList()
+                    let result: GetActiveTraineesListResDTO = try await trainerRepoUseCase.getActiveTraineesList()
                     let trainee: [ActiveTraineeInfoResEntity] = result.trainees.map { $0.dtoToEntity() }
                     await send(.view(.setTraineeList(trainee)))
-                    
                 }
+                
             case .view(.setTraineeList(let trainees)):
                 state.traineeList = trainees
                 return .none
                 
-            case .view(.goTraineeInvitation):
-                print("트레이너 내 회원 > 회원 초대하기로 이동")
+            case .view(.tapTraineeInvitation):
+                return .send(.setNavigating(.addTrainee))
+                
+            case .setNavigating:
                 return .none
             }
         }
