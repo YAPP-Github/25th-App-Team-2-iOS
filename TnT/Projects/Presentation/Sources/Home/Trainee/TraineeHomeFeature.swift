@@ -208,7 +208,8 @@ public struct TraineeHomeFeature {
                 case .onAppear:
                     return .concatenate(
                         .send(.showPopUp),
-                        currentPageUpdated(state: &state)
+                        currentPageUpdated(state: &state),
+                        .send(.api(.getActiveDateDetail(date: state.selectedDate)))
                     )
                 }
                 

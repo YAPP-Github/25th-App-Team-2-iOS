@@ -43,11 +43,15 @@ public struct TraineeDietRecordDetailFeature {
         }
     }
     
+    @Dependency(\.traineeRepoUseCase) private var traineeRepoUseCase
+    
     public enum Action: Sendable, ViewAction {
         /// 뷰에서 발생한 액션을 처리합니다.
         case view(View)
         /// api 콜 액션을 처리합니다
         case api(APIAction)
+        /// 식단 정보 반영
+        case setDietRecordDetail(RecordListItemEntity)
         /// 네비게이션 여부 설정
         case setNavigating
         
@@ -57,6 +61,8 @@ public struct TraineeDietRecordDetailFeature {
             case binding(BindingAction<State>)
             /// 우측 상단 ellipsis 버튼 탭
             case tapEllipsisButton
+            /// 화면에 표시될 때
+            case onAppear
         }
         
         @CasePathable
@@ -81,14 +87,27 @@ public struct TraineeDietRecordDetailFeature {
                     
                 case .tapEllipsisButton:
                     return .none
+                    
+                case .onAppear:
+                    return .send(.api(.getDietRecordDetail))
                 }
                 
             case .api(let action):
                 switch action {
                 case .getDietRecordDetail:
-                    // TODO: API 나오면 추후 연결
-                    return .none
+                    let id = state.dietId
+                    return .run { send in
+                        let result = try await traineeRepoUseCase.getDietRecordDetail(dietId: id).toEntity()
+                        await send(.setDietRecordDetail(result))
+                    }
                 }
+                
+            case .setDietRecordDetail(let info):
+                state.dietImageURL = URL(string: info.imageUrl ?? "")
+                state.dietType = .init(from: info.type ?? RecordType.diet(type: .breakfast))
+                state.dietDate = info.date
+                state.dietInfo = info.title
+                return .none
                 
             case .setNavigating:
                 return .none
