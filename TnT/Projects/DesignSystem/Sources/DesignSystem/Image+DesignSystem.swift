@@ -33,6 +33,7 @@ public extension ImageResource {
     static let icnRadioButtonSelected: ImageResource = DesignSystemAsset.icnRadioButtonSelected.imageResource
     static let icnCheckMarkEmpty: ImageResource = DesignSystemAsset.icnCheckMarkEmpty.imageResource
     static let icnCheckMarkFilled: ImageResource = DesignSystemAsset.icnCheckMarkFilled.imageResource
+    static let icnCheckMarkGreen: ImageResource = DesignSystemAsset.icnCheckMarkGreen.imageResource
     static let icnCheckButtonUnselected: ImageResource = DesignSystemAsset.icnCheckButtonUnselected.imageResource
     static let icnCheckButtonSelected: ImageResource = DesignSystemAsset.icnCheckButtonSelected.imageResource
     static let icnStarEmpty: ImageResource = DesignSystemAsset.icnStarEmpty.imageResource

@@ -47,6 +47,11 @@ public struct TrainerHomeView: View {
         .onAppear {
             send(.onAppear)
         }
+        .tToast(
+            isPresented: $store.sessionTMessage,
+            message: "",
+            leftViewType: .image(.icnCheckMarkGreen)
+        )
     }
     
     // MARK: - Sections
@@ -117,7 +122,7 @@ public struct TrainerHomeView: View {
             if let record = store.tappedsessionInfo, !record.lessons.isEmpty {
                 ForEach(record.lessons, id: \.id) { record in
                     SessionCellView(session: record) {
-                        send(.tapSessionCompleted(id: record.ptLessonId))
+                        send(.tapSessionCompleted(id: Int(record.ptLessonId)!))
                     } onTap: {
                         // TODO: - 트레이너 기록 추가
                     }

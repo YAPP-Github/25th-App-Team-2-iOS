@@ -80,7 +80,7 @@ public extension View {
     /// - `isPresented`: 토스트의 표시 여부를 제어하는 Binding.
     /// - `message`: 토스트에 표시할 메시지.
     /// - `leftView`: 토스트 좌측에 추가할 아이콘이나 뷰.
-    func tToast<LeftView: View>(
+    func tToast(
         isPresented: Binding<Bool>,
         message: String,
         leftViewType: TToastView.LeftViewType

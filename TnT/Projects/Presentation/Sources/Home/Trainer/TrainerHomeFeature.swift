@@ -36,6 +36,8 @@ public struct TrainerHomeFeature {
         var isHideUntilSelected: Bool
         /// 트레이니 연결 여부
         var isConnected: Bool
+        /// 수업완료
+        var sessionTMessage: Bool
         
         // MARK: UI related state
         /// 캘린더 표시 페이지
@@ -62,7 +64,8 @@ public struct TrainerHomeFeature {
             isConnected: Bool = false,
             view_currentPage: Date = .now,
             tappedsessionInfo: GetDateSessionListEntity? = nil,
-            view_isPopUpPresented: Bool = false
+            view_isPopUpPresented: Bool = false,
+            sessionTMessage: Bool = false
         ) {
             self.selectedDate = selectedDate
             self.events = events
@@ -74,6 +77,7 @@ public struct TrainerHomeFeature {
             self.view_currentPage = view_currentPage
             self.tappedsessionInfo = tappedsessionInfo
             self.view_isPopUpPresented = view_isPopUpPresented
+            self.sessionTMessage = sessionTMessage
         }
     }
     
@@ -93,7 +97,7 @@ public struct TrainerHomeFeature {
             /// 우측 상단 알림 페이지 보기 버튼 탭
             case tapAlarmPageButton
             /// 수업 완료 버튼 탭
-            case tapSessionCompleted(id: String)
+            case tapSessionCompleted(id: Int)
             /// 수업 추가 버튼 탭
             case tapAddSessionButton
             /// 연결 권장 팝업 - 다음에 버튼 탭
@@ -112,6 +116,10 @@ public struct TrainerHomeFeature {
             case calendarDateTap
             /// 탭한 일자 api 형태에 맞춰 변환하기(yyyy-mm-dd)
             case settingSessionList(sessions: GetDateSessionListEntity)
+            /// 수업 기록 남기기 탭
+            case tapRecordSessionButton
+            /// ToastMessage
+            case sessionToastMessage
         }
     }
     
@@ -132,13 +140,28 @@ public struct TrainerHomeFeature {
                 case .binding:
                     return .none
                     
+                case .tapRecordSessionButton:
+                    print("수업 기록 화면으로 이동")
+                    return .none
+                    
+                /// 수업 완료 후 토스트 메시지
+                case .sessionToastMessage:
+                    state.sessionTMessage = true
+                    return .none
+                    
                 case .tapAlarmPageButton:
                     return .send(.setNavigating(.alarmPage))
                     
+                /// 수업 완료 버튼 탭
                 case .tapSessionCompleted(let id):
-                    // TODO: 네비게이션 연결 시 추가
-                    print("tapSessionCompleted otLessionID \(id)")
-                    return .none
+                    return .run { send in
+                        do {
+                            _ = try await trainerRepoUseCase.putCompleteLesson(lessonId: id)
+                            await send(.view(.sessionToastMessage))
+                        } catch {
+                            print("error of put session complete \(error.localizedDescription)")
+                        }
+                    }
                     
                 case .tapAddSessionButton:
                     return .send(.setNavigating(.addPTSessionPage))
