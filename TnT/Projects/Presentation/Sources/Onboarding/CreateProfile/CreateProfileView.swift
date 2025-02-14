@@ -52,6 +52,7 @@ public struct CreateProfileView: View {
             ) {
                 send(.tapNextButton)
             }
+            .debounce()
         }
     }
     

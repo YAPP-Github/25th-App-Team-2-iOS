@@ -74,6 +74,7 @@ public struct TrainerAddPTSessionView: View {
                 ) {
                     send(.tapSubmitButton)
                 }
+                .debounce()
             }
         }
         .sheet(item: $store.view_bottomSheetItem) { item in

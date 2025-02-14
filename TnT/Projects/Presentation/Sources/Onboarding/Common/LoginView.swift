@@ -80,6 +80,7 @@ public struct LoginView: View {
                         send(.tappedKakaoLogin)
                     }
                 }
+                .debounce()
             }
         }
         .padding(.bottom, 62)

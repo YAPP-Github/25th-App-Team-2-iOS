@@ -68,6 +68,7 @@ public struct TraineeAddDietRecordView: View {
                 ) {
                     send(.tapSubmitButton)
                 }
+                .debounce()
                 .padding(.horizontal, 16)
             }
         }

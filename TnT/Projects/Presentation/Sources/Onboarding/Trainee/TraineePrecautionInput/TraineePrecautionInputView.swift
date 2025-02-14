@@ -50,6 +50,7 @@ public struct TraineePrecautionInputView: View {
                 ) {
                     send(.tapNextButton)
                 }
+                .debounce()
             }
         }
         .onChange(of: focusedField) { _, newFocus in
