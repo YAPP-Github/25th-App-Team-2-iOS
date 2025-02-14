@@ -52,6 +52,7 @@ public struct CreateProfileView: View {
             ) {
                 send(.tapNextButton)
             }
+            .disabled(!store.view_isNextButtonEnabled)
             .debounce()
         }
     }

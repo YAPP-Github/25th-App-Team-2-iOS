@@ -47,6 +47,7 @@ public struct TraineeInvitationCodeInputView: View {
                 ) {
                     send(.tapNextButton)
                 }
+                .disabled(!store.view_isNextButtonEnabled)
             }
         }
         .onChange(of: focusedField) { oldValue, newValue in

@@ -51,6 +51,7 @@ public struct TraineeTrainingInfoInputView: View {
                 ) {
                     send(.tapNextButton)
                 }
+                .disabled(!store.view_isNextButtonEnabled)
             }
         }
         .sheet(isPresented: $store.view_isDatePickerPresented) {

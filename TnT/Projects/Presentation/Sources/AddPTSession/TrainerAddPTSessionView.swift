@@ -74,6 +74,7 @@ public struct TrainerAddPTSessionView: View {
                 ) {
                     send(.tapSubmitButton)
                 }
+                .disabled(!store.view_isSubmitButtonEnabled)
                 .debounce()
             }
         }

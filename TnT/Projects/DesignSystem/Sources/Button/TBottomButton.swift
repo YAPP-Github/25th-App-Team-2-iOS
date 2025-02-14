@@ -33,13 +33,13 @@ public struct TBottomButton: View {
     }
     
     public var body: some View {
-        Button(title) {
-            action()
+        Button(action: { action() }) {
+            Text(title)
+                .typographyStyle(.heading4, with: isEnable ? ButtonState.true.textColor : ButtonState.false.textColor)
+                .padding(.vertical, 20)
+                .frame(maxWidth: .infinity)
+                .background(isEnable ? ButtonState.true.background : ButtonState.false.background)
         }
-        .typographyStyle(.heading4, with: isEnable ? ButtonState.true.textColor : ButtonState.false.textColor)
-        .padding(.vertical, 20)
-        .frame(maxWidth: .infinity)
-        .background(isEnable ? ButtonState.true.background : ButtonState.false.background)
     }
 }
 

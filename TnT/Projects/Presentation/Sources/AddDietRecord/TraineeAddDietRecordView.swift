@@ -68,6 +68,7 @@ public struct TraineeAddDietRecordView: View {
                 ) {
                     send(.tapSubmitButton)
                 }
+                .disabled(!store.view_isSubmitButtonEnabled)
                 .debounce()
                 .padding(.horizontal, 16)
             }
