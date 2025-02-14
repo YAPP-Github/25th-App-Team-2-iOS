@@ -40,11 +40,6 @@ public struct TrainerHomeFeature {
         // MARK: UI related state
         /// 캘린더 표시 페이지
         var view_currentPage: Date
-        /// 수업 카드 시간 표시
-        var view_sessionCardTimeString: String {
-            guard let sessionInfo else { return "" }
-            return "\(TDateFormatUtility.formatter(for: .a_HHmm).string(from: sessionInfo.startDate)) ~ \(TDateFormatUtility.formatter(for: .a_HHmm).string(from: sessionInfo.endDate))"
-        }
         /// 기록 제목 표시
         var view_recordTitleString: String {
             return TDateFormatUtility.formatter(for: .M월_d일_EEEE).string(from: selectedDate)
@@ -114,6 +109,8 @@ public struct TrainerHomeFeature {
             case settingSessionList(sessions: GetDateSessionListEntity)
             /// 수업 완료 후 토스트 메시지
             case completeToastMessage
+            /// 캘린더 데이터 캐싱을 위한 계산
+            case isLoadedCheck(currentMonth: Int, nextMonth: Int)
         }
     }
     
@@ -128,7 +125,7 @@ public struct TrainerHomeFeature {
             case .view(let action):
                 switch action {
                 case .binding(\.selectedDate):
-                    //                    print("state.events[state.selectedDate] \(state.events[state.selectedDate])")
+//                    print("state.events[state.selectedDate] \(state.events[state.selectedDate])")
                     return .none
                     
                 case .binding:
@@ -140,7 +137,7 @@ public struct TrainerHomeFeature {
                 case .tapSessionCompleted(let id):
                     guard let id = Int(id) else { return .none }
                     return .run { send in
-                        let result: PutCompleteLessonResDTO = try await trainerRepoUseCase.putCompleteLesson(lessonId: id)
+                        let _: PutCompleteLessonResDTO = try await trainerRepoUseCase.putCompleteLesson(lessonId: id)
                         await send(.view(.completeToastMessage))
                         await send(.view(.calendarDateTap))
                     }
@@ -191,20 +188,40 @@ public struct TrainerHomeFeature {
                         .send(.view(.calendarDateTap))
                     )
                     
+                case .isLoadedCheck(let current, let next):
+                    let year: Int = Calendar.current.component(.year, from: state.selectedDate)
+
+                    let isLoaded: Bool = state.events.keys.contains { date in
+                        let eventMonth: Int = Calendar.current.component(.month, from: date)
+                        return eventMonth == next
+                    }
+                    
+                    if isLoaded {
+                        return .none
+                    } else {
+                        if current > next { /// 이전달로 넘기는 경우
+                            return .run { send in
+                                await send(.view(.fetchMonthlyLessons(year: current == 1 ? year-1 : year, month: next)))
+                            }
+                        } else { /// 다음달로 넘기는 경우
+                            return .run { send in
+                                await send(.view(.fetchMonthlyLessons(year: year, month: next)))
+                            }
+                        }
+                    }
+                    
                 case .fetchMonthlyLessons(year: let year, month: let month):
+                    var events: [Date: Int] = state.events
+                    
                     return .run { send in
                         do {
-                            let temp: GetMonthlyLessonListResDTO = try await trainerRepoUseCase.getMonthlyLessonList(
+                            let result: GetMonthlyLessonListResDTO = try await trainerRepoUseCase.getMonthlyLessonList(
                                 year: year,
                                 month: month
                             )
                             
-                            let dateFormatter: DateFormatter = DateFormatter()
-                            dateFormatter.dateFormat = "yyyy-MM-dd"
-                            
-                            var events: [Date: Int] = [:]
-                            for lesson in temp.calendarPtLessonCounts {
-                                if let date = dateFormatter.date(from: lesson.date) {
+                            for lesson in result.calendarPtLessonCounts {
+                                if let date = lesson.date.toDate(format: .yyyyMMdd) {
                                     events[date] = lesson.count
                                 } else {
                                     print("Invalid date format: \(lesson.date)")
@@ -215,20 +232,18 @@ public struct TrainerHomeFeature {
                             print("리스트 Fetching Error: \(error)")
                         }
                     }
+                    
                 case .updateEvents(let events):
-                    state.events = events
+                    state.events.merge(events) { current, new in new }
                     return .none
                     
                 case .calendarDateTap:
                     let formattedDate: String = TDateFormatUtility.formatter(for: .yyyyMMdd).string(from: state.selectedDate)
-                    
+                    let events = state.events
                     return .run { send in
-                        do {
-                            let sessionList: GetDateSessionListEntity = try await trainerRepoUseCase.getDateSessionList(date: formattedDate).toEntity()
-                            await send(.view(.settingSessionList(sessions: sessionList)))
-                        } catch {
-                            print("error \(error.localizedDescription)")
-                        }
+                        let sessionList: GetDateSessionListEntity = try await trainerRepoUseCase.getDateSessionList(date: formattedDate).toEntity()
+                        await send(.view(.settingSessionList(sessions: sessionList)))
+                        await send(.view(.updateEvents(events)))
                     }
                     
                 case .settingSessionList(let list):

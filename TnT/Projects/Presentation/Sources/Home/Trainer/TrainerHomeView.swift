@@ -80,6 +80,11 @@ public struct TrainerHomeView: View {
                     store.selectedDate = startOfDay
                     send(.calendarDateTap)
                 })
+                .onChange(of: store.state.view_currentPage, { oldValue, newValue in
+                    let current: Int = Calendar.current.component(.month, from: oldValue)
+                    let next: Int = Calendar.current.component(.month, from: newValue)
+                    send(.isLoadedCheck(currentMonth: current, nextMonth: next))
+                })
                 .padding(.horizontal, 20)
             }
         }
