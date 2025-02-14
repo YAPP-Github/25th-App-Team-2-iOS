@@ -12,9 +12,7 @@ import ComposableArchitecture
 import Domain
 import DesignSystem
 
-/// 회원 기본 정보를 입력하는 화면
-/// - 생년월일, 키, 체중 입력을 포함
-/// - 생년월일 입력 시 DatePicker 표시
+/// PT  정보를 입력하는 화면
 @ViewAction(for: TraineeTrainingInfoInputFeature.self)
 public struct TraineeTrainingInfoInputView: View {
     
@@ -57,6 +55,7 @@ public struct TraineeTrainingInfoInputView: View {
         }
         .sheet(isPresented: $store.view_isDatePickerPresented) {
             TDatePickerView(
+                selectedDate: store.startDate.toDate(format: .yyyyMMddSlash) ?? .now,
                 title: "PT 시작일",
                 monthFormatter: {
                     TDateFormatUtility.formatter(for: .yyyy년_MM월).string(from: $0)

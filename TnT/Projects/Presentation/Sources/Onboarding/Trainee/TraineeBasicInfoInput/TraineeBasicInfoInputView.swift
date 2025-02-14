@@ -56,8 +56,7 @@ public struct TraineeBasicInfoInputView: View {
         .sheet(isPresented: $store.view_isDatePickerPresented) {
             TDatePickerView(
                 calendarType: .system(in: ...Date().addingTimeInterval(-86400)),
-                selectedDate: TraineeBasicInfoInputFeature.defaultDatePickerDate,
-                currentPageDate: TraineeBasicInfoInputFeature.defaultDatePickerDate,
+                selectedDate: store.birthDate.toDate(format: .yyyyMMddSlash) ?? TraineeBasicInfoInputFeature.defaultDatePickerDate,
                 title: "생년월일",
                 monthFormatter: {
                     TDateFormatUtility.formatter(for: .yyyy년_MM월).string(from: $0)

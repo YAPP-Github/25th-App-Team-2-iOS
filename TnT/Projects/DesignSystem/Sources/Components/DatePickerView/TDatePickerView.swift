@@ -30,23 +30,21 @@ public struct TDatePickerView: View {
     /// - Parameters:
     ///   - calendarType: 시스템 캘린더 / 커스텀 캘린더 선택 (기본값: 커스텀)
     ///   - selectedDate: 초기 선택 날짜 (기본값: 현재 날짜)
-    ///   - currentPageDate: 초기 표시 날짜 (기본값: 현재 날짜)
     ///   - title: DatePicker의 제목
     ///   - buttonAction: 날짜 선택 후 실행할 액션
     public init(
         calendarType: CalendarType = .custom,
         selectedDate: Date = .now,
-        currentPageDate: Date = .now,
         title: String,
         monthFormatter: @escaping (Date) -> String,
         buttonAction: @escaping (Date) -> Void
     ) {
         self.calendarType = calendarType
         self.selectedDate = selectedDate
-        self.currentPageDate = currentPageDate
         self.title = title
         self.monthFormatter = monthFormatter
         self.buttonAction = buttonAction
+        currentPageDate = selectedDate
     }
     
     public var body: some View {
