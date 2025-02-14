@@ -79,12 +79,14 @@ public struct TermView: View {
             TDivider(height: 2, color: .neutral100)
                 .padding(.vertical, 8)
             
-            ForEach(store.view_terms.keys.sorted(by: { $0.id < $1.id }), id: \.self) { term in
-                termListItem(
-                    term: term,
-                    isAgreed: store.view_terms[term] ?? false
-                ) {
-                    send(.toggleTerm(term, !$0))
+            VStack(spacing: 12) {
+                ForEach(store.view_terms.keys.sorted(by: { $0.id < $1.id }), id: \.self) { term in
+                    termListItem(
+                        term: term,
+                        isAgreed: store.view_terms[term] ?? false
+                    ) {
+                        send(.toggleTerm(term, !$0))
+                    }
                 }
             }
         }
