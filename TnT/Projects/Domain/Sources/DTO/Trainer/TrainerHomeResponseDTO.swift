@@ -29,6 +29,7 @@ public struct SessonDTO: Decodable {
     public let ptLessonId: String
     public let traineeId: String
     public let traineeName: String
+    public let traineeProfileImageUrl: String
     public let session: Int
     public let startTime: String
     public let endTime: String
@@ -38,6 +39,7 @@ public struct SessonDTO: Decodable {
         ptLessonId: String,
         traineeId: String,
         traineeName: String,
+        traineeProfileImageUrl: String,
         session: Int,
         startTime: String,
         endTime: String,
@@ -46,6 +48,7 @@ public struct SessonDTO: Decodable {
         self.ptLessonId = ptLessonId
         self.traineeId = traineeId
         self.traineeName = traineeName
+        self.traineeProfileImageUrl = traineeProfileImageUrl
         self.session = session
         self.startTime = startTime
         self.endTime = endTime
@@ -75,6 +78,7 @@ public struct SessonEntity: Equatable, Encodable {
     public let ptLessonId: String
     public let traineeId: String
     public let traineeName: String
+    public let traineeProfileImageUrl: String
     public let session: Int
     public let startTime: String
     public let endTime: String
@@ -84,6 +88,7 @@ public struct SessonEntity: Equatable, Encodable {
         ptLessonId: String,
         traineeId: String,
         traineeName: String,
+        traineeProfileImageUrl: String,
         session: Int,
         startTime: String,
         endTime: String,
@@ -92,6 +97,7 @@ public struct SessonEntity: Equatable, Encodable {
         self.ptLessonId = ptLessonId
         self.traineeId = traineeId
         self.traineeName = traineeName
+        self.traineeProfileImageUrl = traineeProfileImageUrl
         self.session = session
         self.startTime = startTime
         self.endTime = endTime
@@ -122,14 +128,15 @@ public extension GetDateSessionListDTO {
 
 // MARK: - SessonDTO -> SessonEntity
 public extension SessonDTO {
-    public func toEntity() -> SessonEntity {
+    func toEntity() -> SessonEntity {
         return SessonEntity(
             ptLessonId: self.ptLessonId,
             traineeId: self.traineeId,
             traineeName: self.traineeName,
+            traineeProfileImageUrl: self.traineeProfileImageUrl,
             session: self.session,
-            startTime: self.startTime,
-            endTime: self.endTime,
+            startTime: self.startTime.toDate(format: .ISO8601)?.toString(format: .a_HHmm) ?? "",
+            endTime: self.endTime.toDate(format: .ISO8601)?.toString(format: .a_HHmm) ?? "",
             isCompleted: self.isCompleted
         )
     }
@@ -140,6 +147,7 @@ public extension SessonDTO {
             ptLessonId: self.ptLessonId,
             traineeId: self.traineeId,
             traineeName: self.traineeName,
+            traineeProfileImageUrl: self.traineeProfileImageUrl,
             session: self.session,
             startTime: self.startTime,
             endTime: self.endTime,
@@ -166,6 +174,7 @@ public extension SessonEntity {
             ptLessonId: self.ptLessonId,
             traineeId: self.traineeId,
             traineeName: self.traineeName,
+            traineeProfileImageUrl: self.traineeProfileImageUrl,
             session: self.session,
             startTime: self.startTime,
             endTime: self.endTime,

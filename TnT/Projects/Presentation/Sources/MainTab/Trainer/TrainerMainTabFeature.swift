@@ -105,6 +105,8 @@ public struct TrainerMainTabFeature {
                 switch internalAction {
                 case .homeAction(.setNavigating(let screen)):
                     return .send(.setNavigating(.trainerHome(screen)))
+                case .traineeListAction(.setNavigating(let screen)):
+                    return .send(.setNavigating(.trainerTraineeList(screen)))
                 case .myPageAction(.setNavigating(let screen)):
                     return .send(.setNavigating(.trainerMyPage(screen)))
                 default:
@@ -118,6 +120,9 @@ public struct TrainerMainTabFeature {
         .ifCaseLet(\.home, action: \.subFeature.homeAction) {
             TrainerHomeFeature()
         }
+        .ifCaseLet(\.traineeList, action: \.subFeature.traineeListAction, then: {
+            TrainerManagementFeature()
+        })
         .ifCaseLet(\.myPage, action: \.subFeature.myPageAction) {
             TrainerMypageFeature()
         }

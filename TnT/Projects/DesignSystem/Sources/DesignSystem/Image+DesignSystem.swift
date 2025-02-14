@@ -29,9 +29,11 @@ public extension ImageResource {
     static let icnMypageFilled: ImageResource = DesignSystemAsset.icnMypageFilled.imageResource
     static let icnWriteWhite: ImageResource = DesignSystemAsset.icnWriteWhite.imageResource
     static let icnWriteBlack: ImageResource = DesignSystemAsset.icnWriteBlack.imageResource
+    static let icnWriteGray: ImageResource = DesignSystemAsset.icnWriteGray.imageResource
     static let icnRadioButtonUnselected: ImageResource = DesignSystemAsset.icnRadioButtonUnselected.imageResource
     static let icnRadioButtonSelected: ImageResource = DesignSystemAsset.icnRadioButtonSelected.imageResource
     static let icnCheckMarkEmpty: ImageResource = DesignSystemAsset.icnCheckMarkEmpty.imageResource
+    static let icnCheckMarkGreen: ImageResource = DesignSystemAsset.icnCheckMarkGreen.imageResource
     static let icnCheckMarkFilled: ImageResource = DesignSystemAsset.icnCheckMarkFilled.imageResource
     static let icnCheckButtonUnselected: ImageResource = DesignSystemAsset.icnCheckButtonUnselected.imageResource
     static let icnCheckButtonSelected: ImageResource = DesignSystemAsset.icnCheckButtonSelected.imageResource
@@ -50,6 +52,7 @@ public extension ImageResource {
     static let icnWriteBlackFilled: ImageResource = DesignSystemAsset.icnWriteBlackFilled.imageResource
     static let icnPlus: ImageResource = DesignSystemAsset.icnPlus.imageResource
     static let icnPlusEmpty: ImageResource = DesignSystemAsset.icnPlusEmpty.imageResource
+    static let icnPlusGray: ImageResource = DesignSystemAsset.icnPlusGray.imageResource
     static let icnAlarm: ImageResource = DesignSystemAsset.icnAlarm.imageResource
     static let icnCalendar: ImageResource = DesignSystemAsset.icnCalendar.imageResource
     static let icnDelete24px: ImageResource = DesignSystemAsset.icnDelete24.imageResource

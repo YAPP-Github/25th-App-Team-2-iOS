@@ -112,6 +112,8 @@ public struct TrainerHomeFeature {
             case calendarDateTap
             /// 탭한 일자 api 형태에 맞춰 변환하기(yyyy-mm-dd)
             case settingSessionList(sessions: GetDateSessionListEntity)
+            /// 수업 완료 후 토스트 메시지
+            case completeToastMessage
         }
     }
     
@@ -126,7 +128,7 @@ public struct TrainerHomeFeature {
             case .view(let action):
                 switch action {
                 case .binding(\.selectedDate):
-                    print("state.events[state.selectedDate] \(state.events[state.selectedDate])")
+                    //                    print("state.events[state.selectedDate] \(state.events[state.selectedDate])")
                     return .none
                     
                 case .binding:
@@ -136,8 +138,15 @@ public struct TrainerHomeFeature {
                     return .send(.setNavigating(.alarmPage))
                     
                 case .tapSessionCompleted(let id):
-                    // TODO: 네비게이션 연결 시 추가
-                    print("tapSessionCompleted otLessionID \(id)")
+                    guard let id = Int(id) else { return .none }
+                    return .run { send in
+                        let result: PutCompleteLessonResDTO = try await trainerRepoUseCase.putCompleteLesson(lessonId: id)
+                        await send(.view(.completeToastMessage))
+                        await send(.view(.calendarDateTap))
+                    }
+                    
+                case .completeToastMessage:
+                    NotificationCenter.default.post(toast: .init(presentType: .image(.icnCheckMarkGreen), message: "PT 수업을 완료했어요"))
                     return .none
                     
                 case .tapAddSessionButton:
@@ -175,7 +184,12 @@ public struct TrainerHomeFeature {
                         state.view_isPopUpPresented = true
                     }
                     
-                    return .send(.view(.fetchMonthlyLessons(year: year, month: month)))
+                    return .concatenate(
+                        .send(.view(.fetchMonthlyLessons(year: month == 1 ? year-1 : year, month: month == 1 ? 12 : month-1))),
+                        .send(.view(.fetchMonthlyLessons(year: year, month: month))),
+                        .send(.view(.fetchMonthlyLessons(year: year, month: month+1))),
+                        .send(.view(.calendarDateTap))
+                    )
                     
                 case .fetchMonthlyLessons(year: let year, month: let month):
                     return .run { send in
@@ -206,7 +220,7 @@ public struct TrainerHomeFeature {
                     return .none
                     
                 case .calendarDateTap:
-                    let formattedDate = TDateFormatUtility.formatter(for: .yyyyMMdd).string(from: state.selectedDate)
+                    let formattedDate: String = TDateFormatUtility.formatter(for: .yyyyMMdd).string(from: state.selectedDate)
                     
                     return .run { send in
                         do {

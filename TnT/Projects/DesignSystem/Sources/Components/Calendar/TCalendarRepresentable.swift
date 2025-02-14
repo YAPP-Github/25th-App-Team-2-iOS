@@ -64,7 +64,6 @@ public struct TCalendarRepresentable: UIViewRepresentable {
         calendar.appearance.titleDefaultColor = .clear
         calendar.calendarWeekdayView.weekdayLabels[0].textColor = UIColor(.red500)
         
-        
         return calendar
     }
 

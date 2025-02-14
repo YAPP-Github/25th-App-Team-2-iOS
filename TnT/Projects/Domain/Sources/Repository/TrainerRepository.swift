@@ -29,9 +29,6 @@ public protocol TrainerRepository {
     /// 달력 스케줄 카운트 표시에 필요한 PT 리스트 불러오기
     func getMonthlyLessonList(year: Int, month: Int) async throws -> GetMonthlyLessonListResDTO
     
-    /// 회원 조희
-    func getMembersList() async throws -> GetActiveTraineesListResDTO
-    
     /// 연결 완료된 트레이니 정보 불러오기
     func getConnectedTraineeInfo(trainerId: Int, traineeId: Int) async throws -> GetConnectedTraineeInfoResponseDTO
     

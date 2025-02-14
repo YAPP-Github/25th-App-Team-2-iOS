@@ -12,6 +12,7 @@ import ComposableArchitecture
 import DesignSystem
 import Domain
 
+@ViewAction(for: TrainerManagementFeature.self)
 struct TrainerManagementView: View {
     
     public var store: StoreOf<TrainerManagementFeature>
@@ -21,11 +22,11 @@ struct TrainerManagementView: View {
     }
     
     var body: some View {
-        ScrollView {
+        ScrollView(showsIndicators: false) {
             VStack(spacing: 12) {
-                
                 Header()
-                if let trainees = store.traineeList {
+                
+                if let trainees = store.traineeList, !trainees.isEmpty {
                     TraineeListView(trainees: trainees)
                 } else {
                     EmptyListView()
@@ -33,7 +34,7 @@ struct TrainerManagementView: View {
                 }
             }
             .onAppear {
-                store.send(.view(.onappear))
+                send(.onappear)
             }
             .navigationBarBackButtonHidden()
         }
@@ -42,14 +43,25 @@ struct TrainerManagementView: View {
     
     @ViewBuilder
     func Header() -> some View {
-        TNavigation(type: .LTextRButtonTitle(
-            leftTitle: "내 회원",
-            pointText: "\(store.traineeList?.count ?? 0)",
-            rightButton: "회원 초대하기")
-        )
-        .rightTap {
-            store.send(.view(.goTraineeInvitation))
+        HStack(spacing: 6) {
+            Text("내 회원")
+                .typographyStyle(.heading2, with: .neutral900)
+            Text("\(store.traineeList?.count ?? 0)")
+                .typographyStyle(.heading2, with: .red500)
+            
+            Spacer()
+            
+            Button {
+                send(.tapTraineeInvitation)
+            } label: {
+                Text("회원 초대하기")
+                    .typographyStyle(.label2Medium, with: Color.neutral600)
+                    .padding(.init(top: 7, leading: 12, bottom: 7, trailing: 12))
+                    .background(Color.neutral200)
+                    .clipShape(RoundedRectangle(cornerRadius: 8))
+            }
         }
+        .padding(20)
     }
     
     /// 연결된 회원이 있는 경우
@@ -61,6 +73,7 @@ struct TrainerManagementView: View {
                     .padding(.bottom, 16)
             }
         }
+        .padding(.horizontal, 16)
     }
     
     /// 연결된 회원이 없는 경우
@@ -79,27 +92,36 @@ struct TrainerManagementView: View {
     @ViewBuilder
     func ListCellView(trainee: ActiveTraineeInfoResEntity) -> some View {
         VStack(spacing: 12) {
-            HStack {
-                HStack {
+            HStack(spacing: 0) {
+                HStack(spacing: 12) {
                     ProfileImageView(imageURL: trainee.profileImageUrl)
                     
-                    VStack(spacing: 12) {
+                    VStack(spacing: 0) {
                         Text(trainee.name)
                             .typographyStyle(.body1Bold, with: Color.neutral900)
+                            .frame(maxWidth: .infinity, alignment: .leading)
                         Text(trainee.ptGoals.joined(separator: ", "))
                             .typographyStyle(.label2Medium, with: Color.neutral500)
+                            .frame(maxWidth: .infinity, alignment: .leading)
                     }
+                    .padding(.vertical, 9)
                 }
                 
                 Spacer()
-                TChip(leadingEmoji: "💪", title: "\(trainee.finishedPtCount)", style: .blue)
+                VStack {
+                    TChip(leadingEmoji: "💪", title: "\(trainee.finishedPtCount)/\(trainee.totalPtCount)회", style: .blue)
+                }
             }
             
-            VStack(spacing: 5) {
-                Text("메모")
-                    .typographyStyle(.label2Bold, with: Color.neutral600)
-                Text(trainee.memo)
-                    .typographyStyle(.label2Medium, with: Color.neutral500)
+            if !trainee.memo.isEmpty {
+                VStack(spacing: 5) {
+                    Text("메모")
+                        .typographyStyle(.label2Bold, with: Color.neutral600)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                    Text(trainee.memo)
+                        .typographyStyle(.label2Medium, with: Color.neutral500)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                }
             }
         }
         .padding(12)
