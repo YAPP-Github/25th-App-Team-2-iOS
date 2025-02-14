@@ -44,13 +44,14 @@ public struct TraineeTrainingPurposeView: View {
         }
         .navigationBarBackButtonHidden()
         .keyboardDismissOnTap()
-        .safeAreaInset(edge: .bottom) {
+        .bottomFixWith {
             TBottomButton(
                 title: "다음",
                 isEnable: store.view_isNextButtonEnabled
             ) {
                 send(.tapNextButton)
             }
+            .padding(.bottom, .safeAreaBottom)
         }
     }
     

@@ -43,16 +43,15 @@ public struct TraineeTrainingInfoInputView: View {
         }
         .navigationBarBackButtonHidden()
         .keyboardDismissOnTap()
-        .safeAreaInset(edge: .bottom) {
-            if store.view_focusField == nil {
-                TBottomButton(
-                    title: "다음",
-                    isEnable: store.view_isNextButtonEnabled
-                ) {
-                    send(.tapNextButton)
-                }
-                .disabled(!store.view_isNextButtonEnabled)
+        .bottomFixWith {
+            TBottomButton(
+                title: "다음",
+                isEnable: store.view_isNextButtonEnabled
+            ) {
+                send(.tapNextButton)
             }
+            .padding(.bottom, .safeAreaBottom)
+            .disabled(!store.view_isNextButtonEnabled)
         }
         .sheet(isPresented: $store.view_isDatePickerPresented) {
             TDatePickerView(

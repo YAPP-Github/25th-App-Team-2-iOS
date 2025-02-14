@@ -22,33 +22,38 @@ public struct ConnectionCompleteView: View {
     }
     
     public var body: some View {
-        NavigationStack {
-            ZStack {
-                Image(.imgConnectionCompleteBackground)
-                    .resizable()
-                    .ignoresSafeArea()
-                    .scaledToFill()
+        ZStack {
+            Image(.imgConnectionCompleteBackground)
+                .resizable()
+                .scaledToFill()
+                .frame(width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height)
+                .clipped()
+                .ignoresSafeArea()
+            
+            VStack(spacing: 0) {
+                Color.clear
+                    .frame(heightRatio: 0.1)
                 
-                VStack(spacing: 0) {
-                    Spacer()
+                Header()
                     
-                    Header()
-                        .padding(.bottom, 35)
-                    
-                    Image(.imgBoom)
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: 320, height: 320)
-                    
-                    TBottomButton(title: "다음", isEnable: true) {
-                        send(.tappedNextButton)
-                    }
-                    .padding(.bottom, 40)
-                    .ignoresSafeArea(.all, edges: .bottom)
+                Spacer()
+                
+                Image(.imgBoom)
+                    .resizable()
+                    .aspectRatio(1, contentMode: .fit)
+                    .frame(heightRatio: 0.35)
+                    .padding(horizontalRatio: 0.05)
+                
+                Spacer()
+                
+                TBottomButton(title: "다음", isEnable: true) {
+                    send(.tappedNextButton)
                 }
+                .padding(.bottom, .safeAreaBottom)
+                .ignoresSafeArea(.all, edges: .bottom)
             }
-            .navigationBarBackButtonHidden()
         }
+        .navigationBarBackButtonHidden()
     }
     
     @ViewBuilder

@@ -59,19 +59,18 @@ public struct TraineeAddDietRecordView: View {
         .onTapGesture { focusedField = nil }
         .navigationBarBackButtonHidden()
         .keyboardDismissOnTap()
-        .safeAreaInset(edge: .bottom) {
-            if store.view_focusField == nil {
-                TButton(
-                    title: "저장",
-                    config: .xLarge,
-                    state: .default(.primary(isEnabled: store.view_isSubmitButtonEnabled))
-                ) {
-                    send(.tapSubmitButton)
-                }
-                .disabled(!store.view_isSubmitButtonEnabled)
-                .debounce()
-                .padding(.horizontal, 16)
+        .bottomFixWith {
+            TButton(
+                title: "저장",
+                config: .xLarge,
+                state: .default(.primary(isEnabled: store.view_isSubmitButtonEnabled))
+            ) {
+                send(.tapSubmitButton)
             }
+            .padding(.bottom, .safeAreaBottom)
+            .disabled(!store.view_isSubmitButtonEnabled)
+            .debounce()
+            .padding(.horizontal, 16)
         }
         .sheet(item: $store.view_bottomSheetItem) { item in
             switch item {

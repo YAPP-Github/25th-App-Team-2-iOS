@@ -45,13 +45,14 @@ public struct CreateProfileView: View {
         }
         .navigationBarBackButtonHidden()
         .keyboardDismissOnTap()
-        .safeAreaInset(edge: .bottom) {
+        .bottomFixWith {
             TBottomButton(
                 title: "다음",
                 isEnable: store.view_isNextButtonEnabled
             ) {
                 send(.tapNextButton)
             }
+            .padding(.bottom, .safeAreaBottom)
             .disabled(!store.view_isNextButtonEnabled)
             .debounce()
         }

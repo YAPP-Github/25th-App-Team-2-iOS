@@ -39,13 +39,14 @@ public struct ProfileCompletionView: View {
         }
         .navigationBarBackButtonHidden()
         .keyboardDismissOnTap()
-        .safeAreaInset(edge: .bottom) {
+        .bottomFixWith {
             TBottomButton(
                 title: "시작하기",
                 isEnable: true
             ) {
                 send(.tapNextButton)
             }
+            .padding(.bottom, .safeAreaBottom)
         }
     }
 

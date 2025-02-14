@@ -63,21 +63,20 @@ public struct TrainerAddPTSessionView: View {
                 .padding(.bottom, .safeAreaBottom + 20)
             }
         }
+        .bottomFixWith {
+            TBottomButton(
+                title: "완료",
+                isEnable: store.view_isSubmitButtonEnabled
+            ) {
+                send(.tapSubmitButton)
+            }
+            .padding(.bottom, .safeAreaBottom)
+            .disabled(!store.view_isSubmitButtonEnabled)
+            .debounce()
+        }
         .onTapGesture { focusedField = nil }
         .navigationBarBackButtonHidden()
         .keyboardDismissOnTap()
-        .safeAreaInset(edge: .bottom) {
-            if store.view_focusField == nil {
-                TBottomButton(
-                    title: "완료",
-                    isEnable: store.view_isSubmitButtonEnabled
-                ) {
-                    send(.tapSubmitButton)
-                }
-                .disabled(!store.view_isSubmitButtonEnabled)
-                .debounce()
-            }
-        }
         .sheet(item: $store.view_bottomSheetItem) { item in
             switch item {
             case .traineeList:

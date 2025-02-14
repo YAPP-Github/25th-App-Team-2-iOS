@@ -26,14 +26,17 @@ public struct UserTypeSelectionView: View {
     
     public var body: some View {
         VStack(spacing: 0) {
-            VStack(spacing: 48) {
-                Header()
-                
-                ImageSection()
-                
-                ButtonSection()
-            }
-            .padding(.top, 60)
+            Spacer()
+            
+            Header()
+            
+            Spacer()
+            
+            ImageSection()
+            
+            Spacer()
+            
+            ButtonSection()
             
             Spacer()
         }

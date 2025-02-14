@@ -29,20 +29,23 @@ public struct ConnectedTraineeProfileView: View {
             ZStack {
                 Image(.imgConnectionCompleteBackground)
                     .resizable()
-                    .ignoresSafeArea()
                     .scaledToFill()
+                    .frame(width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height)
+                    .clipped()
+                    .ignoresSafeArea()
                 
                 VStack(spacing: 0) {
                     Spacer()
                     
                     traineeView()
-                       
-                    Spacer()
                    
+                    Spacer()
+                    
                     TBottomButton(title: "시작하기", isEnable: true) {
                         send(.startButtonTapped)
                     }
-                    .padding(.bottom, 40)
+                    .padding(.bottom, .safeAreaBottom)
+                    .ignoresSafeArea(.all, edges: .bottom)
                 }
             }
             .navigationBarBackButtonHidden()
@@ -94,7 +97,7 @@ public struct ConnectedTraineeProfileView: View {
                     }
                     .padding(.init(top: 32, leading: 20, bottom: 32, trailing: 20))
                 }
-                .frame(height: 581)
+                .frame(heightRatio: 0.7)
                 .padding(.horizontal, 40)
         }
     }

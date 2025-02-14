@@ -42,16 +42,15 @@ public struct TraineePrecautionInputView: View {
         }
         .navigationBarBackButtonHidden()
         .keyboardDismissOnTap()
-        .safeAreaInset(edge: .bottom) {
-            if store.view_focusField == false {
-                TBottomButton(
-                    title: "다음",
-                    isEnable: store.view_isNextButtonEnabled
-                ) {
-                    send(.tapNextButton)
-                }
-                .debounce()
+        .bottomFixWith {
+            TBottomButton(
+                title: "다음",
+                isEnable: store.view_isNextButtonEnabled
+            ) {
+                send(.tapNextButton)
             }
+            .padding(.bottom, .safeAreaBottom)
+            .debounce()
         }
         .onChange(of: focusedField) { _, newFocus in
             print(newFocus)
