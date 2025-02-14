@@ -101,7 +101,13 @@ public struct TraineeInvitationCodeInputView: View {
         VStack(spacing: 48) {
             TTextField(
                 placeholder: "코드를 입력해주세요",
-                text: $store.invitationCode,
+                text: Binding(get: {
+                    store.invitationCode
+                }, set: {
+                    if store.invitationCode != $0 {
+                        store.invitationCode = $0
+                    }
+                }),
                 textFieldStatus: $store.view_invitationCodeStatus,
                 rightView: {
                     TTextField.RightView(
