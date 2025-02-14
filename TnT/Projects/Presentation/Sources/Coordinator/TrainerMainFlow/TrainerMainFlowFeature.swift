@@ -72,7 +72,7 @@ public struct TrainerMainFlowFeature {
                     
                     /// 트레이너 초대코드 발급 페이지 건너 뛰기 -> 홈으로
                 case .element(id: _, action: .trainerMakeInvitationCodePage(.setNavigation)):
-                    state.path.removeLast()
+                    state.path.removeSubrange(1...)
                     return .none
                     
                     /// 연결 완료 -> 트레이니 정보
@@ -82,12 +82,12 @@ public struct TrainerMainFlowFeature {
                     
                     /// 트레이니 정보 -> 홈으로
                 case .element(id: _, action: .connectedTraineeProfile(.setNavigating)):
-                    state.path.removeLast(2)
+                    state.path.removeSubrange(1...)
                     return.none
 
                     /// 트레이너 수업 추가 -> 홈으로
                 case .element(id: _, action: .addPTSession(.setNavigating)):
-                    state.path.removeLast()
+                    state.path.removeSubrange(1...)
                     return .none
                     
                 default:
