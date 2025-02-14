@@ -55,6 +55,9 @@ public struct TraineeBasicInfoInputView: View {
         }
         .sheet(isPresented: $store.view_isDatePickerPresented) {
             TDatePickerView(
+                isCustom: false,
+                selectedDate: TraineeBasicInfoInputFeature.defaultDatePickerDate,
+                currentPageDate: TraineeBasicInfoInputFeature.defaultDatePickerDate,
                 title: "생년월일",
                 monthFormatter: {
                     TDateFormatUtility.formatter(for: .yyyy년_MM월).string(from: $0)
@@ -95,7 +98,7 @@ public struct TraineeBasicInfoInputView: View {
     private func TextFieldSection() -> some View {
         VStack(spacing: 48) {
             TTextField(
-                placeholder: "2000/01/01",
+                placeholder: TraineeBasicInfoInputFeature.defaultDatePickerDate.toString(format: .yyyyMMddSlash),
                 text: $store.birthDate,
                 textFieldStatus: $store.view_birthDateStatus
             )

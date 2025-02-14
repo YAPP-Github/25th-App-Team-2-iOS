@@ -16,6 +16,7 @@ import DesignSystem
 public struct TraineeBasicInfoInputFeature {
     
     public typealias FocusField = TraineeBasicInfoInputView.Field
+    static let defaultDatePickerDate: Date = "2000/01/01".toDate(format: .yyyyMMddSlash) ?? .now
     
     @ObservableState
     public struct State: Equatable {
