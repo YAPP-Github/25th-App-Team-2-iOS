@@ -36,6 +36,8 @@ public struct TrainerHomeFeature {
         var isHideUntilSelected: Bool
         /// 트레이니 연결 여부
         var isConnected: Bool
+        /// 팝업 관련 Flag
+        var popUpFlag: Bool
         
         // MARK: UI related state
         /// 캘린더 표시 페이지
@@ -57,7 +59,8 @@ public struct TrainerHomeFeature {
             isConnected: Bool = false,
             view_currentPage: Date = .now,
             tappedsessionInfo: GetDateSessionListEntity? = nil,
-            view_isPopUpPresented: Bool = false
+            view_isPopUpPresented: Bool = false,
+            popUpFlag: Bool = false
         ) {
             self.selectedDate = selectedDate
             self.events = events
@@ -69,6 +72,7 @@ public struct TrainerHomeFeature {
             self.view_currentPage = view_currentPage
             self.tappedsessionInfo = tappedsessionInfo
             self.view_isPopUpPresented = view_isPopUpPresented
+            self.popUpFlag = popUpFlag
         }
     }
     
@@ -111,6 +115,8 @@ public struct TrainerHomeFeature {
             case completeToastMessage
             /// 캘린더 데이터 캐싱을 위한 계산
             case isLoadedCheck(currentMonth: Int, nextMonth: Int)
+            /// 수업 추가 전 회원 목록 팝업
+            case popUpOfCheckTrainee
         }
     }
     
@@ -146,7 +152,20 @@ public struct TrainerHomeFeature {
                     return .none
                     
                 case .tapAddSessionButton:
-                    return .send(.setNavigating(.addPTSessionPage))
+                    return .run { send in
+                        let result: GetActiveTraineesListResDTO = try await trainerRepoUseCase.getActiveTraineesList()
+                        
+                        if result.trainees.isEmpty {
+                            return await send(.view(.popUpOfCheckTrainee))
+                        } else {
+                            return await send(.setNavigating(.addPTSessionPage))
+                        }
+                    }
+                    
+                case .popUpOfCheckTrainee:
+                    state.view_isPopUpPresented = true
+                    state.popUpFlag = false
+                    return .none
                     
                 case .tapPopUpNextButton:
                     if state.isHideUntilSelected {
@@ -168,7 +187,7 @@ public struct TrainerHomeFeature {
                         }
                     }
                     state.view_isPopUpPresented = false
-                    return .send(.setNavigating(.trainerMakeInvitationCodePage))
+                    return .send(.setNavigating(.checkTrainerInvitationCode))
                     
                 case .onAppear:
                     let year: Int = Calendar.current.component(.year, from: state.selectedDate)
@@ -177,6 +196,7 @@ public struct TrainerHomeFeature {
                     if let hideUntil = state.hidePopupUntil, hideUntil > Date() {
                         state.view_isPopUpPresented = false
                     } else {
+                        state.popUpFlag = true
                         state.view_isPopUpPresented = true
                     }
                     
@@ -264,5 +284,7 @@ extension TrainerHomeFeature {
         case addPTSessionPage
         /// 초대 코드 발급페이지
         case trainerMakeInvitationCodePage
+        /// 초대 코드 확인 페잊
+        case checkTrainerInvitationCode
     }
 }

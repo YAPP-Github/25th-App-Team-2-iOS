@@ -49,6 +49,9 @@ public struct TrainerMainFlowFeature {
                         case .addPTSessionPage:
                             state.path.append(.addPTSession(.init()))
                             return .none
+                        case .checkTrainerInvitationCode:
+                            state.path.append(.checkInvitationCode(.init()))
+                            return .none
                         case .trainerMakeInvitationCodePage:
                             state.path.append(.trainerMakeInvitationCodePage(.init()))
                             return .none
@@ -122,6 +125,8 @@ extension TrainerMainFlowFeature {
         case connectionComplete(ConnectionCompleteFeature)
         /// 연결된 트레이니 프로필
         case connectedTraineeProfile(ConnectedTraineeProfileFeature)
+        /// 트레이너 초대코드 확인
+        case checkInvitationCode(CheckTrainerInvitationCodeFeature)
         
         // MARK: - 회원 목록
         /// 회원 추가

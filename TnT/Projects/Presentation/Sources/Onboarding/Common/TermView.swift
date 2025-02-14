@@ -80,7 +80,7 @@ public struct TermView: View {
                 .padding(.vertical, 8)
             
             ForEach(store.view_terms.keys.sorted(by: { $0.id < $1.id }), id: \.self) { term in
-                termListItem(
+                TermListItem(
                     term: term,
                     isAgreed: store.view_terms[term] ?? false
                 ) {
@@ -91,7 +91,7 @@ public struct TermView: View {
     }
     
     @ViewBuilder
-    private func termListItem(term: Term, isAgreed: Bool, toggle: @escaping (Bool) -> Void) -> some View {
+    private func TermListItem(term: Term, isAgreed: Bool, toggle: @escaping (Bool) -> Void) -> some View {
         HStack(spacing: 8) {
             Image(isAgreed ? .icnCheckButtonSelected : .icnCheckButtonUnselected)
                 .resizable()
