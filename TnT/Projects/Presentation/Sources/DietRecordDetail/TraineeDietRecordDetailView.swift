@@ -52,6 +52,9 @@ public struct TraineeDietRecordDetailView: View {
         }
         .navigationBarBackButtonHidden()
         .keyboardDismissOnTap()
+        .onAppear {
+            send(.onAppear)
+        }
     }
     
     // MARK: - Sections
@@ -90,7 +93,7 @@ public struct TraineeDietRecordDetailView: View {
     
     @ViewBuilder
     private func ContentSection() -> some View {
-        VStack(spacing: 8) {
+        VStack(alignment: .leading, spacing: 8) {
             VStack(alignment: .leading, spacing: 0) {
                 if let chipInfo = store.dietType?.chipInfo {
                     TChip(uiInfo: chipInfo)

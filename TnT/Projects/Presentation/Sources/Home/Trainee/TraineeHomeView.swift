@@ -60,7 +60,7 @@ public struct TraineeHomeView: View {
         .navigationBarBackButtonHidden()
         .sheet(isPresented: $store.view_isBottomSheetPresented) {
             TraineeRecordStartView(itemContents: [
-                ("🏋🏻‍♀️", "개인 운동", { send(.tapAddWorkoutRecordButton) }),
+//                ("🏋🏻‍♀️", "개인 운동", { send(.tapAddWorkoutRecordButton) }),
                 ("🥗", "식단", { send(.tapAddDietRecordButton) })
             ])
             .padding(.top, 10)
@@ -143,8 +143,8 @@ public struct TraineeHomeView: View {
                 if !store.records.isEmpty {
                     ForEach(store.records, id: \.id) { item in
                         TRecordCard(
-                            chipUIInfo: item.type.chipInfo,
-                            timeText: TDateFormatUtility.formatter(for: .a_HHmm).string(from: item.date),
+                            chipUIInfo: item.type?.chipInfo,
+                            timeText: item.date?.toString(format: .a_HHmm) ?? "",
                             title: item.title,
                             imgURL: URL(string: item.imageUrl ?? ""),
                             hasFeedback: item.hasFeedBack,
@@ -152,6 +152,9 @@ public struct TraineeHomeView: View {
                                 send(.tapShowRecordFeedbackButton(id: item.id))
                             }
                         )
+                        .onTapGesture {
+                            send(.tapRecordItem(type: item.type, id: item.id))
+                        }
                     }
                 } else {
                     RecordEmptyView()

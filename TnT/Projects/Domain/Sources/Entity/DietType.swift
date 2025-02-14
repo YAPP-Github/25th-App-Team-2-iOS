@@ -24,4 +24,9 @@ public enum DietType: String, Sendable, CaseIterable {
         case .snack: return "간식"
         }
     }
+    
+    public init?(from recordType: RecordType) {
+        guard case .diet(let type) = recordType else { return nil }
+        self = type
+    }
 }
