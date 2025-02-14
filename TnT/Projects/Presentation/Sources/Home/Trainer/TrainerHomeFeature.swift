@@ -125,8 +125,7 @@ public struct TrainerHomeFeature {
             case .view(let action):
                 switch action {
                 case .binding(\.selectedDate):
-//                    print("state.events[state.selectedDate] \(state.events[state.selectedDate])")
-                    return .none
+                    return .send(.view(.calendarDateTap))
                     
                 case .binding:
                     return .none
