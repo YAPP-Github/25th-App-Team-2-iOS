@@ -45,13 +45,16 @@ public struct CreateProfileView: View {
         }
         .navigationBarBackButtonHidden()
         .keyboardDismissOnTap()
-        .safeAreaInset(edge: .bottom) {
+        .bottomFixWith {
             TBottomButton(
                 title: "다음",
                 isEnable: store.view_isNextButtonEnabled
             ) {
                 send(.tapNextButton)
             }
+            .padding(.bottom, .safeAreaBottom)
+            .disabled(!store.view_isNextButtonEnabled)
+            .debounce()
         }
     }
     
@@ -128,7 +131,7 @@ public struct CreateProfileView: View {
             ),
             footer: .init(
                 footerText: store.view_isFooterTextVisible
-                ? "\(store.view_nameMaxLength ?? 15)자 이하로 입력해주세요"
+                ? "\(store.view_nameMaxLength ?? 15)자 미만의 한글 또는 영문으로 입력해주세요"
                 : "",
                 status: store.view_textFieldStatus
             )

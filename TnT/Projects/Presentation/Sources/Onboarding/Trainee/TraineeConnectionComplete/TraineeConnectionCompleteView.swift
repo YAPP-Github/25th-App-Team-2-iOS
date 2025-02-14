@@ -28,20 +28,25 @@ public struct TraineeConnectionCompleteView: View {
             
             // Main
             VStack(spacing: 0) {
-                Spacer()
+                Color.clear
+                    .frame(heightRatio: 0.1)
                 
                 Header()
-                    .padding(.bottom, 35)
+                    
+                Spacer()
                 
                 Image(.imgBoom)
                     .resizable()
-                    .scaledToFit()
-                    .frame(width: 320, height: 320)
+                    .aspectRatio(1, contentMode: .fit)
+                    .frame(heightRatio: 0.38)
+                    .padding(horizontalRatio: 0.05)
+                
+                Spacer()
                 
                 TBottomButton(title: "다음", isEnable: true) {
                     send(.tapNextButton)
                 }
-                .padding(.bottom, 40)
+                .padding(.bottom, .safeAreaBottom)
                 .ignoresSafeArea(.all, edges: .bottom)
             }
         }
@@ -53,8 +58,10 @@ public struct TraineeConnectionCompleteView: View {
     private func Background() -> some View {
         Image(.imgConnectionCompleteBackground)
             .resizable()
-            .ignoresSafeArea()
             .scaledToFill()
+            .frame(width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height)
+            .clipped()
+            .ignoresSafeArea()
     }
     @ViewBuilder
     private func Header() -> some View {
@@ -105,8 +112,8 @@ private extension TraineeConnectionCompleteView {
                         case .success(let image):
                             image
                                 .resizable()
+                                .aspectRatio(contentMode: .fill)
                                 .frame(width: 100, height: 100)
-                                .scaledToFill()
                                 .clipShape(Circle())
                             
                         case .failure:

@@ -31,11 +31,11 @@ public struct TraineeTrainingPurposeFeature {
         /// - Parameters:
         ///   - signUpEntity: 현재 회원가입 정보 @Shared
         ///   - selectedPurposes: 사용자가 선택한 트레이닝 목적 목록 (기본값: 빈 `Set`)
-        ///   - view_isNextButtonEnabled: "다음" 버튼 활성화 여부 (기본값: `false`)
+        ///   - view_isNextButtonEnabled: "다음" 버튼 활성화 여부 (기본값: `true`)
         public init(
             signUpEntity: Shared<PostSignUpEntity>,
             selectedPurposes: Set<TrainingPurpose> = [],
-            view_isNextButtonEnabled: Bool = false
+            view_isNextButtonEnabled: Bool = true
         ) {
             self._signUpEntity = signUpEntity
             self.selectedPurposes = selectedPurposes
@@ -96,7 +96,7 @@ public struct TraineeTrainingPurposeFeature {
 // MARK: Internal Logic
 private extension TraineeTrainingPurposeFeature {
     func validate(_ state: inout State) -> Effect<Action> {
-        state.view_isNextButtonEnabled = !state.selectedPurposes.isEmpty
+        state.view_isNextButtonEnabled = true // 항상 활성화
         return .none
     }
 }

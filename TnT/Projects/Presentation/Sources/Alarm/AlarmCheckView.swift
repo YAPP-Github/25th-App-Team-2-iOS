@@ -12,7 +12,7 @@ import ComposableArchitecture
 import Domain
 import DesignSystem
 
-/// 알람 목록을 입력하는 화면
+/// 알람 목록을 확인하는 화면
 /// 유저에게 도착한 알람을 표시 - 유저 타입에 따라 분류
 @ViewAction(for: AlarmCheckFeature.self)
 public struct AlarmCheckView: View {
@@ -30,6 +30,7 @@ public struct AlarmCheckView: View {
                 type: .LButtonWithTitle(leftImage: .icnArrowLeft, centerTitle: "알림"),
                 leftAction: { send(.tapNavBackButton) }
             )
+            TDivider(color: .neutral200)
             
             ScrollView(showsIndicators: false) {
                 AlarmList()

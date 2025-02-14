@@ -71,7 +71,7 @@ public struct MakeInvitationCodeFeature {
                     
                 case .tapCodeToCopy:
                     UIPasteboard.general.string = state.invitationCode
-                    NotificationCenter.default.post(toast: .init(presentType: .text("⚠"), message: "코드가 복사되었어요!"))
+                    NotificationCenter.default.post(toast: .init(presentType: .image(.icnCheckMarkFilled), message: "코드가 복사되었어요!"))
                     return .none
                     
                 case .tappedReissuanceButton:

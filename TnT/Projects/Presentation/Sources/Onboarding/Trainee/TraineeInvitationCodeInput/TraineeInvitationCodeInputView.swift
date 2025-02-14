@@ -39,15 +39,15 @@ public struct TraineeInvitationCodeInputView: View {
         }
         .navigationBarBackButtonHidden()
         .keyboardDismissOnTap()
-        .safeAreaInset(edge: .bottom) {
-            if store.view_isFieldFocused == false {
-                TBottomButton(
-                    title: "다음",
-                    isEnable: store.view_isNextButtonEnabled
-                ) {
-                    send(.tapNextButton)
-                }
+        .bottomFixWith {
+            TBottomButton(
+                title: "다음",
+                isEnable: store.view_isNextButtonEnabled
+            ) {
+                send(.tapNextButton)
             }
+            .padding(.bottom, .safeAreaBottom)
+            .disabled(!store.view_isNextButtonEnabled)
         }
         .onChange(of: focusedField) { oldValue, newValue in
             if oldValue != newValue {
@@ -101,7 +101,13 @@ public struct TraineeInvitationCodeInputView: View {
         VStack(spacing: 48) {
             TTextField(
                 placeholder: "코드를 입력해주세요",
-                text: $store.invitationCode,
+                text: Binding(get: {
+                    store.invitationCode
+                }, set: {
+                    if store.invitationCode != $0 {
+                        store.invitationCode = $0
+                    }
+                }),
                 textFieldStatus: $store.view_invitationCodeStatus,
                 rightView: {
                     TTextField.RightView(

@@ -103,7 +103,7 @@ public struct OnboardingFlowFeature {
                     
                 /// 트레이니 회원가입 완료 화면 -> 트레이너 초대코드 입력 화면 이동
                 case .element(id: _, action: .traineeProfileCompletion(.setNavigating)):
-                    state.path.append(.traineeInvitationCodeInput(.init(view_popUp: .invitePopUp, view_isPopupPresented: true)))
+                    state.path.append(.traineeInvitationCodeInput(.init()))
                     return .none
                     
                 /// 트레이니 초대코드 입력 화면 -> 트레이니 홈화면/PT 정보 입력 화면

@@ -9,6 +9,8 @@
 import SwiftUI
 import ComposableArchitecture
 
+import Domain
+
 @Reducer
 public struct TermFeature {
     @ObservableState
@@ -93,9 +95,9 @@ public enum Term: CaseIterable {
     var url: String {
         switch self {
         case .term:
-            return "https://www.notion.so/f1ee7a43b6d941068723163fda127699?pvs=4"
+            return AppLinks.termsOfService
         case .personalInfo:
-            return "https://www.notion.so/775bc037dd1b4e8ba56679e51a7321e5?pvs=4"
+            return AppLinks.privacyPolicy
         }
     }
 }
