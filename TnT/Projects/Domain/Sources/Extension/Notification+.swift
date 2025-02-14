@@ -19,6 +19,8 @@ public extension Notification.Name {
     static let hideProgressNotification = Notification.Name("HideProgressNotification")
     /// 세션 만료 팝업을 표시하기 위한 노티피케이션 이름
     static let showSessionExpiredPopupNotification = Notification.Name("ShowSessionExpiredPopupNotification")
+    /// FCM 토큰 - 트레이너/트레이니 연결 완료 receive 노티피케이션 이름
+    static let fcmUserConnectedNotification = Notification.Name("FCMUserConnectedNotification")
 }
 
 public extension NotificationCenter {

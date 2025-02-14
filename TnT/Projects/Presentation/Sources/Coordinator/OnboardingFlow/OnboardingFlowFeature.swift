@@ -14,7 +14,7 @@ import Domain
 @Reducer
 public struct OnboardingFlowFeature {
     @ObservableState
-    public struct State: Equatable {
+    public struct State: Equatable, Sendable {
         public var path: StackState<Path.State>
         @Shared var signUpEntity: PostSignUpEntity
         
@@ -47,9 +47,9 @@ public struct OnboardingFlowFeature {
                 case .element(id: _, action: .snsLogin(.setNavigating(let screen))):
                     switch screen {
                     case .traineeHome:
-                        return .send(.switchFlow(.traineeMainFlow))
+                        return .send(.switchFlow(.traineeMainFlow(.init())))
                     case .trainerHome:
-                        return .send(.switchFlow(.trainerMainFlow))
+                        return .send(.switchFlow(.trainerMainFlow(.init())))
                     case .userTypeSelection:
                         state.path.append(.userTypeSelection(.init(signUpEntity: state.$signUpEntity)))
                     }
@@ -83,7 +83,7 @@ public struct OnboardingFlowFeature {
                     
                 /// 트레이너 초대 코드 생성 화면 -> 트레이너 홈 이동
                 case .element(id: _, action: .trainerMakeInvitationCode(.setNavigation)):
-                    return .send(.switchFlow(.trainerMainFlow))
+                    return .send(.switchFlow(.trainerMainFlow(.init())))
                     
                 // MARK: Trainee
                 /// 트레이니 기본 정보 입력 -> PT 목적 설정 화면 이동
@@ -110,7 +110,7 @@ public struct OnboardingFlowFeature {
                 case .element(id: _, action: .traineeInvitationCodeInput(.setNavigating(let screen))):
                     switch screen {
                     case .traineeHome:
-                        return .send(.switchFlow(.traineeMainFlow))
+                        return .send(.switchFlow(.traineeMainFlow(.init())))
                     case let .trainingInfoInput(trainerName, invitationCode):
                         state.path.append(.traineeTrainingInfoInput(.init(trainerName: trainerName, invitationCode: invitationCode)))
                         return .none
@@ -133,7 +133,7 @@ public struct OnboardingFlowFeature {
                 
                 /// 트레이니 트레이너 연결완료 -> 트레이니 홈화면
                 case .element(id: _, action: .traineeConnectionComplete(.setNavigating)):
-                    return .send(.switchFlow(.traineeMainFlow))
+                    return .send(.switchFlow(.traineeMainFlow(.init())))
                     
                 default:
                     return .none

@@ -14,7 +14,7 @@ import Domain
 @Reducer
 public struct TrainerMainFlowFeature {
     @ObservableState
-    public struct State: Equatable {
+    public struct State: Equatable, Sendable {
         public var path: StackState<Path.State>
         
         public init(path: StackState<Path.State> = .init([.mainTab(.home(.init()))])) {
@@ -69,7 +69,7 @@ public struct TrainerMainFlowFeature {
                     case .trainerMyPage(let screen):
                         switch screen {
                         case .onboardingLogin:
-                            return .send(.switchFlow(.onboardingFlow))
+                            return .send(.switchFlow(.onboardingFlow(.init())))
                         }
                     }
                     

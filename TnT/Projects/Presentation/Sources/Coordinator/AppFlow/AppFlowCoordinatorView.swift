@@ -69,5 +69,30 @@ public struct AppFlowCoordinatorView: View {
                 )
             )
         }
+        .onReceive(NotificationCenter.default.publisher(for: NSNotification.Name.showSessionExpiredPopupNotification)) { notification in
+            send(.notification(.showSessionExpiredPopup))
+        }
+        .onReceive(NotificationCenter.default.publisher(for: NSNotification.Name.fcmUserConnectedNotification)) { notification in
+            guard let userInfo = notification.userInfo else { return }
+            let trainerId: Int64 = {
+                if let value = userInfo["trainerId"] as? Int64 {
+                    return value
+                } else if let string = userInfo["trainerId"] as? String,
+                          let value = Int64(string) {
+                    return value
+                }
+                return 0
+            }()
+            let traineeId: Int64 = {
+                if let value = userInfo["traineeId"] as? Int64 {
+                    return value
+                } else if let string = userInfo["traineeId"] as? String,
+                          let value = Int64(string) {
+                    return value
+                }
+                return 0
+            }()
+            send(.notification(.showConnectCompletion(trainerId: trainerId, traineeId: traineeId)))
+        }
     }
 }

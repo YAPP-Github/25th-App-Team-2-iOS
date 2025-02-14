@@ -7,13 +7,32 @@
 //
 
 import UIKit
+import Domain
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     var window: UIWindow?
 
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
-        guard (scene is UIWindowScene) else { return }
+        if let notificationResponse = connectionOptions.notificationResponse {
+            let userInfo = notificationResponse.notification.request.content.userInfo
+
+            if let trainerIdString = userInfo["trainerId"] as? String,
+               let trainerId = Int64(trainerIdString),
+               let traineeIdString = userInfo["traineeId"] as? String,
+               let traineeId = Int64(traineeIdString) {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1.2) {
+                    NotificationCenter.default.post(
+                        name: NSNotification.Name.fcmUserConnectedNotification,
+                        object: nil,
+                        userInfo: [
+                            "trainerId": trainerId,
+                            "traineeId": traineeId
+                        ]
+                    )
+                }
+            }
+        }
     }
 
     func sceneDidDisconnect(_ scene: UIScene) {

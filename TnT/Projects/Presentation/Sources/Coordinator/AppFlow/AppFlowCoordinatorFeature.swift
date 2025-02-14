@@ -13,9 +13,9 @@ import Domain
 import DIContainer
 
 public enum AppFlow: Sendable {
-    case onboardingFlow
-    case traineeMainFlow
-    case trainerMainFlow
+    case onboardingFlow(OnboardingFlowFeature.State)
+    case traineeMainFlow(TraineeMainFlowFeature.State)
+    case trainerMainFlow(TrainerMainFlowFeature.State)
 }
 
 @Reducer
@@ -67,8 +67,6 @@ public struct AppFlowCoordinatorFeature {
         case updateUserInfo(type: UserType?, isConnected: Bool)
         /// 스플래시 표시 종료 시
         case splashFinished
-        /// 세션 만료 팝업 표시
-        case showSessionExpiredPopup
         
         @CasePathable
         public enum View: Sendable, BindableAction {
@@ -78,6 +76,8 @@ public struct AppFlowCoordinatorFeature {
             case onAppear
             /// 세션 만료 팝업 확인 버튼 탭
             case tapSessionExpiredPopupConfirmButton
+            /// Notification 액션 처리
+            case notification(NotificationAction)
         }
         
         @CasePathable
@@ -94,6 +94,14 @@ public struct AppFlowCoordinatorFeature {
         public enum APIAction: Sendable {
             /// 로그인 세션 유효 확인 API
             case checkSession
+        }
+        
+        @CasePathable
+        public enum NotificationAction: Sendable {
+            /// 세션 만료 팝업 표시
+            case showSessionExpiredPopup
+            /// 트레이너/트레이니 연결 완료 알림 탭 시
+            case showConnectCompletion(trainerId: Int64, traineeId: Int64)
         }
     }
     
@@ -118,16 +126,27 @@ public struct AppFlowCoordinatorFeature {
                             try await Task.sleep(for: .seconds(1))
                             await send(.splashFinished)
                         },
-                        .send(.checkSessionInfo),
-                        .run { send in
-                            for await _ in NotificationCenter.default.notifications(named: .showSessionExpiredPopupNotification) {
-                                await send(.showSessionExpiredPopup)
-                            }
-                        }
+                        .send(.checkSessionInfo)
                     )
+                    
                 case .tapSessionExpiredPopupConfirmButton:
                     state.view_isPopUpPresented = false
-                    return self.setFlow(.onboardingFlow, state: &state)
+                    return self.setFlow(.onboardingFlow(.init()), state: &state)
+                    
+                case .notification(let action):
+                    switch action {
+                    case .showSessionExpiredPopup:
+                        state.view_isPopUpPresented = true
+                        return .none
+                        
+                    case let .showConnectCompletion(trainerId, traineeId):
+                        return self.setFlow(.trainerMainFlow(.init(path:
+                                .init([
+                                    .mainTab(.home(.init())),
+                                    .connectionComplete(.init(traineeId: traineeId, trainerId: trainerId))
+                                ])
+                        )), state: &state)
+                    }
                 }
                 
             case .subFeature(let internalAction):
@@ -173,19 +192,15 @@ public struct AppFlowCoordinatorFeature {
                 
                 switch userType {
                 case .trainee:
-                    return self.setFlow(.traineeMainFlow, state: &state)
+                    return self.setFlow(.traineeMainFlow(.init()), state: &state)
                 case .trainer:
-                    return self.setFlow(.trainerMainFlow, state: &state)
+                    return self.setFlow(.trainerMainFlow(.init()), state: &state)
                 default:
-                    return self.setFlow(.onboardingFlow, state: &state)
+                    return self.setFlow(.onboardingFlow(.init()), state: &state)
                 }
                 
             case .splashFinished:
                 state.view_isSplashActive = false
-                return .none
-                
-            case .showSessionExpiredPopup:
-                state.view_isPopUpPresented = true
                 return .none
             }
         }
@@ -204,15 +219,15 @@ extension AppFlowCoordinatorFeature {
         state.trainerMainState = nil
         
         switch flow {
-        case .onboardingFlow:
+        case .onboardingFlow(let flowState):
             state.userType = nil
-            state.onboardingState = .init()
-        case .traineeMainFlow:
+            state.onboardingState = flowState
+        case .traineeMainFlow(let flowState):
             state.userType = .trainee
-            state.traineeMainState = .init()
-        case .trainerMainFlow:
+            state.traineeMainState = flowState
+        case .trainerMainFlow(let flowState):
             state.userType = .trainer
-            state.trainerMainState = .init()
+            state.trainerMainState = flowState
         }
         
         return .none
