@@ -18,7 +18,7 @@ public extension ConnectTraineeInfoDTO {
             age: self.age,
             height: height,
             weight: weight,
-            ptGoal: self.ptGoal,
+            ptGoal: self.ptGoal ?? "",
             cautionNote: self.cautionNote
         )
     }

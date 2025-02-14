@@ -53,6 +53,7 @@ public struct ConnectionCompleteView: View {
                 .ignoresSafeArea(.all, edges: .bottom)
             }
         }
+        .onAppear { send(.onAppear) }
         .navigationBarBackButtonHidden()
     }
     

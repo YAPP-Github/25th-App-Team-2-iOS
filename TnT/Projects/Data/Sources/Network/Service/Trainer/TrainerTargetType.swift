@@ -25,7 +25,7 @@ public enum TrainerTargetType {
     /// 회원 조희
     case getMemebersList
     /// 연결 완료된 트레이니 최초로 정보 불러오기
-    case getConnectedTraineeInfo(trainerId: Int, traineeId: Int)
+    case getConnectedTraineeInfo(trainerId: Int64, traineeId: Int64)
     /// 관리 중인 회원 목록 요청
     case getActiveTraineesList
     /// PT 수업 추가

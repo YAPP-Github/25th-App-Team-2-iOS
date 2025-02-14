@@ -25,32 +25,30 @@ public struct ConnectedTraineeProfileView: View {
     }
     
     public var body: some View {
-        NavigationStack {
-            ZStack {
-                Image(.imgConnectionCompleteBackground)
-                    .resizable()
-                    .scaledToFill()
-                    .frame(width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height)
-                    .clipped()
-                    .ignoresSafeArea()
+        ZStack {
+            Image(.imgConnectionCompleteBackground)
+                .resizable()
+                .scaledToFill()
+                .frame(width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height)
+                .clipped()
+                .ignoresSafeArea()
+            
+            VStack(spacing: 0) {
+                Spacer()
                 
-                VStack(spacing: 0) {
-                    Spacer()
-                    
-                    traineeView()
-                   
-                    Spacer()
-                    
-                    TBottomButton(title: "시작하기", isEnable: true) {
-                        send(.startButtonTapped)
-                    }
-                    .padding(.bottom, .safeAreaBottom)
-                    .ignoresSafeArea(.all, edges: .bottom)
+                traineeView()
+               
+                Spacer()
+                
+                TBottomButton(title: "시작하기", isEnable: true) {
+                    send(.startButtonTapped)
                 }
+                .padding(.bottom, .safeAreaBottom)
+                .ignoresSafeArea(.all, edges: .bottom)
             }
-            .navigationBarBackButtonHidden()
         }
         .background(Color.neutral800)
+        .navigationBarBackButtonHidden()
     }
     
     @ViewBuilder

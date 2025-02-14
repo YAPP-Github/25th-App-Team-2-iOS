@@ -50,7 +50,7 @@ public struct TrainerRepositoryImpl: TrainerRepository {
         return try await networkService.request(TrainerTargetType.getMonthlyLessonList(year: year, month: month), decodingType: GetMonthlyLessonListResDTO.self)
     }
     
-    public func getConnectedTraineeInfo(trainerId: Int, traineeId: Int) async throws -> GetConnectedTraineeInfoResponseDTO {
+    public func getConnectedTraineeInfo(trainerId: Int64, traineeId: Int64) async throws -> GetConnectedTraineeInfoResponseDTO {
         return try await networkService.request(TrainerTargetType.getConnectedTraineeInfo(trainerId: trainerId, traineeId: traineeId), decodingType: GetConnectedTraineeInfoResponseDTO.self)
     }
     

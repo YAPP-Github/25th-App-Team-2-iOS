@@ -15,14 +15,14 @@ import Domain
 public struct ConnectionCompleteFeature {
     @ObservableState
     public struct State: Equatable {
-        var traineeId: Int?
-        var trainerId: Int?
+        var traineeId: Int64?
+        var trainerId: Int64?
         var connectionInfo: ConnectionInfoEntity?
         var traineeProfile: ConnectedTraineeProfileEntity?
         
         public init(
-            traineeId: Int? = nil,
-            trainerId: Int? = nil,
+            traineeId: Int64? = nil,
+            trainerId: Int64? = nil,
             connectionInfo: ConnectionInfoEntity? = nil,
             traineeProfile: ConnectedTraineeProfileEntity? = nil
         ) {

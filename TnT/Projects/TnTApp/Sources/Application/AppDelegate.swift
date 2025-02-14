@@ -12,6 +12,7 @@ import FirebaseMessaging
 import UserNotifications
 
 import Data
+import Domain
 
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
@@ -60,6 +61,31 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
     ) {
         completionHandler([.sound, .badge, .list, .banner])
     }
+    
+    /// fore/background 알림 탭했을 때 처리
+    func userNotificationCenter(
+        _ center: UNUserNotificationCenter,
+        didReceive response: UNNotificationResponse,
+        withCompletionHandler completionHandler: @escaping () -> Void
+    ) {
+        let userInfo = response.notification.request.content.userInfo
+        
+        if let trainerIdString = userInfo["trainerId"] as? String,
+           let trainerId = Int64(trainerIdString),
+           let traineeIdString = userInfo["traineeId"] as? String,
+           let traineeId = Int64(traineeIdString) {
+            NotificationCenter.default.post(
+                name: NSNotification.Name.fcmUserConnectedNotification,
+                object: nil,
+                userInfo: [
+                    "trainerId": trainerId,
+                    "traineeId": traineeId
+                ]
+            )
+        }
+        
+        completionHandler()
+    }
 }
 
 // MARK: - MessagingDelegate (FCM 토큰 가져오기)
@@ -77,5 +103,14 @@ extension AppDelegate: MessagingDelegate {
         }
 
         print("✅ FCM 등록 토큰: \(fcmToken)")
+    }
+}
+
+extension AppDelegate {
+    // SceneDelegate
+    func application(_ application: UIApplication, configurationForConnecting connectingSceneSession: UISceneSession, options: UIScene.ConnectionOptions) -> UISceneConfiguration {
+        let sceneConfig = UISceneConfiguration(name: nil, sessionRole: connectingSceneSession.role)
+        sceneConfig.delegateClass = SceneDelegate.self
+        return sceneConfig
     }
 }

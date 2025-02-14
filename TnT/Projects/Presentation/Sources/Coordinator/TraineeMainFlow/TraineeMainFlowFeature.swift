@@ -78,7 +78,7 @@ public struct TraineeMainFlowFeature {
                             
                             /// 마이페이지 로그아웃/회원탈퇴 -> 온보딩 로그인 화면 이동
                         case .onboardingLogin:
-                            return .send(.switchFlow(.onboardingFlow))
+                            return .send(.switchFlow(.onboardingFlow(.init())))
                         }
                     }
                     

@@ -31,11 +31,11 @@ public struct ConnectTraineeInfoDTO: Decodable {
     /// 나이
     let age: Int?
     /// 키
-    let height: Double
+    let height: Double?
     /// 몸무게
-    let weight: Double
+    let weight: Double?
     /// PT 목표
-    let ptGoal: String
+    let ptGoal: String?
     /// 주의 사항
     let cautionNote: String?
 }
