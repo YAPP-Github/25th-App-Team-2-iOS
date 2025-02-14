@@ -51,7 +51,7 @@ public struct TraineeBasicInfoInputFeature {
         ///   - view_heightStatus: 키 필드 상태 (기본값: `.empty`)
         ///   - view_weightStatus: 몸무게 필드 상태 (기본값: `.empty`)
         ///   - view_isDatePickerPresented: DatePicker 표시 여부 (기본값: `false`)
-        ///   - view_isNextButtonEnabled: "다음" 버튼 활성화 여부 (기본값: `false`)
+        ///   - view_isNextButtonEnabled: "다음" 버튼 활성화 여부 (기본값: `true`)
         public init(
             signUpEntity: Shared<PostSignUpEntity>,
             birthDate: String = "",
