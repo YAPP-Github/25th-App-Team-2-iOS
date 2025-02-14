@@ -16,6 +16,7 @@ import DesignSystem
 public struct TraineeBasicInfoInputFeature {
     
     public typealias FocusField = TraineeBasicInfoInputView.Field
+    static let defaultDatePickerDate: Date = "2000/01/01".toDate(format: .yyyyMMddSlash) ?? .now
     
     @ObservableState
     public struct State: Equatable {
@@ -51,7 +52,7 @@ public struct TraineeBasicInfoInputFeature {
         ///   - view_heightStatus: 키 필드 상태 (기본값: `.empty`)
         ///   - view_weightStatus: 몸무게 필드 상태 (기본값: `.empty`)
         ///   - view_isDatePickerPresented: DatePicker 표시 여부 (기본값: `false`)
-        ///   - view_isNextButtonEnabled: "다음" 버튼 활성화 여부 (기본값: `false`)
+        ///   - view_isNextButtonEnabled: "다음" 버튼 활성화 여부 (기본값: `true`)
         public init(
             signUpEntity: Shared<PostSignUpEntity>,
             birthDate: String = "",
@@ -61,7 +62,7 @@ public struct TraineeBasicInfoInputFeature {
             view_heightStatus: TTextField.Status = .empty,
             view_weightStatus: TTextField.Status = .empty,
             view_isDatePickerPresented: Bool = false,
-            view_isNextButtonEnabled: Bool = false
+            view_isNextButtonEnabled: Bool = true
         ) {
             self._signUpEntity = signUpEntity
             self.birthDate = birthDate
@@ -122,7 +123,7 @@ public struct TraineeBasicInfoInputFeature {
                     
                 case let .setFocus(oldFocus, newFocus):
                     state.view_focusField = newFocus
-                    return newFocus == nil
+                    return oldFocus != newFocus
                     ? self.validateInput(&state, field: oldFocus)
                     : .none
                     
@@ -174,8 +175,8 @@ private extension TraineeBasicInfoInputFeature {
     /// 모든 필드의 상태를 검증하여 "다음" 버튼 활성화 여부를 결정
     func validateAllFields(_ state: inout State) -> Effect<Action> {
         let dateValid: Bool = state.birthDate.isEmpty || state.view_birthDateStatus == .filled
-        let heightValid: Bool = !state.height.isEmpty && state.view_heightStatus != .invalid
-        let weightValid: Bool = !state.weight.isEmpty && state.view_weightStatus != .invalid
+        let heightValid: Bool = !state.height.isEmpty || state.view_heightStatus != .invalid
+        let weightValid: Bool = !state.weight.isEmpty || state.view_weightStatus != .invalid
 
         state.view_isNextButtonEnabled = dateValid && heightValid && weightValid
         return .none

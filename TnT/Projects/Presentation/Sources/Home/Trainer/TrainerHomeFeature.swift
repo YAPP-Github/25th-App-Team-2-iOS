@@ -40,11 +40,6 @@ public struct TrainerHomeFeature {
         // MARK: UI related state
         /// 캘린더 표시 페이지
         var view_currentPage: Date
-        /// 수업 카드 시간 표시
-        var view_sessionCardTimeString: String {
-            guard let sessionInfo else { return "" }
-            return "\(TDateFormatUtility.formatter(for: .a_HHmm).string(from: sessionInfo.startDate)) ~ \(TDateFormatUtility.formatter(for: .a_HHmm).string(from: sessionInfo.endDate))"
-        }
         /// 기록 제목 표시
         var view_recordTitleString: String {
             return TDateFormatUtility.formatter(for: .M월_d일_EEEE).string(from: selectedDate)

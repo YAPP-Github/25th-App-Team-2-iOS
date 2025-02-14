@@ -36,6 +36,7 @@ public struct TrainerAddPTSessionView: View {
                 leftAction: { send(.tapNavBackButton) }
             )
             TDivider(height: 1, color: .neutral200)
+            
             ScrollView {
                 VStack(alignment: .leading, spacing: 0) {
                     Header()
@@ -62,19 +63,20 @@ public struct TrainerAddPTSessionView: View {
                 .padding(.bottom, .safeAreaBottom + 20)
             }
         }
+        .bottomFixWith {
+            TBottomButton(
+                title: "완료",
+                isEnable: store.view_isSubmitButtonEnabled
+            ) {
+                send(.tapSubmitButton)
+            }
+            .padding(.bottom, .safeAreaBottom)
+            .disabled(!store.view_isSubmitButtonEnabled)
+            .debounce()
+        }
         .onTapGesture { focusedField = nil }
         .navigationBarBackButtonHidden()
         .keyboardDismissOnTap()
-        .safeAreaInset(edge: .bottom) {
-            if store.view_focusField == nil {
-                TBottomButton(
-                    title: "완료",
-                    isEnable: store.view_isSubmitButtonEnabled
-                ) {
-                    send(.tapSubmitButton)
-                }
-            }
-        }
         .sheet(item: $store.view_bottomSheetItem) { item in
             switch item {
             case .traineeList:
@@ -86,6 +88,7 @@ public struct TrainerAddPTSessionView: View {
                 )
             case .datePicker(let field):
                 TDatePickerView(
+                    selectedDate: store.ptDate ?? .now,
                     title: field.title,
                     monthFormatter: { TDateFormatUtility.formatter(for: .yyyy년_MM월).string(from: $0) },
                     buttonAction: {
@@ -196,7 +199,7 @@ public struct TrainerAddPTSessionView: View {
         HStack(alignment: .bottom, spacing: 12) {
             // StartTime
             TTextField(
-                placeholder: "09:00",
+                placeholder: Date().toString(format: .HHmm),
                 text: Binding(get: {
                     store.startTime?.toString(format: .HHmm) ?? ""
                 }, set: { _ in }),
@@ -227,7 +230,7 @@ public struct TrainerAddPTSessionView: View {
             
             // EndTime
             TTextField(
-                placeholder: "10:00",
+                placeholder: Date().addingTimeInterval(3600).toString(format: .HHmm),
                 text: Binding(get: {
                     store.endTime?.toString(format: .HHmm) ?? ""
                 }, set: { _ in }),

@@ -89,14 +89,14 @@ public struct TraineeMainFlowFeature {
                     
                     /// 식단 기록 화면 등록 -> 홈화면으로 이동
                 case .element(id: _, action: .addDietRecordPage(.setNavigating)):
-                    state.path.removeLast()
+                    state.path.removeSubrange(1...)
                     return .none
                     
                     /// 마이페이지 초대코드 입력화면 다음 버튼 탭 - > PT 정보 입력 화면 or 홈 이동
                 case .element(_, action: .traineeInvitationCodeInput(.setNavigating(let screen))):
                     switch screen {
                     case .traineeHome:
-                        state.path.removeLast()
+                        state.path.removeSubrange(1...)
                     case let .trainingInfoInput(trainerName, invitationCode):
                         state.path.append(.traineeTrainingInfoInput(.init(trainerName: trainerName, invitationCode: invitationCode)))
                     }
@@ -119,7 +119,7 @@ public struct TraineeMainFlowFeature {
                     
                     /// 연결 완료 화면 -> 홈으로 이동
                 case .element(id: _, action: .traineeConnectionComplete(.setNavigating)):
-                    state.path.removeLast(2)
+                    state.path.removeSubrange(1...)
                     return .none
                     
                 default:

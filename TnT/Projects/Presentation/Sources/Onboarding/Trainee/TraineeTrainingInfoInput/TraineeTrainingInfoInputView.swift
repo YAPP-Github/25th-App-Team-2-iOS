@@ -12,9 +12,7 @@ import ComposableArchitecture
 import Domain
 import DesignSystem
 
-/// 회원 기본 정보를 입력하는 화면
-/// - 생년월일, 키, 체중 입력을 포함
-/// - 생년월일 입력 시 DatePicker 표시
+/// PT  정보를 입력하는 화면
 @ViewAction(for: TraineeTrainingInfoInputFeature.self)
 public struct TraineeTrainingInfoInputView: View {
     
@@ -45,18 +43,19 @@ public struct TraineeTrainingInfoInputView: View {
         }
         .navigationBarBackButtonHidden()
         .keyboardDismissOnTap()
-        .safeAreaInset(edge: .bottom) {
-            if store.view_focusField == nil {
-                TBottomButton(
-                    title: "다음",
-                    isEnable: store.view_isNextButtonEnabled
-                ) {
-                    send(.tapNextButton)
-                }
+        .bottomFixWith {
+            TBottomButton(
+                title: "다음",
+                isEnable: store.view_isNextButtonEnabled
+            ) {
+                send(.tapNextButton)
             }
+            .padding(.bottom, .safeAreaBottom)
+            .disabled(!store.view_isNextButtonEnabled)
         }
         .sheet(isPresented: $store.view_isDatePickerPresented) {
             TDatePickerView(
+                selectedDate: store.startDate.toDate(format: .yyyyMMddSlash) ?? .now,
                 title: "PT 시작일",
                 monthFormatter: {
                     TDateFormatUtility.formatter(for: .yyyy년_MM월).string(from: $0)
@@ -79,7 +78,7 @@ public struct TraineeTrainingInfoInputView: View {
     private func TextFieldSection() -> some View {
         VStack(spacing: 48) {
             TTextField(
-                placeholder: "2025/01/13",
+                placeholder: Date().toString(format: .yyyyMMddSlash),
                 text: $store.startDate,
                 textFieldStatus: $store.view_startDateStatus
             )

@@ -22,11 +22,11 @@ public struct TraineeTrainingInfoInputFeature {
         // MARK: Data related state
         /// 트레이너 이름
         var trainerName: String
-        /// 입력된 생년월일
+        /// 입력된 시작 날짜
         var startDate: String
-        /// 입력된 키
+        /// 입력된 현재 횟수
         var currentCount: String
-        /// 입력된 몸무게
+        /// 입력된 총 횟수
         var totalCount: String
         /// 트레이너 초대코드
         var invitationCode: String
@@ -44,16 +44,6 @@ public struct TraineeTrainingInfoInputFeature {
         var view_isNextButtonEnabled: Bool
         
         /// `TraineeBasicInfoInputFeature.State`의 생성자
-        /// - Parameters:
-        ///   - trainerName: 트레이너 이름 (기본값: `""`)
-        ///   - birthDate: 입력된 생년월일 (기본값: `""`)
-        ///   - height: 입력된 키 (기본값: `""`)
-        ///   - weight: 입력된 몸무게 (기본값: `""`)
-        ///   - view_birthDateStatus: 생년월일 필드 상태 (기본값: `.empty`)
-        ///   - view_heightStatus: 키 필드 상태 (기본값: `.empty`)
-        ///   - view_weightStatus: 몸무게 필드 상태 (기본값: `.empty`)
-        ///   - view_isDatePickerPresented: DatePicker 표시 여부 (기본값: `false`)
-        ///   - view_isNextButtonEnabled: "다음" 버튼 활성화 여부 (기본값: `false`)
         public init(
             trainerName: String = "",
             startDate: String = "",
@@ -135,7 +125,7 @@ public struct TraineeTrainingInfoInputFeature {
                     
                 case let .setFocus(oldFocus, newFocus):
                     state.view_focusField = newFocus
-                    return newFocus == nil
+                    return oldFocus != newFocus
                     ? self.validateInput(&state, field: oldFocus)
                     : .none
                     
@@ -223,7 +213,7 @@ private extension TraineeTrainingInfoInputFeature {
 }
 
 extension TraineeTrainingInfoInputFeature {
-    public enum RoutingScreen {
+    public enum RoutingScreen: Sendable {
         case connectionComplete(trainerName: String, traineeName: String, trainerImageUrl: String, traineeImageUrl: String)
     }
 }

@@ -36,6 +36,8 @@ public struct TraineeAddDietRecordView: View {
                 ),
                 leftAction: { send(.tapNavBackButton) }
             )
+            TDivider(color: .neutral200)
+            
             ScrollView {
                 VStack(alignment: .leading, spacing: 8) {
                     DietPhotoSection()
@@ -57,22 +59,24 @@ public struct TraineeAddDietRecordView: View {
         .onTapGesture { focusedField = nil }
         .navigationBarBackButtonHidden()
         .keyboardDismissOnTap()
-        .safeAreaInset(edge: .bottom) {
-            if store.view_focusField == nil {
-                TButton(
-                    title: "저장",
-                    config: .xLarge,
-                    state: .default(.primary(isEnabled: store.view_isSubmitButtonEnabled))
-                ) {
-                    send(.tapSubmitButton)
-                }
-                .padding(.horizontal, 16)
+        .bottomFixWith {
+            TButton(
+                title: "저장",
+                config: .xLarge,
+                state: .default(.primary(isEnabled: store.view_isSubmitButtonEnabled))
+            ) {
+                send(.tapSubmitButton)
             }
+            .padding(.bottom, .safeAreaBottom)
+            .disabled(!store.view_isSubmitButtonEnabled)
+            .debounce()
+            .padding(.horizontal, 16)
         }
         .sheet(item: $store.view_bottomSheetItem) { item in
             switch item {
             case .datePicker(let field):
                 TDatePickerView(
+                    selectedDate: store.dietDate ?? .now,
                     title: field.title,
                     monthFormatter: { TDateFormatUtility.formatter(for: .yyyy년_MM월).string(from: $0) },
                     buttonAction: {
@@ -82,9 +86,9 @@ public struct TraineeAddDietRecordView: View {
                 .autoSizingBottomSheet(presentationDragIndicator: .hidden)
             case .timePicker(let field):
                 TTimePickerView(
-                    selectedTime: store.dietDate ?? .now,
+                    selectedTime: store.dietTime ?? .now,
                     title: field.title,
-                    minuteStep: 10,
+                    minuteStep: 1,
                     buttonAction: {
                         send(.tapBottomSheetSubmitButton(field, $0))
                     }
@@ -163,7 +167,7 @@ public struct TraineeAddDietRecordView: View {
     @ViewBuilder
     private func DietDateSection() -> some View {
         TTextField(
-            placeholder: "2025/11/19",
+            placeholder: Date().toString(format: .yyyyMMddSlash),
             text: Binding(get: {
                 store.dietDate?.toString(format: .yyyyMMddSlash) ?? ""
             }, set: { _ in }),
@@ -185,7 +189,7 @@ public struct TraineeAddDietRecordView: View {
     @ViewBuilder
     private func DietTimeSection() -> some View {
         TTextField(
-            placeholder: "09:00",
+            placeholder: Date().toString(format: .HHmm),
             text: Binding(get: {
                 store.dietTime?.toString(format: .HHmm) ?? ""
             }, set: { _ in }),

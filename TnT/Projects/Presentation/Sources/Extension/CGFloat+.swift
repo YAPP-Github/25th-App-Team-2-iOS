@@ -23,9 +23,9 @@ public extension CGFloat {
     static var safeAreaBottom: CGFloat {
         guard let window = UIApplication.shared.connectedScenes
             .compactMap({ ($0 as? UIWindowScene)?.keyWindow })
-            .first else { return 34 }
+            .first else { return 0 }
         
         let bottomInset = window.safeAreaInsets.bottom
-        return bottomInset > 0 ? bottomInset : 34
+        return bottomInset > 0 ? bottomInset : 0
     }
 }

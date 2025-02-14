@@ -43,18 +43,19 @@ public struct TraineeBasicInfoInputView: View {
         }
         .navigationBarBackButtonHidden()
         .keyboardDismissOnTap()
-        .safeAreaInset(edge: .bottom) {
-            if store.view_focusField == nil {
-                TBottomButton(
-                    title: "다음",
-                    isEnable: store.view_isNextButtonEnabled
-                ) {
-                    send(.tapNextButton)
-                }
+        .bottomFixWith {
+            TBottomButton(
+                title: "다음",
+                isEnable: store.view_isNextButtonEnabled
+            ) {
+                send(.tapNextButton)
             }
+            .padding(.bottom, .safeAreaBottom)
         }
         .sheet(isPresented: $store.view_isDatePickerPresented) {
             TDatePickerView(
+                calendarType: .system(in: ...Date().addingTimeInterval(-86400)),
+                selectedDate: store.birthDate.toDate(format: .yyyyMMddSlash) ?? TraineeBasicInfoInputFeature.defaultDatePickerDate,
                 title: "생년월일",
                 monthFormatter: {
                     TDateFormatUtility.formatter(for: .yyyy년_MM월).string(from: $0)
@@ -86,7 +87,7 @@ public struct TraineeBasicInfoInputView: View {
             .frame(maxWidth: .infinity)
             .padding(.horizontal, 20)
             
-            TInfoTitleHeader(title: "회원님의 기본 정보를\n입력해주세요", subTitle: "PT에 참고할 기본 정보에요!")
+            TInfoTitleHeader(title: "회원님의 기본 정보를\n입력해주세요", subTitle: "정보를 입력하면 PT 트레이너에게 전송돼요")
         }
         .padding(.vertical, 12)
     }
@@ -95,7 +96,7 @@ public struct TraineeBasicInfoInputView: View {
     private func TextFieldSection() -> some View {
         VStack(spacing: 48) {
             TTextField(
-                placeholder: "2000/01/01",
+                placeholder: TraineeBasicInfoInputFeature.defaultDatePickerDate.toString(format: .yyyyMMddSlash),
                 text: $store.birthDate,
                 textFieldStatus: $store.view_birthDateStatus
             )
@@ -122,7 +123,7 @@ public struct TraineeBasicInfoInputView: View {
                     }
                 )
                 .withSectionLayout(
-                    header: .init(isRequired: true, title: "키", limitCount: nil, textCount: nil),
+                    header: .init(isRequired: false, title: "키", limitCount: nil, textCount: nil),
                     footer: .init(footerText: "잘못된 수치를 입력했어요", status: store.view_heightStatus)
                 )
                 .focused($focusedField, equals: .height)
@@ -137,7 +138,7 @@ public struct TraineeBasicInfoInputView: View {
                     }
                 )
                 .withSectionLayout(
-                    header: .init(isRequired: true, title: "체중", limitCount: nil, textCount: nil),
+                    header: .init(isRequired: false, title: "체중", limitCount: nil, textCount: nil),
                     footer: .init(footerText: "잘못된 수치를 입력했어요", status: store.view_weightStatus)
                 )
                 .focused($focusedField, equals: .weight)

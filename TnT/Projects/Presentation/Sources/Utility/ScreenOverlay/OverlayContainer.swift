@@ -36,7 +36,7 @@ public struct OverlayContainer: View {
                 
                 TToastView(message: toast.message, leftViewType: toast.leftViewType)
                     .padding(.horizontal, 20)
-                    .padding(.bottom, 24)
+                    .padding(.bottom, 56)
                     .transition(.move(edge: .bottom).combined(with: .opacity))
                     .onTapGesture {
                         overlayManager.dismissIfAllowed()

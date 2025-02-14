@@ -17,9 +17,9 @@ public struct ConnectedTraineeProfileEntity: Equatable, Sendable {
     /// 나이
     public let age: Int?
     /// 키
-    public let height: Double
+    public let height: Double?
     /// 몸무게
-    public let weight: Double
+    public let weight: Double?
     /// PT 목표
     public let ptGoal: String
     /// 주의 사항
@@ -29,8 +29,8 @@ public struct ConnectedTraineeProfileEntity: Equatable, Sendable {
         traineeName: String,
         imageUrl: String,
         age: Int?,
-        height: Double,
-        weight: Double,
+        height: Double?,
+        weight: Double?,
         ptGoal: String,
         cautionNote: String?
     ) {

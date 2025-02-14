@@ -10,12 +10,14 @@ import Foundation
 
 public extension ConnectTraineeInfoDTO {
     func toEntity() -> ConnectedTraineeProfileEntity {
+        let height = self.height == 0 ? nil : self.height
+        let weight = self.weight == 0 ? nil : self.weight
         return .init(
             traineeName: self.traineeName,
             imageUrl: self.traineeProfileImageUrl,
             age: self.age,
-            height: self.height,
-            weight: self.weight,
+            height: height,
+            weight: weight,
             ptGoal: self.ptGoal,
             cautionNote: self.cautionNote
         )
