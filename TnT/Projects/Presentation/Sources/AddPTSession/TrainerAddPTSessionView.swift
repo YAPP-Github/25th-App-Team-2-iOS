@@ -36,6 +36,7 @@ public struct TrainerAddPTSessionView: View {
                 leftAction: { send(.tapNavBackButton) }
             )
             TDivider(height: 1, color: .neutral200)
+            
             ScrollView {
                 VStack(alignment: .leading, spacing: 0) {
                     Header()

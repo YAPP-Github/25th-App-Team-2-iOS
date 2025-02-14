@@ -36,6 +36,8 @@ public struct TraineeAddDietRecordView: View {
                 ),
                 leftAction: { send(.tapNavBackButton) }
             )
+            TDivider(color: .neutral200)
+            
             ScrollView {
                 VStack(alignment: .leading, spacing: 8) {
                     DietPhotoSection()
