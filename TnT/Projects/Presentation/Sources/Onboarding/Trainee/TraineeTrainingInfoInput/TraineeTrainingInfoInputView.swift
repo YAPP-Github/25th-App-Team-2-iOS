@@ -79,7 +79,7 @@ public struct TraineeTrainingInfoInputView: View {
     private func TextFieldSection() -> some View {
         VStack(spacing: 48) {
             TTextField(
-                placeholder: "2025/01/13",
+                placeholder: Date().toString(format: .yyyyMMddSlash),
                 text: $store.startDate,
                 textFieldStatus: $store.view_startDateStatus
             )
