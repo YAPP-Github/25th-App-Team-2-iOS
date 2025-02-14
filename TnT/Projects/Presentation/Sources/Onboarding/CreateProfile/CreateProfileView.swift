@@ -128,7 +128,7 @@ public struct CreateProfileView: View {
             ),
             footer: .init(
                 footerText: store.view_isFooterTextVisible
-                ? "\(store.view_nameMaxLength ?? 15)자 이하로 입력해주세요"
+                ? "\(store.view_nameMaxLength ?? 15)자 미만의 한글 또는 영문으로 입력해주세요"
                 : "",
                 status: store.view_textFieldStatus
             )
