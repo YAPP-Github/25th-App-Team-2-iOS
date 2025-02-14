@@ -11,7 +11,7 @@ import DesignSystem
 
 public enum TrainerTabInfo: String, CaseIterable, Equatable, Sendable {
     case home = "홈"
-//    case feedback = "피드백"
+    case feedback = "피드백"
     case traineeList = "회원목록"
     case mypage = "내 정보"
     
@@ -19,8 +19,8 @@ public enum TrainerTabInfo: String, CaseIterable, Equatable, Sendable {
         switch self {
         case .home:
             return .icnHomeFilled
-//        case .feedback:
-//            return .icnFeedbackFilled
+        case .feedback:
+            return .icnFeedbackFilled
         case .traineeList:
             return .icnListFilled
         case .mypage:
@@ -32,8 +32,8 @@ public enum TrainerTabInfo: String, CaseIterable, Equatable, Sendable {
         switch self {
         case .home:
             return .icnHomeEmpty
-//        case .feedback:
-//            return .icnFeedbackEmpty
+        case .feedback:
+            return .icnFeedbackEmpty
         case .traineeList:
             return .icnListEmpty
         case .mypage:

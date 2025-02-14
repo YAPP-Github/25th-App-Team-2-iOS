@@ -14,7 +14,7 @@ public struct TrainerMainTabFeature {
     @ObservableState
     public enum State: Equatable {
         case home(TrainerHomeFeature.State)
-//        case feedback
+        case feedback(TrainerFeedbackFeature.State)
         case traineeList(TrainerManagementFeature.State)
         case myPage(TrainerMypageFeature.State)
         
@@ -23,8 +23,8 @@ public struct TrainerMainTabFeature {
             switch self {
             case .home:
                 return .home
-//            case .feedback:
-//                return .feedback
+            case .feedback:
+                return .feedback
             case .traineeList:
                 return .traineeList
             case .myPage:
@@ -37,6 +37,8 @@ public struct TrainerMainTabFeature {
             switch self {
             case .home(let homeState):
                 return homeState.view_isPopUpPresented
+            case .feedback:
+                return false
             case .traineeList:
                 return false
             case .myPage(let myPageState):
@@ -67,7 +69,7 @@ public struct TrainerMainTabFeature {
             /// 홈 화면에서 발생하는 액션 처리
             case homeAction(TrainerHomeFeature.Action)
 //            /// 피드백 화면에서 발생하는 액션 처리
-//            case feedbackAction
+            case feedbackAction(TrainerFeedbackFeature.Action)
             /// 회원 목록 화면에서 발생하는 액션 처리
             case traineeListAction(TrainerManagementFeature.Action)
             /// 마이페이지 화면에서 발생하는 액션 처리
@@ -87,10 +89,10 @@ public struct TrainerMainTabFeature {
                     case .home:
                         state = .home(.init())
                         return .none
-//                    case .feedback:
-//                        // TODO: feedback Feature 작성 후 추가해주세요
-//                        state = .feedback
-//                        return .none
+                    case .feedback:
+                        // TODO: feedback Feature 작성 후 추가해주세요
+                        state = .feedback(.init())
+                        return .none
                     case .traineeList:
                         state = .traineeList(.init())
                         return .none
