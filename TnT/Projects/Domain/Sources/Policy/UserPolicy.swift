@@ -22,17 +22,17 @@ struct UserPolicy {
         isRequired: false
     )
     
-    /// 키 입력 검증 (정수 3자리, 필수)
+    /// 키 입력 검증 (정수 3자리)
     static let heightInput: PolicyInputInfo = .init(
         textValidation: { TextValidator.isValidInput($0, maxLength: 3, regexPattern: #"^\d{3}$"#) },
-        isRequired: true
+        isRequired: false
     )
     
-    /// 몸무게 입력 검증 (정수 3자리 + 소수점 1자리, 필수)
+    /// 몸무게 입력 검증 (정수 3자리 + 소수점 1자리)
     /// 정수 최소 2자리 이상, 소수점 1자리까지만
     static let weightInput: PolicyInputInfo = .init(
         textValidation: { TextValidator.isValidInput($0, maxLength: 5, regexPattern: #"^\d{2,3}(\.\d{1})?$"#) },
-        isRequired: true
+        isRequired: false
     )
     
     /// 주의사항 최대 길이 제한 (공백 포함)

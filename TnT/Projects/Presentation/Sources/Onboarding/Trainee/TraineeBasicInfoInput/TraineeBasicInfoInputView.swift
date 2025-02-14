@@ -122,7 +122,7 @@ public struct TraineeBasicInfoInputView: View {
                     }
                 )
                 .withSectionLayout(
-                    header: .init(isRequired: true, title: "키", limitCount: nil, textCount: nil),
+                    header: .init(isRequired: false, title: "키", limitCount: nil, textCount: nil),
                     footer: .init(footerText: "잘못된 수치를 입력했어요", status: store.view_heightStatus)
                 )
                 .focused($focusedField, equals: .height)
@@ -137,7 +137,7 @@ public struct TraineeBasicInfoInputView: View {
                     }
                 )
                 .withSectionLayout(
-                    header: .init(isRequired: true, title: "체중", limitCount: nil, textCount: nil),
+                    header: .init(isRequired: false, title: "체중", limitCount: nil, textCount: nil),
                     footer: .init(footerText: "잘못된 수치를 입력했어요", status: store.view_weightStatus)
                 )
                 .focused($focusedField, equals: .weight)
