@@ -135,7 +135,7 @@ public struct TraineeTrainingInfoInputFeature {
                     
                 case let .setFocus(oldFocus, newFocus):
                     state.view_focusField = newFocus
-                    return newFocus == nil
+                    return oldFocus != newFocus
                     ? self.validateInput(&state, field: oldFocus)
                     : .none
                     
