@@ -265,14 +265,18 @@ public struct TrainerAddPTSessionFeature {
                     else { return .none }
                     
                     return .run { send in
-                        let result = try await trainerRepoUseCase.postLesson(
-                            reqDTO: .init(
-                                start: startDate,
-                                end: endDate,
-                                traineeId: traineeId
+                        do {
+                            let _ = try await trainerRepoUseCase.postLesson(
+                                reqDTO: .init(
+                                    start: startDate,
+                                    end: endDate,
+                                    traineeId: traineeId
+                                )
                             )
-                        )
-                        await send(.setNavigating)
+                            await send(.setNavigating)
+                        } catch {
+                            NotificationCenter.default.post(toast: .init(presentType: .text("⚠"), message: "이미 예약된 시간대입니다"))
+                        }
                     }
                 }
                 
