@@ -24,35 +24,17 @@ struct ToyProjectApp: App {
 
     var body: some Scene {
         WindowGroup {
-//            AppFlowCoordinatorView(
-//                store: .init(
-//                    initialState: AppFlowCoordinatorFeature.State(),
-//                    reducer: { AppFlowCoordinatorFeature()
-//                    })
-//            )
-//             .onOpenURL(perform: { url in
-//                if AuthApi.isKakaoTalkLoginUrl(url) {
-//                    debugPrint(AuthController.handleOpenUrl(url: url))
-//                }
-//            })
-            ConnectedTraineeProfileView(
+            AppFlowCoordinatorView(
                 store: .init(
-                    initialState: ConnectedTraineeProfileFeature.State(
-                        traineeProfile: .init(
-                            traineeName: "테스트입니다테스트입니다123",
-                            imageUrl: "https://www.aandmedu.in/wp-content/uploads/2021/11/9-16-Aspect-Ratio-576x1024.jpg",
-                            age: nil,
-                            height: nil,
-                            weight: nil,
-                            ptGoal: "",
-                            cautionNote: ""
-                        )
-                    ),
-                    reducer: {
-                        ConnectedTraineeProfileFeature()
-                    }
-                )
+                    initialState: AppFlowCoordinatorFeature.State(),
+                    reducer: { AppFlowCoordinatorFeature()
+                    })
             )
+             .onOpenURL(perform: { url in
+                if AuthApi.isKakaoTalkLoginUrl(url) {
+                    debugPrint(AuthController.handleOpenUrl(url: url))
+                }
+            })
         }
     }
 }
