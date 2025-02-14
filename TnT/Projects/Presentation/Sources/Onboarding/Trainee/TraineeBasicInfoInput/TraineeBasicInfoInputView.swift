@@ -55,7 +55,7 @@ public struct TraineeBasicInfoInputView: View {
         }
         .sheet(isPresented: $store.view_isDatePickerPresented) {
             TDatePickerView(
-                isCustom: false,
+                calendarType: .system(in: ...Date().addingTimeInterval(-86400)),
                 selectedDate: TraineeBasicInfoInputFeature.defaultDatePickerDate,
                 currentPageDate: TraineeBasicInfoInputFeature.defaultDatePickerDate,
                 title: "생년월일",
@@ -89,7 +89,7 @@ public struct TraineeBasicInfoInputView: View {
             .frame(maxWidth: .infinity)
             .padding(.horizontal, 20)
             
-            TInfoTitleHeader(title: "회원님의 기본 정보를\n입력해주세요", subTitle: "PT에 참고할 기본 정보에요!")
+            TInfoTitleHeader(title: "회원님의 기본 정보를\n입력해주세요", subTitle: "정보를 입력하면 PT 트레이너에게 전송돼요")
         }
         .padding(.vertical, 12)
     }
