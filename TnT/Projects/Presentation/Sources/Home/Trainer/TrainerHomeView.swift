@@ -75,11 +75,6 @@ public struct TrainerHomeView: View {
                     currentPage: $store.view_currentPage,
                     events: store.events
                 )
-                .onChange(of: store.state.selectedDate, { oldValue, newValue in
-                    let startOfDay: Date = Calendar.current.startOfDay(for: newValue)
-                    store.selectedDate = startOfDay
-                    send(.calendarDateTap)
-                })
                 .onChange(of: store.state.view_currentPage, { oldValue, newValue in
                     let current: Int = Calendar.current.component(.month, from: oldValue)
                     let next: Int = Calendar.current.component(.month, from: newValue)
