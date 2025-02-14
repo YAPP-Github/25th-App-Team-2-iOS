@@ -75,6 +75,7 @@ public struct TraineeAddDietRecordView: View {
             switch item {
             case .datePicker(let field):
                 TDatePickerView(
+                    selectedDate: store.dietDate ?? .now,
                     title: field.title,
                     monthFormatter: { TDateFormatUtility.formatter(for: .yyyy년_MM월).string(from: $0) },
                     buttonAction: {
@@ -84,9 +85,9 @@ public struct TraineeAddDietRecordView: View {
                 .autoSizingBottomSheet(presentationDragIndicator: .hidden)
             case .timePicker(let field):
                 TTimePickerView(
-                    selectedTime: store.dietDate ?? .now,
+                    selectedTime: store.dietTime ?? .now,
                     title: field.title,
-                    minuteStep: 10,
+                    minuteStep: 1,
                     buttonAction: {
                         send(.tapBottomSheetSubmitButton(field, $0))
                     }
@@ -165,7 +166,7 @@ public struct TraineeAddDietRecordView: View {
     @ViewBuilder
     private func DietDateSection() -> some View {
         TTextField(
-            placeholder: "2025/11/19",
+            placeholder: Date().toString(format: .yyyyMMddSlash),
             text: Binding(get: {
                 store.dietDate?.toString(format: .yyyyMMddSlash) ?? ""
             }, set: { _ in }),
@@ -187,7 +188,7 @@ public struct TraineeAddDietRecordView: View {
     @ViewBuilder
     private func DietTimeSection() -> some View {
         TTextField(
-            placeholder: "09:00",
+            placeholder: Date().toString(format: .HHmm),
             text: Binding(get: {
                 store.dietTime?.toString(format: .HHmm) ?? ""
             }, set: { _ in }),
