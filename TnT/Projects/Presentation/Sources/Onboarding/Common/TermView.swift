@@ -81,7 +81,7 @@ public struct TermView: View {
             
             VStack(spacing: 12) {
                 ForEach(store.view_terms.keys.sorted(by: { $0.id < $1.id }), id: \.self) { term in
-                    termListItem(
+                        TermListItem(
                         term: term,
                         isAgreed: store.view_terms[term] ?? false
                     ) {

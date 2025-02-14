@@ -3,12 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>CFBundleDisplayName</key>
-	<dict>
-		<key>UIApplicationSupportsMultipleScenes</key>
-		<false/>
-		<key>UISceneConfigurations</key>
-		<dict/>
-	</dict>
+	<string>TnT</string>
 	<key>FirebaseAppDelegateProxyEnabled
 출처: https://nsios.tistory.com/191 [NamS의 iOS일기:티스토리]</key>
 	<string>NO</string>
