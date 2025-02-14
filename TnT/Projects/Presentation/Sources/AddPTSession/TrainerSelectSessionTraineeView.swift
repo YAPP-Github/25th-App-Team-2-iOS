@@ -37,7 +37,7 @@ public struct TrainerSelectSessionTraineeView: View {
     public var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             Header()
-                .padding(.top, 10)
+                .padding(.top, 30)
             
             if contentHeight >= 708 {
                 ScrollView {
@@ -58,7 +58,7 @@ public struct TrainerSelectSessionTraineeView: View {
     private func Header() -> some View {
         VStack(spacing: 0) {
             HStack {
-                Text("회원선택하기")
+                Text("회원 선택하기")
                     .typographyStyle(.heading3, with: .neutral900)
                 
                 Spacer()
@@ -78,14 +78,14 @@ public struct TrainerSelectSessionTraineeView: View {
     
     @ViewBuilder
     private func Contents() -> some View {
-        VStack(spacing: 12) {
+        VStack(spacing: 0) {
             ForEach(traineeList, id: \.listItem.id) { item in
                 TraineeListItem(
                     isSelected: item.listItem.id == selectedTraineeId,
                     name: item.listItem.name,
                     action: item.action
                 )
-                .frame(height: 40)
+                .frame(height: 56)
             }
         }
         .background(
@@ -132,7 +132,7 @@ private extension TrainerSelectSessionTraineeView {
                 }
             }
             .padding(.horizontal, 20)
-            .padding(.vertical, 8)
+            .padding(.vertical, 16)
         }
     }
 }

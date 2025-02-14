@@ -93,7 +93,7 @@ public struct TermView: View {
     }
     
     @ViewBuilder
-    private func termListItem(term: Term, isAgreed: Bool, toggle: @escaping (Bool) -> Void) -> some View {
+    private func TermListItem(term: Term, isAgreed: Bool, toggle: @escaping (Bool) -> Void) -> some View {
         HStack(spacing: 8) {
             Image(isAgreed ? .icnCheckButtonSelected : .icnCheckButtonUnselected)
                 .resizable()

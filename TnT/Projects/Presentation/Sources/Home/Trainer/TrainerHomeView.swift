@@ -42,7 +42,7 @@ public struct TrainerHomeView: View {
         }
         .navigationBarBackButtonHidden()
         .tPopUp(isPresented: $store.view_isPopUpPresented) {
-            PopUpView()
+            PopUpView(flag: store.state.popUpFlag)
         }
         .onAppear {
             send(.onAppear)
@@ -75,10 +75,10 @@ public struct TrainerHomeView: View {
                     currentPage: $store.view_currentPage,
                     events: store.events
                 )
-                .onChange(of: store.state.selectedDate, { oldValue, newValue in
-                    let startOfDay: Date = Calendar.current.startOfDay(for: newValue)
-                    store.selectedDate = startOfDay
-                    send(.calendarDateTap)
+                .onChange(of: store.state.view_currentPage, { oldValue, newValue in
+                    let current: Int = Calendar.current.component(.month, from: oldValue)
+                    let next: Int = Calendar.current.component(.month, from: newValue)
+                    send(.isLoadedCheck(currentMonth: current, nextMonth: next))
                 })
                 .padding(.horizontal, 20)
             }
@@ -140,7 +140,7 @@ public struct TrainerHomeView: View {
                     Image(.icnPlusGray)
                         .resizable()
                         .frame(width: 24, height: 24)
-                    Text("수업추가")
+                    Text("수업 추가")
                         .typographyStyle(.body1Medium, with: .neutral50)
                 }
             }
@@ -152,7 +152,9 @@ public struct TrainerHomeView: View {
     }
     
     @ViewBuilder
-    private func PopUpView() -> some View {
+    /// flag를 추가해서 3일 동안 보지 않기 Text 추가 유무 설정
+    /// flag = true : 3일 동안 보지 않기 추가 / false : 제거
+    private func PopUpView(flag: Bool) -> some View {
         VStack(spacing: 20) {
             VStack(spacing: 8) {
                 Text("회원을 연결해 주세요")
@@ -165,17 +167,21 @@ public struct TrainerHomeView: View {
                     .multilineTextAlignment(.center)
             }
             
-            Button(action: {
-                send(.tapPopUpDontShowUntilThreeDaysButton(!store.isHideUntilSelected))
-            }) {
-                HStack(spacing: 4) {
-                    Image(store.isHideUntilSelected ? .icnCheckMarkFilled : .icnCheckMarkEmpty)
-                        .resizable()
-                        .frame(width: 24, height: 24)
-                    Text("3일 동안 보지 않기")
-                        .typographyStyle(.body2Medium, with: .neutral500)
-                    Spacer()
+            if flag {
+                Button(action: {
+                    send(.tapPopUpDontShowUntilThreeDaysButton(!store.isHideUntilSelected))
+                }) {
+                    HStack(spacing: 4) {
+                        Image(store.isHideUntilSelected ? .icnCheckMarkFilled : .icnCheckMarkEmpty)
+                            .resizable()
+                            .frame(width: 24, height: 24)
+                        Text("3일 동안 보지 않기")
+                            .typographyStyle(.body2Medium, with: .neutral500)
+                        Spacer()
+                    }
                 }
+            } else {
+                EmptyView()
             }
             
             HStack(spacing: 8) {

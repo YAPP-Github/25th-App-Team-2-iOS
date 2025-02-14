@@ -26,11 +26,10 @@ public struct TrainerMainTabView: View {
                 if let store = store.scope(state: \.home, action: \.subFeature.homeAction) {
                     TrainerHomeView(store: store)
                 }
-//            case .feedback:
-//                if let store = store.scope(state: \.feedback, action: \.subFeature.feedbackAction) {
-//                    Color.clear
-//                        .frame(maxWidth: .infinity, maxHeight: .infinity)
-//                }
+            case .feedback:
+                if let store = store.scope(state: \.feedback, action: \.subFeature.feedbackAction) {
+                    TrainerFeedbackView(store: store)
+                }
             case .traineeList:
                 if let store = store.scope(state: \.traineeList, action: \.subFeature.traineeListAction) {
                     TrainerManagementView(store: store)

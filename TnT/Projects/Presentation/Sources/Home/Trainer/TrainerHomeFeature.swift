@@ -36,6 +36,8 @@ public struct TrainerHomeFeature {
         var isHideUntilSelected: Bool
         /// 트레이니 연결 여부
         var isConnected: Bool
+        /// 팝업 관련 Flag
+        var popUpFlag: Bool
         
         // MARK: UI related state
         /// 캘린더 표시 페이지
@@ -57,7 +59,8 @@ public struct TrainerHomeFeature {
             isConnected: Bool = false,
             view_currentPage: Date = .now,
             tappedsessionInfo: GetDateSessionListEntity? = nil,
-            view_isPopUpPresented: Bool = false
+            view_isPopUpPresented: Bool = false,
+            popUpFlag: Bool = false
         ) {
             self.selectedDate = selectedDate
             self.events = events
@@ -69,6 +72,7 @@ public struct TrainerHomeFeature {
             self.view_currentPage = view_currentPage
             self.tappedsessionInfo = tappedsessionInfo
             self.view_isPopUpPresented = view_isPopUpPresented
+            self.popUpFlag = popUpFlag
         }
     }
     
@@ -109,6 +113,10 @@ public struct TrainerHomeFeature {
             case settingSessionList(sessions: GetDateSessionListEntity)
             /// 수업 완료 후 토스트 메시지
             case completeToastMessage
+            /// 캘린더 데이터 캐싱을 위한 계산
+            case isLoadedCheck(currentMonth: Int, nextMonth: Int)
+            /// 수업 추가 전 회원 목록 팝업
+            case popUpOfCheckTrainee
         }
     }
     
@@ -123,8 +131,7 @@ public struct TrainerHomeFeature {
             case .view(let action):
                 switch action {
                 case .binding(\.selectedDate):
-                    //                    print("state.events[state.selectedDate] \(state.events[state.selectedDate])")
-                    return .none
+                    return .send(.view(.calendarDateTap))
                     
                 case .binding:
                     return .none
@@ -135,7 +142,7 @@ public struct TrainerHomeFeature {
                 case .tapSessionCompleted(let id):
                     guard let id = Int(id) else { return .none }
                     return .run { send in
-                        let result: PutCompleteLessonResDTO = try await trainerRepoUseCase.putCompleteLesson(lessonId: id)
+                        let _: PutCompleteLessonResDTO = try await trainerRepoUseCase.putCompleteLesson(lessonId: id)
                         await send(.view(.completeToastMessage))
                         await send(.view(.calendarDateTap))
                     }
@@ -145,7 +152,20 @@ public struct TrainerHomeFeature {
                     return .none
                     
                 case .tapAddSessionButton:
-                    return .send(.setNavigating(.addPTSessionPage))
+                    return .run { send in
+                        let result: GetActiveTraineesListResDTO = try await trainerRepoUseCase.getActiveTraineesList()
+                        
+                        if result.trainees.isEmpty {
+                            return await send(.view(.popUpOfCheckTrainee))
+                        } else {
+                            return await send(.setNavigating(.addPTSessionPage))
+                        }
+                    }
+                    
+                case .popUpOfCheckTrainee:
+                    state.view_isPopUpPresented = true
+                    state.popUpFlag = false
+                    return .none
                     
                 case .tapPopUpNextButton:
                     if state.isHideUntilSelected {
@@ -167,7 +187,7 @@ public struct TrainerHomeFeature {
                         }
                     }
                     state.view_isPopUpPresented = false
-                    return .send(.setNavigating(.trainerMakeInvitationCodePage))
+                    return .send(.setNavigating(.checkTrainerInvitationCode))
                     
                 case .onAppear:
                     let year: Int = Calendar.current.component(.year, from: state.selectedDate)
@@ -176,6 +196,7 @@ public struct TrainerHomeFeature {
                     if let hideUntil = state.hidePopupUntil, hideUntil > Date() {
                         state.view_isPopUpPresented = false
                     } else {
+                        state.popUpFlag = true
                         state.view_isPopUpPresented = true
                     }
                     
@@ -186,20 +207,40 @@ public struct TrainerHomeFeature {
                         .send(.view(.calendarDateTap))
                     )
                     
+                case .isLoadedCheck(let current, let next):
+                    let year: Int = Calendar.current.component(.year, from: state.selectedDate)
+
+                    let isLoaded: Bool = state.events.keys.contains { date in
+                        let eventMonth: Int = Calendar.current.component(.month, from: date)
+                        return eventMonth == next
+                    }
+                    
+                    if isLoaded {
+                        return .none
+                    } else {
+                        if current > next { /// 이전달로 넘기는 경우
+                            return .run { send in
+                                await send(.view(.fetchMonthlyLessons(year: current == 1 ? year-1 : year, month: next)))
+                            }
+                        } else { /// 다음달로 넘기는 경우
+                            return .run { send in
+                                await send(.view(.fetchMonthlyLessons(year: year, month: next)))
+                            }
+                        }
+                    }
+                    
                 case .fetchMonthlyLessons(year: let year, month: let month):
+                    var events: [Date: Int] = state.events
+                    
                     return .run { send in
                         do {
-                            let temp: GetMonthlyLessonListResDTO = try await trainerRepoUseCase.getMonthlyLessonList(
+                            let result: GetMonthlyLessonListResDTO = try await trainerRepoUseCase.getMonthlyLessonList(
                                 year: year,
                                 month: month
                             )
                             
-                            let dateFormatter: DateFormatter = DateFormatter()
-                            dateFormatter.dateFormat = "yyyy-MM-dd"
-                            
-                            var events: [Date: Int] = [:]
-                            for lesson in temp.calendarPtLessonCounts {
-                                if let date = dateFormatter.date(from: lesson.date) {
+                            for lesson in result.calendarPtLessonCounts {
+                                if let date = lesson.date.toDate(format: .yyyyMMdd) {
                                     events[date] = lesson.count
                                 } else {
                                     print("Invalid date format: \(lesson.date)")
@@ -210,20 +251,18 @@ public struct TrainerHomeFeature {
                             print("리스트 Fetching Error: \(error)")
                         }
                     }
+                    
                 case .updateEvents(let events):
-                    state.events = events
+                    state.events.merge(events) { current, new in new }
                     return .none
                     
                 case .calendarDateTap:
                     let formattedDate: String = TDateFormatUtility.formatter(for: .yyyyMMdd).string(from: state.selectedDate)
-                    
+                    let events = state.events
                     return .run { send in
-                        do {
-                            let sessionList: GetDateSessionListEntity = try await trainerRepoUseCase.getDateSessionList(date: formattedDate).toEntity()
-                            await send(.view(.settingSessionList(sessions: sessionList)))
-                        } catch {
-                            print("error \(error.localizedDescription)")
-                        }
+                        let sessionList: GetDateSessionListEntity = try await trainerRepoUseCase.getDateSessionList(date: formattedDate).toEntity()
+                        await send(.view(.settingSessionList(sessions: sessionList)))
+                        await send(.view(.updateEvents(events)))
                     }
                     
                 case .settingSessionList(let list):
@@ -245,5 +284,7 @@ extension TrainerHomeFeature {
         case addPTSessionPage
         /// 초대 코드 발급페이지
         case trainerMakeInvitationCodePage
+        /// 초대 코드 확인 페잊
+        case checkTrainerInvitationCode
     }
 }

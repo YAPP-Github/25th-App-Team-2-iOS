@@ -106,7 +106,7 @@ public struct TrainerMypageView: View {
             ProfileItemView(title: "서비스 이용약관", tapAction: { send(.tapTOSButton) })
             ProfileItemView(title: "개인정보 처리방침", tapAction: { send(.tapPrivacyPolicyButton) })
             ProfileItemView(title: "버전 정보", rightView: {
-                Text(store.versionInfo)
+                Text("0.0.1")
                     .typographyStyle(.body2Medium, with: .neutral400)
             })
             ProfileItemView(title: "오픈소스 라이선스", tapAction: { send(.tapOpenSourceLicenseButton) })

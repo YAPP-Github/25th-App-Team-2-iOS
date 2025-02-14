@@ -60,7 +60,7 @@ public struct TNavigation: View {
                     leftAction?()
                 }
             
-        case .Title, .RTextWithTitle:
+        case .Title, .RTextWithTitle, .RButtonWithTitle:
             Rectangle()
                 .fill(Color.clear)
                 .frame(width: 32, height: 32)
@@ -84,7 +84,8 @@ public struct TNavigation: View {
                 .LRButtonWithTitle(_, let centerTitle, _),
                 .LButtonRTextWithTitle(_, let centerTitle, _),
                 .RTextWithTitle(let centerTitle, _),
-                .Title(let centerTitle):
+                .Title(let centerTitle),
+                .RButtonWithTitle(let centerTitle, _):
             Text(centerTitle)
                 .typographyStyle(.heading4, with: .neutral900)
                 .frame(maxWidth: .infinity, alignment: .center)
@@ -96,7 +97,7 @@ public struct TNavigation: View {
     @ViewBuilder
     private var rightView: some View {
         switch type {
-        case .LRButtonWithTitle(_, _, let rightImage):
+        case .LRButtonWithTitle(_, _, let rightImage), .RButtonWithTitle(_, let rightImage):
             Image(rightImage)
                 .resizable()
                 .frame(width: 32, height: 32)
@@ -158,6 +159,8 @@ public enum TNavigationCase {
     case LButtonRTextWithTitle(leftImage: ImageResource, centerTitle: String, rightText: String)
     /// 오른쪽 텍스트 버튼, 센터 타이틀
     case RTextWithTitle(centerTitle: String, rightText: String)
+    /// 오른쪽 이미지 버튼, 센터 타이블
+    case RButtonWithTitle(centerTitle: String, rightImage: ImageResource)
     /// 타이틀
     case Title(centerTitle: String)
     /// 왼쪽 이미지

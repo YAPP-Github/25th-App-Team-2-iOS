@@ -36,6 +36,8 @@ public struct TrainerMainFlowView: View {
                 ConnectionCompleteView(store: store)
             case .connectedTraineeProfile(let store):
                 ConnectedTraineeProfileView(store: store)
+            case .checkInvitationCode(let store):
+                CheckTrainerInvitationCodeView(store: store)
             
                 // MARK: - TraineeList
             case .addTrainee(let store):

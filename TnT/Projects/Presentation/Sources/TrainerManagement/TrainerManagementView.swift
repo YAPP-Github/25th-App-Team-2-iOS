@@ -22,10 +22,10 @@ struct TrainerManagementView: View {
     }
     
     var body: some View {
-        ScrollView(showsIndicators: false) {
-            VStack(spacing: 12) {
-                Header()
-                
+        VStack(spacing: 12) {
+            Header()
+            
+            ScrollView(showsIndicators: false) {
                 if let trainees = store.traineeList, !trainees.isEmpty {
                     TraineeListView(trainees: trainees)
                 } else {
@@ -33,11 +33,11 @@ struct TrainerManagementView: View {
                         .frame(minHeight: UIScreen.main.bounds.height - 204)
                 }
             }
-            .onAppear {
-                send(.onappear)
-            }
-            .navigationBarBackButtonHidden()
         }
+        .onAppear {
+            send(.onappear)
+        }
+        .navigationBarBackButtonHidden()
         .background(Color.neutral100)
     }
     
