@@ -61,12 +61,13 @@ public struct ConnectedTraineeProfileView: View {
                 .fill(Color.common0)
                 .overlay {
                     VStack {
-                        VStack(spacing: 10) {
+                        VStack(spacing: 12) {
                             UserProfileView(imageURL: store.traineeProfile.imageUrl)
                             
                             HStack(spacing: 4) {
                                 Text(store.traineeProfile.traineeName)
                                     .typographyStyle(.heading2, with: .neutral950)
+                                    .lineLimit(1)
                                 Text("트레이니")
                                     .typographyStyle(.heading4, with: .neutral950)
                             }
@@ -75,12 +76,16 @@ public struct ConnectedTraineeProfileView: View {
                         Spacer()
                         
                         VStack(spacing: 24) {
-                            HStack(spacing: 21) {
+                            HStack {
                                 if let age = store.traineeProfile.age {
                                     traineeProfileView(title: "나이", content: "\(age)세")
                                 }
-                                traineeProfileView(title: "키", content: "\(store.traineeProfile.height)")
-                                traineeProfileView(title: "체중", content: "\(store.traineeProfile.weight)")
+                                if let height = store.traineeProfile.height {
+                                    traineeProfileView(title: "키", content: "\(height)cm")
+                                }
+                                if let weight = store.traineeProfile.weight {
+                                    traineeProfileView(title: "체중", content: "\(weight)kg")
+                                }
                             }
                             
                             traineeInfoView(content: store.traineeProfile.ptGoal, type: .goal)
@@ -114,7 +119,7 @@ public struct ConnectedTraineeProfileView: View {
             Text(content)
                 .typographyStyle(.label1Medium, with: .neutral800)
                 .frame(height: type == .caution ? 128 : nil)
-                .frame(maxWidth: .infinity, alignment: .leading)
+                .frame(maxWidth: .infinity, alignment: .topLeading)
                 .padding(.init(top: 10, leading: 16, bottom: 10, trailing: 16))
                 .background(Color.neutral100)
                 .clipShape(RoundedRectangle(cornerRadius: 8))
@@ -140,8 +145,8 @@ private extension ConnectedTraineeProfileView {
                         case .success(let image):
                             image
                                 .resizable()
+                                .aspectRatio(contentMode: .fill)
                                 .frame(width: 128, height: 128)
-                                .scaledToFill()
                                 .clipShape(Circle())
                             
                         case .failure:
