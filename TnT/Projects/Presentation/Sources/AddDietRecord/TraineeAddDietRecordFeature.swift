@@ -276,7 +276,7 @@ private extension TraineeAddDietRecordFeature {
         guard state.dietDate != nil else { return .none }
         guard state.dietTime != nil else { return .none }
         guard state.dietType != nil else { return .none }
-        guard state.dietInfo != nil else { return .none }
+        guard !state.dietInfo.isEmpty else { return .none }
         
         state.view_isSubmitButtonEnabled = true
         return .none
