@@ -37,7 +37,6 @@ public struct TrainerSelectSessionTraineeView: View {
     public var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             Header()
-                .padding(.top, 30)
             
             if contentHeight >= 708 {
                 ScrollView {
