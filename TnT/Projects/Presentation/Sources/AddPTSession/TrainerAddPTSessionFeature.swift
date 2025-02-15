@@ -20,6 +20,8 @@ public struct TrainerAddPTSessionFeature {
     @ObservableState
     public struct State: Equatable {
         // MARK: Data related state
+        /// 캘린더에서 선택된 날짜
+        var calendarSelectedDate: Date
         /// 트레이너 회원 목록
         var traineeList: [TraineeListItemEntity]
         /// 선택된 회원
@@ -58,6 +60,7 @@ public struct TrainerAddPTSessionFeature {
         }
         
         public init(
+            calendarSelectedDate: Date = .now,
             traineeList: [TraineeListItemEntity] = [],
             trainee: TraineeListItemEntity? = nil,
             ptDate: Date? = nil,
@@ -75,6 +78,7 @@ public struct TrainerAddPTSessionFeature {
             view_popUp: PopUp? = nil,
             view_isPopUpPresented: Bool = false
         ) {
+            self.calendarSelectedDate = calendarSelectedDate
             self.traineeList = traineeList
             self.trainee = trainee
             self.ptDate = ptDate
@@ -250,6 +254,8 @@ public struct TrainerAddPTSessionFeature {
                     return .none
                     
                 case .onAppear:
+                    state.ptDate = state.calendarSelectedDate
+                    state.view_ptDateStatus = .filled
                     return .send(.api(.getTraineeList))
                 }
                 

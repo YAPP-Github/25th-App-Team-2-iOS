@@ -150,13 +150,13 @@ public struct TrainerHomeFeature {
                     return .none
                     
                 case .tapAddSessionButton:
-                    return .run { send in
+                    return .run { [state] send in
                         let result: GetActiveTraineesListResDTO = try await trainerRepoUseCase.getActiveTraineesList()
                         
                         if result.trainees.isEmpty {
                             return await send(.view(.popUpOfCheckTrainee))
                         } else {
-                            return await send(.setNavigating(.addPTSessionPage))
+                            return await send(.setNavigating(.addPTSessionPage(selectedDate: state.selectedDate)))
                         }
                     }
                     
@@ -284,7 +284,7 @@ extension TrainerHomeFeature {
         /// 알림 페이지
         case alarmPage
         /// PT 일정 추가페이지
-        case addPTSessionPage
+        case addPTSessionPage(selectedDate: Date)
         /// 초대 코드 발급페이지
         case trainerMakeInvitationCodePage
         /// 초대 코드 확인 페잊
