@@ -20,6 +20,8 @@ public struct TrainerHomeFeature {
         // MARK: Data related state
         /// 3일 동안 보지 않기 시작 날짜
         @Shared(.appStorage(AppStorage.hideHomePopupUntil)) var hidePopupUntil: Date?
+        /// 트레이너 연결 여부
+        @Shared(.appStorage(AppStorage.isConnected)) var isConnected: Bool = false
         /// 선택된 날짜
         var selectedDate: Date
         /// 캘린더 이벤트
@@ -34,8 +36,6 @@ public struct TrainerHomeFeature {
         var tappedsessionInfo: GetDateSessionListEntity?
         /// 3일 동안 보지 않기 선택되었는지 여부
         var isHideUntilSelected: Bool
-        /// 트레이니 연결 여부
-        var isConnected: Bool
         /// 팝업 관련 Flag
         var popUpFlag: Bool
         
@@ -56,7 +56,6 @@ public struct TrainerHomeFeature {
             sessionInfo: WorkoutListItemEntity? = nil,
             records: [RecordListItemEntity] = [],
             isHideUntilSelected: Bool = false,
-            isConnected: Bool = false,
             view_currentPage: Date = .now,
             tappedsessionInfo: GetDateSessionListEntity? = nil,
             view_isPopUpPresented: Bool = false,
@@ -68,7 +67,6 @@ public struct TrainerHomeFeature {
             self.sessionInfo = sessionInfo
             self.records = records
             self.isHideUntilSelected = isHideUntilSelected
-            self.isConnected = isConnected
             self.view_currentPage = view_currentPage
             self.tappedsessionInfo = tappedsessionInfo
             self.view_isPopUpPresented = view_isPopUpPresented
@@ -193,12 +191,17 @@ public struct TrainerHomeFeature {
                     let year: Int = Calendar.current.component(.year, from: state.selectedDate)
                     let month: Int = Calendar.current.component(.month, from: state.selectedDate)
                     
-                    if let hideUntil = state.hidePopupUntil, hideUntil > Date() {
-                        state.view_isPopUpPresented = false
-                    } else {
-                        state.popUpFlag = true
-                        state.view_isPopUpPresented = true
-                    }
+                    let hideUntil = state.hidePopupUntil ?? Date()
+                    let hidePopUp = state.isConnected || hideUntil > Date()
+                    state.view_isPopUpPresented = !hidePopUp
+                    state.popUpFlag = !hidePopUp
+                    
+//                    if let hideUntil = state.hidePopupUntil, hideUntil > Date() {
+//                        state.view_isPopUpPresented = false
+//                    } else {
+//                        state.popUpFlag = true
+//                        state.view_isPopUpPresented = true
+//                    }
                     
                     return .concatenate(
                         .send(.view(.fetchMonthlyLessons(year: month == 1 ? year-1 : year, month: month == 1 ? 12 : month-1))),
