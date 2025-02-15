@@ -238,6 +238,7 @@ extension TrainerHomeView {
                         /// 수업 완료 버튼 탭
                         onTapComplete()
                     }
+                    .disabled(session.isCompleted)
                 
                 VStack(spacing: 12) {
                     HStack(spacing: 4) {
@@ -256,7 +257,8 @@ extension TrainerHomeView {
                             .frame(maxWidth: .infinity, alignment: .leading)
                     }
                     
-                    if session.isCompleted {
+                    if false {
+//                    if session.isCompleted {
                         Button {
                             onTap?()
                         } label: {

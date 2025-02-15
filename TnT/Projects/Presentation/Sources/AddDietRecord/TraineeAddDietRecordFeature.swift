@@ -93,6 +93,8 @@ public struct TraineeAddDietRecordFeature {
         case api(APIAction)
         /// 선택된 이미지 데이터 저장
         case imagePicked(Data?)
+        /// 팝업 상태 설정
+        case setPopUp(PopUp?)
         /// 네비게이션 여부 설정
         case setNavigating
         
@@ -239,13 +241,16 @@ public struct TraineeAddDietRecordFeature {
                             ),
                             imgData: state.dietImageData
                         )
-                        await send(.setNavigating)
+                        await send(.setPopUp(.dietAdded))
                     }
                 }
                 
             case .imagePicked(let imgData):
                 state.dietImageData = imgData
                 return self.validateAllFields(&state)
+                
+            case .setPopUp(let popUp):
+                return setPopUpStatus(&state, status: popUp)
 
             case .setNavigating:
                 return .none
