@@ -181,7 +181,7 @@ public struct TraineeHomeFeature {
                     
                 case .tapAddDietRecordButton:
                     state.view_isBottomSheetPresented = false
-                    return .send(.setNavigating(.addDietRecordPage))
+                    return .send(.setNavigating(.addDietRecordPage(selectedDate: state.selectedDate)))
                     
                 case .tapPopUpNextButton:
                     if state.isHideUntilSelected {
@@ -303,7 +303,7 @@ extension TraineeHomeFeature {
         /// 운동 기록 추가 페이지
         case addWorkoutRecordPage
         /// 식단 기록 추가 페이지
-        case addDietRecordPage
+        case addDietRecordPage(selectedDate: Date)
         /// 초대코드 입력 페이지
         case traineeInvitationCodeInput
     }

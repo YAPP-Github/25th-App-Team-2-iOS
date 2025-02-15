@@ -71,6 +71,7 @@ public struct TraineeAddDietRecordView: View {
             .disabled(!store.view_isSubmitButtonEnabled)
             .debounce()
             .padding(.horizontal, 16)
+            .background(Color.common0)
         }
         .sheet(item: $store.view_bottomSheetItem) { item in
             switch item {
@@ -109,6 +110,7 @@ public struct TraineeAddDietRecordView: View {
                 send(.setFocus(oldValue, newValue))
             }
         }
+        .onAppear { send(.onAppear) }
     }
     
     // MARK: - Sections

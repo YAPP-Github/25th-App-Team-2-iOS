@@ -21,6 +21,8 @@ public struct TraineeAddDietRecordFeature {
     @ObservableState
     public struct State: Equatable {
         // MARK: Data related state
+        /// 캘린더에서 선택된 날짜
+        var calendarSelectedDate: Date
         /// 식단 날짜
         var dietDate: Date?
         /// 식단 시간
@@ -51,6 +53,7 @@ public struct TraineeAddDietRecordFeature {
         var view_isPopUpPresented: Bool
         
         public init(
+            calendarSelectedDate: Date = .now,
             dietDate: Date? = nil,
             dietTime: Date? = nil,
             dietType: DietType? = nil,
@@ -66,6 +69,7 @@ public struct TraineeAddDietRecordFeature {
             view_popUp: PopUp? = nil,
             view_isPopUpPresented: Bool = false
         ) {
+            self.calendarSelectedDate = calendarSelectedDate
             self.dietDate = dietDate
             self.dietTime = dietTime
             self.dietType = dietType
@@ -122,6 +126,8 @@ public struct TraineeAddDietRecordFeature {
             case tapPopUpPrimaryButton(popUp: PopUp?)
             /// 포커스 상태 변경
             case setFocus(FocusField?, FocusField?)
+            /// 화면 표시될 때
+            case onAppear
         }
         
         @CasePathable
@@ -227,6 +233,11 @@ public struct TraineeAddDietRecordFeature {
                     guard oldFocus != newFocus else { return .none }
                     state.view_focusField = newFocus
                     return .none
+                    
+                case .onAppear:
+                    state.dietDate = state.calendarSelectedDate
+                    state.view_dietDateStatus = .filled
+                    return .none
                 }
                 
             case .api(let action):
@@ -271,12 +282,12 @@ private extension TraineeAddDietRecordFeature {
     
     /// 모든 필드의 상태를 검증하여 "다음" 버튼 활성화 여부를 결정
     func validateAllFields(_ state: inout State) -> Effect<Action> {
-        
-        guard state.dietImageData != nil else { return .none }
         guard state.dietDate != nil else { return .none }
         guard state.dietTime != nil else { return .none }
+        guard let date = combinedDietDateTime(date: state.dietDate, time: state.dietTime),
+              date <= .now else { return .none }
         guard state.dietType != nil else { return .none }
-        guard !state.dietInfo.isEmpty else { return .none }
+        guard !state.dietInfo.isEmpty && state.dietInfo.count <= 100 else { return .none }
         
         state.view_isSubmitButtonEnabled = true
         return .none
