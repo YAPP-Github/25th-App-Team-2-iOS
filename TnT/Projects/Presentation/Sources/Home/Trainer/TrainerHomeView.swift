@@ -257,7 +257,8 @@ extension TrainerHomeView {
                             .frame(maxWidth: .infinity, alignment: .leading)
                     }
                     
-                    if session.isCompleted {
+                    if false {
+//                    if session.isCompleted {
                         Button {
                             onTap?()
                         } label: {
