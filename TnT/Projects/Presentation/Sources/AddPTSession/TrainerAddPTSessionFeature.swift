@@ -241,7 +241,9 @@ public struct TrainerAddPTSessionFeature {
                     
                 case .tapPopUpPrimaryButton(let popUp):
                     guard popUp != nil else { return .none }
-                    return setPopUpStatus(&state, status: nil)
+                    return popUp == .sessionAdded
+                    ? .send(.setNavigating)
+                    : setPopUpStatus(&state, status: nil)
                     
                 case let .setFocus(oldFocus, newFocus):
                     state.view_focusField = newFocus

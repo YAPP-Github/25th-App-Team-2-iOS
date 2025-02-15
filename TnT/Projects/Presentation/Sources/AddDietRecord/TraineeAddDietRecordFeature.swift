@@ -219,7 +219,9 @@ public struct TraineeAddDietRecordFeature {
                     
                 case .tapPopUpPrimaryButton(let popUp):
                     guard popUp != nil else { return .none }
-                    return setPopUpStatus(&state, status: nil)
+                    return popUp == .dietAdded
+                    ? .send(.setNavigating)
+                    : setPopUpStatus(&state, status: nil)
                     
                 case let .setFocus(oldFocus, newFocus):
                     guard oldFocus != newFocus else { return .none }
