@@ -104,6 +104,8 @@ public struct TrainerAddPTSessionFeature {
         case api(APIAction)
         /// 현재 관리 회원 목록 설정
         case setTraineeList([TraineeListItemEntity])
+        /// 팝업 상태 설정
+        case setPopUp(PopUp?)
         /// 네비게이션 여부 설정
         case setNavigating
         
@@ -273,7 +275,7 @@ public struct TrainerAddPTSessionFeature {
                                     traineeId: traineeId
                                 )
                             )
-                            await send(.setNavigating)
+                            await send(.setPopUp(.sessionAdded))
                         } catch {
                             NotificationCenter.default.post(toast: .init(presentType: .text("⚠"), message: "이미 예약된 시간대입니다"))
                         }
@@ -283,6 +285,9 @@ public struct TrainerAddPTSessionFeature {
             case .setTraineeList(let trainees):
                 state.traineeList = trainees
                 return .none
+                
+            case .setPopUp(let popUp):
+                return setPopUpStatus(&state, status: popUp)
                 
             case .setNavigating:
                 return .none
