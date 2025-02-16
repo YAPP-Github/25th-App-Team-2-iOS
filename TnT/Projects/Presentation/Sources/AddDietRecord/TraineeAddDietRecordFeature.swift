@@ -282,12 +282,16 @@ private extension TraineeAddDietRecordFeature {
     
     /// 모든 필드의 상태를 검증하여 "다음" 버튼 활성화 여부를 결정
     func validateAllFields(_ state: inout State) -> Effect<Action> {
-        guard state.dietDate != nil else { return .none }
-        guard state.dietTime != nil else { return .none }
-        guard let date = combinedDietDateTime(date: state.dietDate, time: state.dietTime),
-              date <= .now else { return .none }
-        guard state.dietType != nil else { return .none }
-        guard !state.dietInfo.isEmpty && state.dietInfo.count <= 100 else { return .none }
+        guard state.dietDate != nil,
+              state.dietTime != nil,
+              let date = combinedDietDateTime(date: state.dietDate, time: state.dietTime),
+              date <= .now,
+              state.dietType != nil,
+              !state.dietInfo.isEmpty && state.dietInfo.count <= 100
+        else {
+            state.view_isSubmitButtonEnabled = false
+            return .none
+        }
         
         state.view_isSubmitButtonEnabled = true
         return .none
