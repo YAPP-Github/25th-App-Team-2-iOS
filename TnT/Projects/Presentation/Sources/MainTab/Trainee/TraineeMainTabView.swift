@@ -34,6 +34,7 @@ public struct TraineeMainTabView: View {
             
             BottomTabBar()
         }
+        .navigationPopGestureDisabled()
         .ignoresSafeArea(.all, edges: .bottom)
     }
     

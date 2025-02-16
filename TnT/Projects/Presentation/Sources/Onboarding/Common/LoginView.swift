@@ -36,6 +36,7 @@ public struct LoginView: View {
         }
         .padding(.horizontal, 28)
         .navigationBarBackButtonHidden()
+        .navigationPopGestureDisabled()
         .sheet(item: $store.scope(state: \.termFeature, action: \.subFeature.termAction)) { store in
             TermView(store: store)
                 .padding(.top, 10)

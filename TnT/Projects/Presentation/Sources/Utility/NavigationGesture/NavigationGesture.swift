@@ -30,9 +30,11 @@ struct PopGestureModifier: ViewModifier {
     func body(content: Content) -> some View {
         content
             .onAppear {
+                guard disabled else { return }
                 UINavigationController.gestureDisabledCount += 1
             }
             .onDisappear {
+                guard disabled else { return }
                 UINavigationController.gestureDisabledCount -= 1
             }
     }

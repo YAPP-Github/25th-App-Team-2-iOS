@@ -42,6 +42,7 @@ public struct TrainerMainTabView: View {
             
             BottomTabBar()
         }
+        .navigationPopGestureDisabled()
         .ignoresSafeArea(.all, edges: .bottom)
     }
     
