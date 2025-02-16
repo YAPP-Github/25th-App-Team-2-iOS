@@ -90,5 +90,7 @@
 	</array>
 	<key>UIUserInterfaceStyle</key>
 	<string>Light</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>앱이 사진 라이브러리에 접근하여 사진을 선택할 수 있도록 허용해주세요.</string>
 </dict>
 </plist>
