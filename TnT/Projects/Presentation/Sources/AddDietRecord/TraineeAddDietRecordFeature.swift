@@ -184,12 +184,12 @@ public struct TraineeAddDietRecordFeature {
                     return .none
                     
                 case .tapNavBackButton:
-                    if state.view_isSubmitButtonEnabled {
+                    if state.dietTime != nil,
+                       state.dietType != nil,
+                       state.dietInfo.isEmpty == false {
                         return self.setPopUpStatus(&state, status: .cancelDietAdd)
                     } else {
-                        return .run { send in
-                            await self.dismiss()
-                        }
+                        return .run { _ in await self.dismiss() }
                     }
                     
                 case .tapPhotoPickerDeleteButton:
