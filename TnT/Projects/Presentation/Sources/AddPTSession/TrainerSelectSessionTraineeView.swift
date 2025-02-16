@@ -48,6 +48,7 @@ public struct TrainerSelectSessionTraineeView: View {
             
             Spacer(minLength: 0)
         }
+        .padding(.top, 24)
         .presentationDetents([.height(contentHeight)])
         .presentationDragIndicator(contentHeight == maxHeight ? .visible : .hidden)
     }

@@ -39,7 +39,7 @@ public struct LoginView: View {
         .navigationPopGestureDisabled()
         .sheet(item: $store.scope(state: \.termFeature, action: \.subFeature.termAction)) { store in
             TermView(store: store)
-                .padding(.top, 10)
+                .padding(.top, 24)
                 .presentationDetents([.height(512)])
                 .presentationDragIndicator(.visible)
         }
