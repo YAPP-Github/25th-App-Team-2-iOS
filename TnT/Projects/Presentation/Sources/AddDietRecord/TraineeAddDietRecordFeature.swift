@@ -52,6 +52,9 @@ public struct TraineeAddDietRecordFeature {
         /// 팝업 표시 여부
         var view_isPopUpPresented: Bool
         
+        // MARK: SubFeature state
+        var photoLibraryState = PhotoLibraryFeature.State()
+        
         public init(
             calendarSelectedDate: Date = .now,
             dietDate: Date? = nil,
@@ -95,6 +98,8 @@ public struct TraineeAddDietRecordFeature {
         case view(View)
         /// api 콜 액션을 처리합니다
         case api(APIAction)
+        /// 하위 피처 액션을 처리합니다
+        case subFeature(SubFeatureAction)
         /// 선택된 이미지 데이터 저장
         case imagePicked(Data?)
         /// 팝업 상태 설정
@@ -135,13 +140,23 @@ public struct TraineeAddDietRecordFeature {
             /// 식단 등록 API
             case registerDietRecord
         }
+        
+        @CasePathable
+        public enum SubFeatureAction: Sendable {
+            case photoLibrary(PhotoLibraryFeature.Action)
+        }
     }
     
     public init() {}
     
     public var body: some ReducerOf<Self> {
-        BindingReducer(action: \.view)
         
+        Scope(state: \.photoLibraryState, action: \.subFeature.photoLibrary) {
+            PhotoLibraryFeature()
+        }
+        
+        BindingReducer(action: \.view)
+
         Reduce { state, action in
             switch action {
             case .view(let action):
@@ -218,6 +233,10 @@ public struct TraineeAddDietRecordFeature {
                     
                 case .tapPopUpSecondaryButton(let popUp):
                     guard popUp != nil else { return .none }
+                    guard popUp != .photoAuthorization else {
+                        return setPopUpStatus(&state, status: nil)
+                    }
+                    
                     return .concatenate(
                         setPopUpStatus(&state, status: nil),
                         .run{ _ in await self.dismiss() }
@@ -225,6 +244,13 @@ public struct TraineeAddDietRecordFeature {
                     
                 case .tapPopUpPrimaryButton(let popUp):
                     guard popUp != nil else { return .none }
+                    
+                    if popUp == .photoAuthorization,
+                        let url = URL(string: UIApplication.openSettingsURLString),
+                       UIApplication.shared.canOpenURL(url) {
+                        UIApplication.shared.open(url)
+                    }
+                    
                     return popUp == .dietAdded
                     ? .send(.setNavigating)
                     : setPopUpStatus(&state, status: nil)
@@ -256,6 +282,15 @@ public struct TraineeAddDietRecordFeature {
                         )
                         await send(.setPopUp(.dietAdded))
                     }
+                }
+                
+            case .subFeature(let internalAction):
+                switch internalAction {
+                case .photoLibrary(.showPermissionPopup):
+                    return setPopUpStatus(&state, status: .photoAuthorization)
+                    
+                default:
+                    return .none
                 }
                 
             case .imagePicked(let imgData):
@@ -358,6 +393,8 @@ public extension TraineeAddDietRecordFeature {
         case dietAdded
         /// 식단 기록을 종료할까요?
         case cancelDietAdd
+        /// 사진 접근 권한이 필요해요
+        case photoAuthorization
         
         var title: String {
             switch self {
@@ -365,6 +402,8 @@ public extension TraineeAddDietRecordFeature {
                 return "식단을 기록했어요!"
             case .cancelDietAdd:
                 return "식단 기록을 종료할까요?"
+            case .photoAuthorization:
+                return "식단 사진 설정을 위해\n사진 접근 권한이 필요해요"
             }
         }
         
@@ -374,12 +413,14 @@ public extension TraineeAddDietRecordFeature {
                 return "내일도 기록해 주실 거죠?"
             case .cancelDietAdd:
                 return "기록이 저장되지 않아요!"
+            case .photoAuthorization:
+                return "사진 추가는 식단 기록 말고도\n프로필과 운동 기록에도 사용돼요"
             }
         }
         
         var showAlertIcon: Bool {
             switch self {
-            case .dietAdded:
+            case .dietAdded, .photoAuthorization:
                 return false
             case .cancelDietAdd:
                 return true
@@ -390,17 +431,8 @@ public extension TraineeAddDietRecordFeature {
             switch self {
             case .dietAdded:
                 return nil
-            case .cancelDietAdd:
+            case .cancelDietAdd, .photoAuthorization:
                 return .tapPopUpSecondaryButton(popUp: self)
-            }
-        }
-        
-        var primaryTitle: String {
-            switch self {
-            case .dietAdded:
-                return "확인"
-            case .cancelDietAdd:
-                return "계속 수정"
             }
         }
         

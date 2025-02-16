@@ -116,11 +116,10 @@ public struct TraineeAddDietRecordView: View {
     // MARK: - Sections
     @ViewBuilder
     private func DietPhotoSection() -> some View {
-        PhotosPicker(
-            selection: $store.view_photoPickerItem,
-            matching: .images,
-            photoLibrary: .shared()
-        ) {
+        PhotoPickerView(store: store.scope(
+            state: \.photoLibraryState,
+            action: \.subFeature.photoLibrary
+        ), selectedItem: $store.view_photoPickerItem) {
             GeometryReader { geometry in
                 if let imageData = store.dietImageData,
                    let uiImage = UIImage(data: imageData) {
@@ -269,9 +268,9 @@ public struct TraineeAddDietRecordView: View {
         if let popUp = store.view_popUp {
             let buttons: [TPopupAlertState.ButtonState] = [
                 popUp.secondaryAction.map { action in
-                        .init(title: "종료", style: .secondary, action: .init(action: { send(action) }))
+                        .init(title: "취소", style: .secondary, action: .init(action: { send(action) }))
                 },
-                .init(title: popUp.primaryTitle, style: .primary, action: .init(action: { send(popUp.primaryAction) }))
+                .init(title: "확인", style: .primary, action: .init(action: { send(popUp.primaryAction) }))
             ].compactMap { $0 }
             
             TPopUpAlertView(
