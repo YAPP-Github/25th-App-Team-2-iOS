@@ -56,6 +56,9 @@ public struct CreateProfileView: View {
             .disabled(!store.view_isNextButtonEnabled)
             .debounce()
         }
+        .tPopUp(isPresented: $store.view_isPopUpPresented) {
+            PopUpView()
+        }
     }
     
     @ViewBuilder
@@ -98,20 +101,20 @@ public struct CreateProfileView: View {
         }
         .frame(width: 132, height: 132)
         .overlay(alignment: .bottomTrailing) {
-            PhotosPicker(
-                selection: $store.view_photoPickerItem,
-                matching: .images,
-                photoLibrary: .shared()
-            ) {
+            PhotoPickerView(store: store.scope(
+                state: \.photoLibraryState,
+                action: \.subFeature.photoLibrary
+            ), selectedItem: $store.view_photoPickerItem) {
                 ZStack {
                     Circle()
                         .fill(Color.neutral900)
-                        .frame(width: 28, height: 28)
+                        
                     Image(.icnWriteWhite)
                         .resizable()
                         .frame(width: 16, height: 16)
                 }
             }
+            .frame(width: 28, height: 28)
         }
     }
     
@@ -137,5 +140,25 @@ public struct CreateProfileView: View {
             )
         )
         .padding(.horizontal, 20)
+    }
+    
+    @ViewBuilder
+    private func PopUpView() -> some View {
+        if let popUp = store.view_popUp {
+            let buttons: [TPopupAlertState.ButtonState] = [
+                .init(title: "취소", style: .secondary, action: .init(action: { send(popUp.secondaryAction) })),
+                .init(title: "확인", style: .primary, action: .init(action: { send(popUp.primaryAction) }))
+            ]
+            
+            TPopUpAlertView(
+                alertState: .init(
+                    title: popUp.title,
+                    message: popUp.message,
+                    buttons: buttons
+                )
+            )
+        } else {
+            EmptyView()
+        }
     }
 }
