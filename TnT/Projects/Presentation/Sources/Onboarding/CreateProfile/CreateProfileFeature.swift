@@ -158,6 +158,10 @@ public struct CreateProfileFeature {
             case .view(let action):
                 switch action {
                 case .binding(\.userName):
+                    let maxLength = userUseCase.getMaxNameLength()
+                    if state.userName.count > maxLength {
+                        state.userName = String(state.userName.prefix(maxLength))
+                    }
                     return self.validate(&state)
                     
                 case .binding(\.view_photoPickerItem):
