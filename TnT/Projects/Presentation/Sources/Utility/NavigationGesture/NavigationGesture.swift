@@ -10,8 +10,9 @@ import Foundation
 import UIKit
 import SwiftUI
 
-extension UINavigationController: ObservableObject, UIGestureRecognizerDelegate {
-    static var gestureEnabled: Bool = true
+extension UINavigationController: @retroactive ObservableObject, @retroactive UIGestureRecognizerDelegate {
+    /// 현재 제스처 비활성화된 화면의 수를 추적하는 카운터
+    static var gestureDisabledCount: Int = 0
     
     open override func viewDidLoad() {
         super.viewDidLoad()
@@ -19,15 +20,7 @@ extension UINavigationController: ObservableObject, UIGestureRecognizerDelegate 
     }
     
     public func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
-        return viewControllers.count > 2 && UINavigationController.gestureEnabled
-    }
-}
-
-extension UIView {
-    var parentViewController: UIViewController? {
-        sequence(first: self) {
-            $0.next
-        }.first { $0 is UIViewController } as? UIViewController
+        return UINavigationController.gestureDisabledCount == 0
     }
 }
 
@@ -37,10 +30,10 @@ struct PopGestureModifier: ViewModifier {
     func body(content: Content) -> some View {
         content
             .onAppear {
-                UINavigationController.gestureEnabled = !disabled
+                UINavigationController.gestureDisabledCount += 1
             }
             .onDisappear {
-                UINavigationController.gestureEnabled = true
+                UINavigationController.gestureDisabledCount -= 1
             }
     }
 }
