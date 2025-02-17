@@ -103,6 +103,7 @@ public struct CreateProfileFeature {
     
     @Dependency(\.userUseCase) private var userUseCase: UserUseCase
     @Dependency(\.userUseRepoCase) private var userUseRepoCase: UserRepository
+    @Dependency(\.socialLogInUseCase) private var socialLoginUseCase: SocialLoginUseCase
     @Dependency(\.keyChainManager) var keyChainManager
     
     public enum Action: Sendable, ViewAction {
@@ -133,8 +134,10 @@ public struct CreateProfileFeature {
         
         @CasePathable
         public enum APIAction: Sendable {
+            /// FCM 토큰 get
+            case getFCMToken
             /// 회원가입 POST
-            case postSignUp
+            case postSignUp(fcmToken: String)
         }
         
         @CasePathable
@@ -186,7 +189,7 @@ public struct CreateProfileFeature {
                     case .trainee:
                         return .send(.setNavigating(.traineeBasicInfoInput))
                     case .trainer:
-                        return .send(.api(.postSignUp))
+                        return .send(.api(.getFCMToken))
                     }
                     
                 case .tapPopUpSecondaryButton(let popUp):
@@ -208,7 +211,15 @@ public struct CreateProfileFeature {
                 
             case .api(let action):
                 switch action {
-                case .postSignUp:
+                case .getFCMToken:
+                    return .run { send in
+                        let fcmToken = try await socialLoginUseCase.getFCMToken()
+                        await send(.api(.postSignUp(fcmToken: fcmToken)))
+                    }
+                    
+                case .postSignUp(let fcmToken):
+                    state.$signUpEntity.withLock { $0.fcmToken = fcmToken }
+                    
                     guard let reqDTO = state.signUpEntity.toDTO() else {
                         return .none
                     }
