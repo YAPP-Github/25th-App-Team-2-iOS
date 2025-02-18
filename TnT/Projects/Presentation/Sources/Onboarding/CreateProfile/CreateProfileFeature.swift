@@ -313,7 +313,7 @@ public extension CreateProfileFeature {
         var message: String {
             switch self {
             case .photoAuthorization:
-                return "사진 추가는 프로필 말고도\n운동과 식단 기록에도 사용돼요"
+                return "‘TnT'는 프로필 사진 설정, 운동 기록 및 식단 기록 저장 등 주요 기능 제공을 위해 사진 접근 권한이 필요합니다.\n설정에서 권한을 활성화해주세요."
             }
         }
         

@@ -76,7 +76,7 @@ public struct CreateProfileView: View {
                 .padding(.horizontal, 20)
             }
             
-            TInfoTitleHeader(title: "이름이 어떻게 되세요?")
+            TInfoTitleHeader(title: "닉네임이 어떻게 되세요?")
         }
         .padding(.vertical, 12)
     }
@@ -121,14 +121,14 @@ public struct CreateProfileView: View {
     @ViewBuilder
     private func TextFieldSection() -> some View {
         TTextField(
-            placeholder: "이름을 입력해주세요",
+            placeholder: "닉네임을 입력해주세요",
             text: $store.userName,
             textFieldStatus: $store.view_textFieldStatus
         )
         .withSectionLayout(
             header: .init(
                 isRequired: true,
-                title: "이름",
+                title: "닉네임",
                 limitCount: store.view_nameMaxLength ?? 15,
                 textCount: store.userName.count
             ),
