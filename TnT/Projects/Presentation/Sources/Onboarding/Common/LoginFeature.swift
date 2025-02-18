@@ -121,9 +121,14 @@ public struct LoginFeature {
                 case .insertFCMToken(let entity):
                     return .run { send in
                         var mutatedEntity = entity
-                        let fcmToken = try await socialLoginUseCase.getFCMToken()
-                        mutatedEntity.fcmToken = fcmToken
-                        await send(.api(.postSocialLogin(entity: mutatedEntity)))
+                        if let fcmToken = try? await socialLoginUseCase.getFCMToken() {
+                            mutatedEntity.fcmToken = fcmToken
+                            await send(.api(.postSocialLogin(entity: mutatedEntity)))
+                        } else {
+                            let fcmToken: String? = try? keyChainManager.read(for: .apns)
+                            mutatedEntity.fcmToken = fcmToken ?? ""
+                            await send(.api(.postSocialLogin(entity: mutatedEntity)))
+                        }
                     }
                     
                 case .postSocialLogin(let entity):

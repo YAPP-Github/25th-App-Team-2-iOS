@@ -120,8 +120,12 @@ public struct TraineePrecautionInputFeature {
                 switch action {
                 case .getFCMToken:
                     return .run { send in
-                        let fcmToken = try await socialLoginUseCase.getFCMToken()
-                        await send(.api(.postSignUp(fcmToken: fcmToken)))
+                        if let fcmToken = try? await socialLoginUseCase.getFCMToken() {
+                            await send(.api(.postSignUp(fcmToken: fcmToken)))
+                        } else {
+                            let fcmToken: String? = try? keyChainManager.read(for: .apns)
+                            await send(.api(.postSignUp(fcmToken: fcmToken ?? "")))
+                        }
                     }
                     
                 case .postSignUp(let fcmToken):
