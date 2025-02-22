@@ -233,27 +233,27 @@ public struct TraineeAddDietRecordFeature {
                     
                 case .tapPopUpSecondaryButton(let popUp):
                     guard popUp != nil else { return .none }
-                    guard popUp != .photoAuthorization else {
-                        return setPopUpStatus(&state, status: nil)
-                    }
-                    
-                    return .concatenate(
-                        setPopUpStatus(&state, status: nil),
-                        .run{ _ in await self.dismiss() }
-                    )
+                    return setPopUpStatus(&state, status: nil)
                     
                 case .tapPopUpPrimaryButton(let popUp):
-                    guard popUp != nil else { return .none }
+                    guard let popUp else { return .none }
                     
-                    if popUp == .photoAuthorization,
-                        let url = URL(string: UIApplication.openSettingsURLString),
-                       UIApplication.shared.canOpenURL(url) {
-                        UIApplication.shared.open(url)
+                    switch popUp {
+                    case .dietAdded:
+                        return .send(.setNavigating)
+                        
+                    case .cancelDietAdd:
+                        return .concatenate(
+                            setPopUpStatus(&state, status: nil),
+                            .run { _ in await self.dismiss() }
+                        )
+                        
+                    case .photoAuthorization:
+                        if let url = URL(string: UIApplication.openSettingsURLString), UIApplication.shared.canOpenURL(url) {
+                            UIApplication.shared.open(url)
+                        }
+                        return setPopUpStatus(&state, status: nil)
                     }
-                    
-                    return popUp == .dietAdded
-                    ? .send(.setNavigating)
-                    : setPopUpStatus(&state, status: nil)
                     
                 case let .setFocus(oldFocus, newFocus):
                     guard oldFocus != newFocus else { return .none }
