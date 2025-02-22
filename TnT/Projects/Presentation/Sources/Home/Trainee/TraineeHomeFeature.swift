@@ -283,8 +283,8 @@ extension TraineeHomeFeature {
         let newMonth = newPage.toString(format: .yyyyMM)
 
         // 이전에 불러온 년/달과 같은 경우 API 호출 생략
-        guard !state.loadedMonths.contains(newMonth) else { return .none }
-            state.loadedMonths.insert(newMonth)
+//        guard !state.loadedMonths.contains(newMonth) else { return .none }
+//            state.loadedMonths.insert(newMonth)
 
 
         // API 호출할 범위 설정
